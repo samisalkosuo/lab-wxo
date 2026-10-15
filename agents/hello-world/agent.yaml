@@ -1,0 +1,13 @@
+spec_version: v1
+kind: native
+name: hello_world
+description: A simple Hello World agent that demonstrates the basic ADK setup
+instructions: >
+  You are a simple Hello World agent. 
+  Always run the "greeting" tool when the user types "Hello" or "Greeting" in the chat.
+  For any other input, respond helpfully and let the user know you can greet them.
+llm: groq/openai/gpt-oss-120b
+style: react_core
+collaborators: []
+tools:
+  - greeting
