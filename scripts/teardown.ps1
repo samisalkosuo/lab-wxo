@@ -1,14 +1,17 @@
 # teardown.ps1
-# Removes all resources created by deploy-all.ps1 from the active WXO environment.
+# Removes the resources created by deploy-all.ps1 from the active WXO environment.
 # Resources are removed in reverse dependency order: agents first, then flows, then tools,
 # then knowledge bases, because agents reference tools and knowledge bases.
 #
-# REAL RESOURCE NAMES (not file names) are used here.  The tool package
-# tools/incident_triage/incident_triage.py exports several @tool functions, each of which
-# becomes an individual named tool in WXO; file-name discovery does not work for packages.
+# WHAT is removed comes from the scenario manifests (scenarios/<id>/scenario.yaml), read by
+# scripts/scenario_manifest.py. Manifests list the REAL resource names (not file names): the tool
+# package tools/incident_triage/incident_triage.py exports several @tool functions, each of which
+# becomes an individual named tool in WXO. Without -Scenario, EVERY scenario is removed (also
+# 'soon' ones: a resource that was never deployed only gives a non-fatal warning).
 #
 # SAFETY: Use -DryRun to print every command without executing it.
 #   .\scripts\teardown.ps1 -DryRun
+#   .\scripts\teardown.ps1 -Scenario incident-triage -DryRun
 #
 # IMPORTANT — UNTESTED FOR REAL DELETION:
 #   Real deletion was NEVER executed against a live instance during development.
@@ -31,7 +34,8 @@
 #   .\scripts\teardown.ps1 -DryRun  # print commands without running them
 
 param(
-    [switch]$DryRun
+    [switch]$DryRun,
+    [string]$Scenario = ""
 )
 
 $ErrorActionPreference = "Continue"   # errors are non-fatal; script continues after each failure
@@ -62,12 +66,38 @@ if ($DryRun) {
     Write-Warning "NOTE: real deletion has never been tested.  Check --help for each subcommand if prompts appear."
 }
 Write-Host "Root: $Root"
+if ($Scenario) { Write-Host "Scenario: $Scenario" } else { Write-Host "Scenarios: ALL" }
 
 # ── Prerequisite: orchestrate on PATH ────────────────────────────────────────
 if (-not (Get-Command orchestrate -ErrorAction SilentlyContinue)) {
     Write-Error "ERROR: 'orchestrate' not found on PATH. Activate your virtual environment first."
     exit 1
 }
+
+# ── Resolve the teardown plan from the scenario manifests ────────────────────
+# Prefer the python.exe that sits next to the orchestrate CLI (same environment, has PyYAML).
+$py = $null
+$orchCmd = Get-Command orchestrate -ErrorAction SilentlyContinue
+if ($orchCmd -and $orchCmd.Source) {
+    $candidate = Join-Path (Split-Path $orchCmd.Source -Parent) "python.exe"
+    if (Test-Path $candidate) { $py = $candidate }
+}
+if (-not $py) {
+    $found = Get-Command python -ErrorAction SilentlyContinue
+    if ($found) { $py = $found.Source }
+}
+if (-not $py) {
+    Write-Error "ERROR: Python not found. Activate the virtual environment that has ibm-watsonx-orchestrate installed."
+    exit 1
+}
+$planArgs = @((Join-Path $Root "scripts\scenario_manifest.py"), "teardown-plan")
+if ($Scenario) { $planArgs += @("--scenario", $Scenario) }
+$planLines = @(& $py @planArgs)
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "ERROR: could not build the teardown plan (see message above). Aborting."
+    exit 1
+}
+$plan = @($planLines | Where-Object { $_ } | ForEach-Object { , ($_ -split "`t") })
 
 # ── Read env.cfg and activate environment ────────────────────────────────────
 # Same parsing logic as deploy-all.ps1: split on the first '=' only.
@@ -116,51 +146,38 @@ if ($DryRun) {
 
 # ── Step 1: Remove agents ─────────────────────────────────────────────────────
 # Agents must be removed first because they reference tools and knowledge bases.
-# Both agents are kind=native (from agent.yaml).
+# The plan lists agents in reverse manifest order, each with its kind (native|external).
 #
-# CLI: orchestrate agents remove --name <name> --kind native
+# CLI: orchestrate agents remove --name <name> --kind <kind>
 # NOTE: --kind is required per 'orchestrate agents remove --help'.
 Write-Host "`n[1/5] Removing agents..." -ForegroundColor Yellow
 
-foreach ($agentName in @("incident_triage", "hello_world")) {
-    Invoke-Remove @("agents", "remove", "--name", $agentName, "--kind", "native") `
-        "agents remove --name $agentName --kind native"
+foreach ($s in @($plan | Where-Object { $_[0] -eq "agent" })) {
+    Invoke-Remove @("agents", "remove", "--name", $s[1], "--kind", $s[2]) `
+        "agents remove --name $($s[1]) --kind $($s[2])"
 }
 
 # ── Step 2: Remove flow tool ──────────────────────────────────────────────────
-# The remediation approval flow is imported as a tool (kind=flow).
-# It must be removed before the Python tools it calls (execute_remediation).
+# Flows are imported as tools (kind=flow), e.g. the remediation approval flow.
+# They must be removed before the Python tools they call (e.g. execute_remediation).
 # CLI: orchestrate tools remove --name <name>
 Write-Host "`n[2/5] Removing flow tool..." -ForegroundColor Yellow
 
-Invoke-Remove @("tools", "remove", "--name", "request_remediation") `
-    "tools remove --name request_remediation"
+foreach ($s in @($plan | Where-Object { $_[0] -eq "flow" })) {
+    Invoke-Remove @("tools", "remove", "--name", $s[1]) `
+        "tools remove --name $($s[1])"
+}
 
 # ── Step 3: Remove Python tools ───────────────────────────────────────────────
-# These are the @tool-decorated functions from tools/incident_triage/incident_triage.py
-# and tools/greetings.py.  WXO registers each function as a separate named tool.
-# The names are the function names exactly as written in the source.
+# These are the @tool-decorated functions listed in each manifest's tools[].names.
+# WXO registers each function as a separate named tool, named exactly as the function.
 # CLI: orchestrate tools remove --name <name>
 Write-Host "`n[3/5] Removing Python tools..." -ForegroundColor Yellow
 
-# tools/incident_triage/incident_triage.py — 8 @tool functions
-foreach ($toolName in @(
-    "list_open_incidents",
-    "get_incident",
-    "get_service_health",
-    "query_logs",
-    "get_metrics",
-    "list_recent_deployments",
-    "open_ticket",
-    "execute_remediation"
-)) {
-    Invoke-Remove @("tools", "remove", "--name", $toolName) `
-        "tools remove --name $toolName"
+foreach ($s in @($plan | Where-Object { $_[0] -eq "tool" })) {
+    Invoke-Remove @("tools", "remove", "--name", $s[1]) `
+        "tools remove --name $($s[1])"
 }
-
-# tools/greetings.py — single @tool function
-Invoke-Remove @("tools", "remove", "--name", "greeting") `
-    "tools remove --name greeting"
 
 # ── Step 4: Remove knowledge bases ────────────────────────────────────────────
 # Knowledge bases can be removed after tools because nothing references them at
@@ -170,8 +187,10 @@ Invoke-Remove @("tools", "remove", "--name", "greeting") `
 # NOTE: removing a built-in Milvus KB deletes the ingested document data too.
 Write-Host "`n[4/5] Removing knowledge bases..." -ForegroundColor Yellow
 
-Invoke-Remove @("knowledge-bases", "remove", "--name", "incident_triage_runbooks") `
-    "knowledge-bases remove --name incident_triage_runbooks"
+foreach ($s in @($plan | Where-Object { $_[0] -eq "kb" })) {
+    Invoke-Remove @("knowledge-bases", "remove", "--name", $s[1]) `
+        "knowledge-bases remove --name $($s[1])"
+}
 
 # ── Done ──────────────────────────────────────────────────────────────────────
 Write-Host "`n[5/5] Done." -ForegroundColor Yellow

@@ -495,7 +495,7 @@ These came out of the Sub-Task 6 review. They must stay visible in the demo scri
 
 ## Phase B - Customer Returns and Refunds Agent (Option 2) - outline
 
-Start only after Phase A is complete and accepted. Detail will be refined then.
+Start only after Phase A is complete and accepted. Detailed plan: [`plans/customer-returns-plan.md`](customer-returns-plan.md).
 
 - **Intent:** Show a conversational agent with messy input, a knowledge base policy, and a clean split between an agent and a rule (Decisions node).
 - **Outline:** mock `lookup_order`, `check_warranty`, `issue_refund_quote` tools; return-policy documents as a knowledge base; deterministic refund rules in a flow Decisions node; agent handles clarification, lookup, escalation. Reuse Phase A deployment, packaging, evaluation and demo-script patterns.
@@ -503,8 +503,17 @@ Start only after Phase A is complete and accepted. Detail will be refined then.
 
 ## Phase C - Release Readiness Supervisor (Option 3) - outline
 
-Start only after Phase B. ADK docs warn about "multi-agent chaos"; build it as a bounded extension.
+Start only after Phase B. ADK docs warn about "multi-agent chaos"; build it as a bounded extension. Detailed plan: [`plans/release-readiness-plan.md`](release-readiness-plan.md).
 
 - **Intent:** Show collaborators and routing with specialist agents (QA, security, operations) and a supervisor that reasons over conflicting answers.
 - **Outline:** reuse Phase A operations tools where sensible; each specialist gets a distinct small tool set; supervisor has explicit termination rules; evaluate routing accuracy.
 - **Status:** `[ ] pending`
+
+## Additional scenarios (HR Onboarding and Cloud FinOps)
+
+Two further scenarios confirmed in the presentation sidebar but not in the original delivery order:
+
+- **HR Onboarding** (Scenario 4): employee provisioning and workflow automation. Detailed plan: [`plans/hr-onboarding-plan.md`](hr-onboarding-plan.md).
+- **Cloud FinOps** (Scenario 5): cloud spend anomaly detection and rightsizing. Detailed plan: [`plans/cloud-finops-plan.md`](cloud-finops-plan.md).
+
+Build order: Phase B (Customer Returns) -> Phase C (Release Readiness) -> HR Onboarding -> Cloud FinOps, unless the user reorders.

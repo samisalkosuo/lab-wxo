@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # deploy-all.sh
-# Deploys all resource types to a WXO environment non-interactively.
+# Deploys scenarios to a WXO environment non-interactively.
 # Reads credentials from env.cfg in the repository root; never reads secrets from other sources.
+#
+# What gets deployed comes from the scenario manifests (scenarios/<id>/scenario.yaml), read by
+# scripts/scenario_manifest.py. Without --scenario, every manifest with `status: live` is deployed.
 #
 # Import order (dependency chain):
 #   connections -> tools (flat .py, OpenAPI .yaml, package folders) -> knowledge bases -> flows -> agents
@@ -9,11 +12,23 @@
 # Prerequisites:
 #   - Copy env.cfg.example to env.cfg and fill in WXO_API_KEY, WXO_URL, WXO_ENV_NAME.
 #   - The `orchestrate` CLI must be on PATH (activated venv, or system install).
+#   - Python with PyYAML (the one that runs `orchestrate`; ibm-watsonx-orchestrate depends on PyYAML).
 #
 # Usage:
-#   bash scripts/deploy-all.sh
+#   bash scripts/deploy-all.sh                             # every live scenario
+#   bash scripts/deploy-all.sh --scenario incident-triage  # one scenario
 
 set -euo pipefail
+
+SCENARIO=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --scenario) [ $# -ge 2 ] || { echo "ERROR: --scenario needs a value" >&2; exit 1; }; SCENARIO="$2"; shift 2 ;;
+        --scenario=*) SCENARIO="${1#--scenario=}"; shift ;;
+        -h|--help) sed -n '2,19p' "${BASH_SOURCE[0]}"; exit 0 ;;
+        *) echo "ERROR: unknown argument '$1'. Usage: deploy-all.sh [--scenario ID]" >&2; exit 1 ;;
+    esac
+done
 
 # The orchestrate CLI prints Unicode symbols after knowledge-base import. On Windows (Git Bash) Python defaults
 # to cp1252 for redirected output and crashes with UnicodeEncodeError. Force UTF-8 (harmless on Linux/macOS).
@@ -28,6 +43,32 @@ if ! command -v orchestrate &>/dev/null; then
     echo "ERROR: 'orchestrate' not found on PATH. Activate your virtual environment first." >&2
     exit 1
 fi
+
+# ── Resolve the deploy plan from the scenario manifests ───────────────────
+# Prefer the python that sits next to the orchestrate CLI (same environment, has PyYAML).
+PY=""
+ORCH_DIR="$(dirname "$(command -v orchestrate)")"
+for cand in "$ORCH_DIR/python" "$ORCH_DIR/python.exe" "$ORCH_DIR/python3"; do
+    if [ -x "$cand" ]; then PY="$cand"; break; fi
+done
+if [ -z "$PY" ]; then
+    PY="$(command -v python3 || command -v python || true)"
+fi
+if [ -z "$PY" ]; then
+    echo "ERROR: Python not found. Activate the virtual environment that has ibm-watsonx-orchestrate installed." >&2
+    exit 1
+fi
+PLAN_ARGS=("$SCRIPT_DIR/scenario_manifest.py" deploy-plan)
+[ -n "$SCENARIO" ] && PLAN_ARGS+=(--scenario "$SCENARIO")
+if ! PLAN="$("$PY" "${PLAN_ARGS[@]}" | tr -d '\r')"; then
+    echo "ERROR: could not build the deploy plan (see message above). Aborting." >&2
+    exit 1
+fi
+# plan_lines KIND... -> the plan lines whose first field is one of the given kinds
+plan_lines() {
+    local kind
+    for kind in "$@"; do printf '%s\n' "$PLAN" | awk -F'\t' -v k="$kind" '$1 == k'; done
+}
 
 # ── Read env.cfg ───────────────────────────────────────────────────────────
 ENV_FILE="$ROOT/env.cfg"
@@ -66,6 +107,7 @@ WXO_ENV_TYPE="${WXO_ENV_TYPE:-ibm_iam}"
 
 echo "=== WXO Deploy All ==="
 echo "Root: $ROOT"
+if [ -n "$SCENARIO" ]; then echo "Scenario: $SCENARIO"; else echo "Scenarios: all with status 'live'"; fi
 
 # ── Register and activate environment ────────────────────────────────────
 echo ""
@@ -93,91 +135,66 @@ fi
 # ── Tools ─────────────────────────────────────────────────────────────────
 echo ""
 echo "[2/6] Importing tools..."
-TOOLS_DIR="$ROOT/tools"
-if [ -d "$TOOLS_DIR" ]; then
-    # Single-file Python tools: tools/*.py
-    while IFS= read -r -d '' file; do
-        echo "    tools import -k python -f $(basename "$file")"
-        orchestrate tools import -k python -f "$file"
-    done < <(find "$TOOLS_DIR" -maxdepth 1 -name "*.py" -print0 | sort -z)
-
-    # OpenAPI tools: tools/*.yaml
-    while IFS= read -r -d '' file; do
-        echo "    tools import -k openapi -f $(basename "$file")"
-        orchestrate tools import -k openapi -f "$file"
-    done < <(find "$TOOLS_DIR" -maxdepth 1 -name "*.yaml" -print0 | sort -z)
-
-    # Multi-file Python package tools: tools/<name>/ with requirements.txt
-    while IFS= read -r -d '' pkg_dir; do
-        req_file="$pkg_dir/requirements.txt"
-        [ -f "$req_file" ] || continue
-        # Find top-level .py entry files inside the package folder
-        found_entry=0
-        while IFS= read -r -d '' entry; do
-            found_entry=1
-            echo "    tools import -k python -p $(basename "$pkg_dir") -f $(basename "$entry") -r requirements.txt"
-            orchestrate tools import -k python \
-                -p "$pkg_dir" \
-                -f "$entry" \
-                -r "$req_file"
-        done < <(find "$pkg_dir" -maxdepth 1 -name "*.py" ! -name "__init__.py" -print0 | sort -z)
-        if [ "$found_entry" -eq 0 ]; then
-            echo "  WARNING: package '$(basename "$pkg_dir")' has requirements.txt but no top-level .py entry file; skipping." >&2
-        fi
-    done < <(find "$TOOLS_DIR" -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
-else
-    echo "  (no tools/ directory, skipping)"
-fi
+n=0
+while IFS=$'\t' read -r kind p1 p2 p3; do
+    [ -n "$kind" ] || continue
+    n=$((n + 1))
+    case "$kind" in
+        tool_py)
+            echo "    tools import -k python -f $(basename "$p1")"
+            orchestrate tools import -k python -f "$ROOT/$p1" ;;
+        tool_openapi)
+            echo "    tools import -k openapi -f $(basename "$p1")"
+            orchestrate tools import -k openapi -f "$ROOT/$p1" ;;
+        tool_pkg)
+            echo "    tools import -k python -p $(basename "$p1") -f $(basename "$p2") -r requirements.txt"
+            orchestrate tools import -k python -p "$ROOT/$p1" -f "$ROOT/$p2" -r "$ROOT/$p3" ;;
+    esac
+done < <(plan_lines tool_py tool_openapi tool_pkg)
+[ "$n" -gt 0 ] || echo "  (no tools in the plan, skipping)"
 
 # ── Knowledge bases ────────────────────────────────────────────────────────
 echo ""
 echo "[3/6] Importing knowledge bases..."
-KNOWLEDGE_DIR="$ROOT/knowledge"
-if [ -d "$KNOWLEDGE_DIR" ]; then
-    while IFS= read -r -d '' file; do
-        echo "    knowledge-bases import -f $(basename "$file")"
-        orchestrate knowledge-bases import -f "$file"
-    done < <(find "$KNOWLEDGE_DIR" -name "*.yaml" -print0 | sort -z)
-else
-    echo "  (no knowledge/ directory, skipping)"
-fi
+n=0
+while IFS=$'\t' read -r kind p1; do
+    [ -n "$kind" ] || continue
+    n=$((n + 1))
+    echo "    knowledge-bases import -f $(basename "$p1")"
+    orchestrate knowledge-bases import -f "$ROOT/$p1"
+done < <(plan_lines kb)
+[ "$n" -gt 0 ] || echo "  (no knowledge bases in the plan, skipping)"
 
 # ── Flows ─────────────────────────────────────────────────────────────────
 echo ""
 echo "[4/6] Importing flows..."
-FLOWS_DIR="$ROOT/flows"
-if [ -d "$FLOWS_DIR" ]; then
-    while IFS= read -r -d '' file; do
-        echo "    tools import -k flow -f $(basename "$file")"
-        orchestrate tools import -k flow -f "$file"
-    done < <(find "$FLOWS_DIR" -name "*.py" -print0 | sort -z)
-else
-    echo "  (no flows/ directory, skipping)"
-fi
+n=0
+while IFS=$'\t' read -r kind p1; do
+    [ -n "$kind" ] || continue
+    n=$((n + 1))
+    echo "    tools import -k flow -f $(basename "$p1")"
+    orchestrate tools import -k flow -f "$ROOT/$p1"
+done < <(plan_lines flow)
+[ "$n" -gt 0 ] || echo "  (no flows in the plan, skipping)"
 
 # ── Agents ─────────────────────────────────────────────────────────────────
 echo ""
 echo "[5/6] Importing agents..."
-AGENTS_DIR="$ROOT/agents"
-if [ -d "$AGENTS_DIR" ]; then
-    while IFS= read -r -d '' agent_yaml; do
-        agent_dir="$(basename "$(dirname "$agent_yaml")")"
-        echo "    agents import -f $agent_dir/agent.yaml"
-        orchestrate agents import -f "$agent_yaml"
+n=0
+while IFS=$'\t' read -r kind p1 agent_name; do
+    [ -n "$kind" ] || continue
+    n=$((n + 1))
+    echo "    agents import -f ${p1#agents/}"
+    orchestrate agents import -f "$ROOT/$p1"
 
-        # 'agents import' creates a DRAFT agent. The chat UI lists only LIVE agents,
-        # so promote it. This fails on the Developer Edition (draft only); warn and continue.
-        agent_name="$(grep -m1 -E '^name:' "$agent_yaml" | sed -E 's/^name:[[:space:]]*//' | tr -d '\r' | awk '{print $1}')"
-        if [ -n "$agent_name" ]; then
-            echo "    agents deploy --name $agent_name"
-            if ! orchestrate agents deploy --name "$agent_name"; then
-                echo "WARNING: agents deploy failed for '$agent_name'. The agent exists as a draft; it may not appear in the chat UI." >&2
-            fi
-        fi
-    done < <(find "$AGENTS_DIR" -mindepth 2 -maxdepth 2 -name "agent.yaml" -print0 | sort -z)
-else
-    echo "  (no agents/ directory, skipping)"
-fi
+    # 'agents import' creates a DRAFT agent. The chat UI lists only LIVE agents,
+    # so promote it. This fails on the Developer Edition (draft only); warn and continue.
+    echo "    agents deploy --name $agent_name"
+    if ! orchestrate agents deploy --name "$agent_name"; then
+        echo "WARNING: agents deploy failed for '$agent_name'. The agent exists as a draft; it may not appear in the chat UI." >&2
+    fi
+done < <(plan_lines agent)
+[ "$n" -gt 0 ] || echo "  (no agents in the plan, skipping)"
 
 echo ""
 echo "=== Deploy complete ==="

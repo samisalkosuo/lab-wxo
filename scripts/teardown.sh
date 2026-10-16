@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 # teardown.sh
-# Removes all resources created by deploy-all.sh from the active WXO environment.
+# Removes the resources created by deploy-all.sh from the active WXO environment.
 # Resources are removed in reverse dependency order: agents first, then flows, then tools,
 # then knowledge bases, because agents reference tools and knowledge bases.
 #
-# REAL RESOURCE NAMES (not file names) are used here.  The tool package
-# tools/incident_triage/incident_triage.py exports several @tool functions, each of which
-# becomes an individual named tool in WXO; file-name discovery does not work for packages.
+# WHAT is removed comes from the scenario manifests (scenarios/<id>/scenario.yaml), read by
+# scripts/scenario_manifest.py. Manifests list the REAL resource names (not file names): the tool
+# package tools/incident_triage/incident_triage.py exports several @tool functions, each of which
+# becomes an individual named tool in WXO. Without --scenario, EVERY scenario is removed (also
+# 'soon' ones: a resource that was never deployed only gives a non-fatal warning).
 #
 # SAFETY: Use --dry-run to print every command without executing it.
 #   bash scripts/teardown.sh --dry-run
+#   bash scripts/teardown.sh --scenario incident-triage --dry-run
 #
 # IMPORTANT — UNTESTED FOR REAL DELETION:
 #   Real deletion was NEVER executed against a live instance during development.
@@ -41,10 +44,13 @@ ROOT="$(dirname "$SCRIPT_DIR")"
 
 # ── Parse arguments ───────────────────────────────────────────────────────────
 DRY_RUN=false
-for arg in "$@"; do
-    case "$arg" in
-        --dry-run) DRY_RUN=true ;;
-        *) echo "Unknown argument: $arg" >&2; exit 1 ;;
+SCENARIO=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --dry-run) DRY_RUN=true; shift ;;
+        --scenario) [ $# -ge 2 ] || { echo "ERROR: --scenario needs a value" >&2; exit 1; }; SCENARIO="$2"; shift 2 ;;
+        --scenario=*) SCENARIO="${1#--scenario=}"; shift ;;
+        *) echo "Unknown argument: $1" >&2; exit 1 ;;
     esac
 done
 
@@ -69,12 +75,36 @@ else
     echo "NOTE: real deletion has never been tested.  Check --help for each subcommand if prompts appear." >&2
 fi
 echo "Root: $ROOT"
+if [ -n "$SCENARIO" ]; then echo "Scenario: $SCENARIO"; else echo "Scenarios: ALL"; fi
 
 # ── Prerequisite: orchestrate on PATH ─────────────────────────────────────────
 if ! command -v orchestrate &>/dev/null; then
     echo "ERROR: 'orchestrate' not found on PATH. Activate your virtual environment first." >&2
     exit 1
 fi
+
+# ── Resolve the teardown plan from the scenario manifests ─────────────────────
+# Prefer the python that sits next to the orchestrate CLI (same environment, has PyYAML).
+PY=""
+ORCH_DIR="$(dirname "$(command -v orchestrate)")"
+for cand in "$ORCH_DIR/python" "$ORCH_DIR/python.exe" "$ORCH_DIR/python3"; do
+    if [ -x "$cand" ]; then PY="$cand"; break; fi
+done
+if [ -z "$PY" ]; then
+    PY="$(command -v python3 || command -v python || true)"
+fi
+if [ -z "$PY" ]; then
+    echo "ERROR: Python not found. Activate the virtual environment that has ibm-watsonx-orchestrate installed." >&2
+    exit 1
+fi
+PLAN_ARGS=("$SCRIPT_DIR/scenario_manifest.py" teardown-plan)
+[ -n "$SCENARIO" ] && PLAN_ARGS+=(--scenario "$SCENARIO")
+if ! PLAN="$("$PY" "${PLAN_ARGS[@]}" | tr -d '\r')"; then
+    echo "ERROR: could not build the teardown plan (see message above). Aborting." >&2
+    exit 1
+fi
+# plan_lines KIND -> the plan lines whose first field is KIND
+plan_lines() { printf '%s\n' "$PLAN" | awk -F'\t' -v k="$1" '$1 == k'; }
 
 # ── Read env.cfg and activate environment ────────────────────────────────────
 # Same parsing logic as deploy-all.sh: split on the first '=' only, strip CR.
@@ -123,54 +153,41 @@ fi
 
 # ── Step 1: Remove agents ─────────────────────────────────────────────────────
 # Agents must be removed first because they reference tools and knowledge bases.
-# Both agents are kind=native (from agent.yaml).
+# The plan lists agents in reverse manifest order, each with its kind (native|external).
 #
-# CLI: orchestrate agents remove --name <name> --kind native
+# CLI: orchestrate agents remove --name <name> --kind <kind>
 # NOTE: --kind is required per 'orchestrate agents remove --help'.
 echo ""
 echo "[1/5] Removing agents..."
 
-for agent_name in incident_triage hello_world; do
-    invoke_remove "agents remove --name $agent_name --kind native" \
-        agents remove --name "$agent_name" --kind native
-done
+while IFS=$'\t' read -r _ name kind; do
+    invoke_remove "agents remove --name $name --kind $kind" \
+        agents remove --name "$name" --kind "$kind"
+done < <(plan_lines agent)
 
 # ── Step 2: Remove flow tool ──────────────────────────────────────────────────
-# The remediation approval flow is imported as a tool (kind=flow).
-# It must be removed before the Python tools it calls (execute_remediation).
+# Flows are imported as tools (kind=flow), e.g. the remediation approval flow.
+# They must be removed before the Python tools they call (e.g. execute_remediation).
 # CLI: orchestrate tools remove --name <name>
 echo ""
 echo "[2/5] Removing flow tool..."
 
-invoke_remove "tools remove --name request_remediation" \
-    tools remove --name request_remediation
+while IFS=$'\t' read -r _ name; do
+    invoke_remove "tools remove --name $name" \
+        tools remove --name "$name"
+done < <(plan_lines flow)
 
 # ── Step 3: Remove Python tools ───────────────────────────────────────────────
-# These are the @tool-decorated functions from tools/incident_triage/incident_triage.py
-# and tools/greetings.py.  WXO registers each function as a separate named tool.
-# The names are the function names exactly as written in the source.
+# These are the @tool-decorated functions listed in each manifest's tools[].names.
+# WXO registers each function as a separate named tool, named exactly as the function.
 # CLI: orchestrate tools remove --name <name>
 echo ""
 echo "[3/5] Removing Python tools..."
 
-# tools/incident_triage/incident_triage.py — 8 @tool functions
-for tool_name in \
-    list_open_incidents \
-    get_incident \
-    get_service_health \
-    query_logs \
-    get_metrics \
-    list_recent_deployments \
-    open_ticket \
-    execute_remediation
-do
-    invoke_remove "tools remove --name $tool_name" \
-        tools remove --name "$tool_name"
-done
-
-# tools/greetings.py — single @tool function
-invoke_remove "tools remove --name greeting" \
-    tools remove --name greeting
+while IFS=$'\t' read -r _ name; do
+    invoke_remove "tools remove --name $name" \
+        tools remove --name "$name"
+done < <(plan_lines tool)
 
 # ── Step 4: Remove knowledge bases ────────────────────────────────────────────
 # Knowledge bases can be removed after tools because nothing references them at
@@ -180,8 +197,10 @@ invoke_remove "tools remove --name greeting" \
 echo ""
 echo "[4/5] Removing knowledge bases..."
 
-invoke_remove "knowledge-bases remove --name incident_triage_runbooks" \
-    knowledge-bases remove --name incident_triage_runbooks
+while IFS=$'\t' read -r _ name; do
+    invoke_remove "knowledge-bases remove --name $name" \
+        knowledge-bases remove --name "$name"
+done < <(plan_lines kb)
 
 # ── Done ──────────────────────────────────────────────────────────────────────
 echo ""

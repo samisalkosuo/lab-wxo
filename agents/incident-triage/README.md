@@ -80,7 +80,7 @@ run = runs.create_run(CreateRunRequest(
 # Poll run.id for status, then read thread messages.
 ```
 
-See `scripts/smoke_test_triage.py` for a complete example (note: that script hard-codes an instance-specific agent UUID and is excluded from the distributable zip).
+See `scripts/smoke_test.py` for a complete example (`python scripts/smoke_test.py --scenario incident-triage`; it finds the agent by name and reads its prompts from `evaluation/incident-triage/ground_truth.json`).
 
 ## Browser test (approval flow)
 

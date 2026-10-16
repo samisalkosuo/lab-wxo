@@ -1,0 +1,87 @@
+# scenario.yaml - manifest for one demo scenario.
+#
+# Purpose: one machine-readable list of every resource a scenario owns, so deploy,
+# package, teardown and smoke-test scripts stop hard-coding names. This file is the
+# reference example; copy it for a new scenario.
+#
+# Rules
+#   - All paths are relative to the repository root, forward slashes.
+#   - Names are the REAL WXO resource names (the `name:` in agent/KB YAML, the
+#     function name of each @tool, the `name=` of each @flow), NOT file names.
+#   - Folder names are kebab-case (agents/, knowledge/, evaluation/, scenarios/);
+#     Python package folders and WXO resource names are snake_case (tools/, flows/).
+#   - Do not put secrets or instance-specific values (UUIDs, URLs) in this file.
+#
+# Field reference
+#   id            kebab-case id; equals the folder name under scenarios/ and the
+#                 file name docs/demo/scenarios/<id>.js
+#   name          display name (sidebar, zip INSTALL.md title)
+#   description   one line (sidebar subtitle)
+#   status        live | soon
+#   agents[]      name, path (folder holding agent.yaml), kind (native|external)
+#   tools[]       path (tool package folder or single .py file), entry (top-level
+#                 .py of a package), names (every @tool in it), attached (names the
+#                 agent may call; names not listed are internal, e.g. called only by a flow)
+#   knowledge_bases[]  name, path (folder holding the KB yaml)
+#   flows[]       name (tool name once imported), path (folder holding the flow .py)
+#   evaluation    path; tier: core (ground_truth.json only) | full (also baseline.py and
+#                 ADK test cases); package_include = files/folders (relative to path)
+#                 that ship in the zip. results/ and logs are never packaged.
+#   demo          script = detailed demo markdown
+#   package       zip_prefix = zip name is wxo-<zip_prefix>-<version>.zip
+
+id: incident-triage
+name: Incident Triage
+description: Multi-source correlation & governed remediation
+status: live
+
+agents:
+  - name: incident_triage
+    path: agents/incident-triage
+    kind: native
+
+tools:
+  - path: tools/incident_triage
+    entry: incident_triage.py
+    names:
+      - list_open_incidents
+      - get_incident
+      - get_service_health
+      - query_logs
+      - get_metrics
+      - list_recent_deployments
+      - open_ticket
+      - execute_remediation
+    # execute_remediation is deliberately NOT attached to the agent; only the
+    # request_remediation flow calls it after human approval (least privilege).
+    attached:
+      - list_open_incidents
+      - get_incident
+      - get_service_health
+      - query_logs
+      - get_metrics
+      - list_recent_deployments
+      - open_ticket
+
+knowledge_bases:
+  - name: incident_triage_runbooks
+    path: knowledge/incident-triage
+
+flows:
+  - name: request_remediation
+    path: flows/incident_triage
+
+evaluation:
+  path: evaluation/incident-triage
+  tier: full
+  package_include:
+    - test_cases
+    - eval_config.yaml
+    - baseline.py
+    - ground_truth.json
+
+demo:
+  script: docs/demo/incident-triage-demo.md
+
+package:
+  zip_prefix: incident-triage

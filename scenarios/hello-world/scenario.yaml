@@ -1,0 +1,24 @@
+# scenario.yaml - manifest for the Hello World smoke-check agent.
+# Not a demo scenario: it only proves the ADK setup works. It has no evaluation,
+# demo script or slides, and the validator exempts it from those requirements.
+# See scenarios/incident-triage/scenario.yaml for the field reference.
+
+id: hello-world
+name: Hello World
+description: ADK setup check (not a demo scenario)
+status: live
+
+agents:
+  - name: hello_world
+    path: agents/hello-world
+    kind: native
+
+tools:
+  - path: tools/greetings.py
+    names:
+      - greeting
+    attached:
+      - greeting
+
+package:
+  zip_prefix: hello-world

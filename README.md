@@ -34,16 +34,24 @@ lab-wxo/
 │       ├── eval_config.yaml
 │       ├── ground_truth.json
 │       └── test_cases/           # 5 evaluation test cases (.json)
+├── scenarios/
+│   ├── incident-triage/scenario.yaml   # Manifest: every resource the scenario owns
+│   └── hello-world/scenario.yaml
 ├── docs/
 │   └── demo/
-│       └── incident-triage-demo.md   # Human-readable demo script
+│       ├── incident-triage-demo.md   # Human-readable demo script
+│       ├── presentation.html         # Slide shell; loads scenarios/*.js
+│       └── scenarios/                # One slides file per scenario (4 are "coming soon" placeholders)
 ├── connections/                  # Connection templates (empty for this demo)
 ├── scripts/
-│   ├── deploy-all.ps1            # Deploy everything (Windows PowerShell)
-│   ├── deploy-all.sh             # Deploy everything (Linux/macOS bash)
-│   ├── teardown.ps1              # Remove everything (Windows PowerShell)
-│   ├── teardown.sh               # Remove everything (Linux/macOS bash)
-│   └── package.py                # Build distributable zip
+│   ├── deploy-all.ps1            # Deploy live scenarios, or one with -Scenario (PowerShell)
+│   ├── deploy-all.sh             # Same, --scenario (bash)
+│   ├── teardown.ps1              # Remove scenarios, or one with -Scenario (PowerShell)
+│   ├── teardown.sh               # Same, --scenario (bash)
+│   ├── scenario_manifest.py      # Reads/validates manifests; builds deploy and teardown plans
+│   ├── new-scenario.py           # Scaffold a new scenario
+│   ├── smoke_test.py             # Send a scenario's prompts to its deployed agent
+│   └── package.py                # Build distributable zip for one scenario
 ├── dist/                         # Packaged zip output (git-ignored)
 ├── env.cfg                       # Secrets -- DO NOT COMMIT
 ├── env.cfg.example               # Template -- safe to commit
@@ -122,20 +130,24 @@ WXO_ENV_TYPE=ibm_iam
 
 ```powershell
 $env:PYTHONUTF8 = "1"   # avoids cp1252 encoding errors on Windows
-.\scripts\deploy-all.ps1
+.\scripts\deploy-all.ps1                            # every scenario with status: live
+.\scripts\deploy-all.ps1 -Scenario incident-triage  # one scenario
 ```
 
 ### Linux / macOS (bash)
 
 ```bash
-bash scripts/deploy-all.sh
+bash scripts/deploy-all.sh                             # every scenario with status: live
+bash scripts/deploy-all.sh --scenario incident-triage  # one scenario
 ```
 
-The script reads `env.cfg`, registers the WXO environment non-interactively, then imports resources in dependency order:
+The script reads `env.cfg`, registers the WXO environment non-interactively, then imports what the scenario manifests (`scenarios/<id>/scenario.yaml`) list, in dependency order:
 
 ```
 connections -> tools (flat .py, multi-file packages) -> knowledge bases -> flows -> agents -> agents deploy
 ```
+
+The deploy and teardown scripts run `scripts/scenario_manifest.py` to read the manifests, so they need the Python environment that has PyYAML (the one with `orchestrate`; the ADK depends on PyYAML). A scenario with `status: soon` is skipped unless you name it with `-Scenario` / `--scenario`. Tool, flow, knowledge-base and agent names are shared by the whole WXO instance, so two scenarios must not reuse a name; the manifest tooling refuses a deploy when it finds a clash.
 
 Each imported agent is promoted from draft to live with `orchestrate agents deploy --name <name>` at the end of the script. **This step is required** because the chat UI only shows live agents. If you skip it (or if the deploy call fails on Developer Edition), the agent will not appear in the agent picker.
 
@@ -146,16 +158,18 @@ Re-running is safe: existing resources are updated in place.
 ## Teardown (dev cleanup)
 
 ```powershell
-.\scripts\teardown.ps1 -DryRun   # preview -- prints commands, makes no changes
-.\scripts\teardown.ps1            # real deletion (UNTESTED -- see warning in script)
+.\scripts\teardown.ps1 -DryRun                          # preview -- prints commands, makes no changes
+.\scripts\teardown.ps1 -Scenario incident-triage -DryRun
+.\scripts\teardown.ps1                                  # ALL scenarios, real deletion (UNTESTED -- see warning in script)
 ```
 
 ```bash
-bash scripts/teardown.sh --dry-run   # preview
-bash scripts/teardown.sh             # real deletion (UNTESTED -- see warning in script)
+bash scripts/teardown.sh --dry-run                           # preview
+bash scripts/teardown.sh --scenario incident-triage --dry-run
+bash scripts/teardown.sh                                     # ALL scenarios, real deletion (UNTESTED -- see warning in script)
 ```
 
-Resources are removed in reverse dependency order (agents first, then flows, then tools, then knowledge bases). The teardown scripts use real WXO resource names, not file names.
+Resources are removed in reverse dependency order (agents first, then flows, then tools, then knowledge bases). The names come from the manifests and are the real WXO resource names, not file names. Without `-Scenario` / `--scenario` every scenario is removed, including ones marked `soon` (a resource that was never deployed only gives a non-fatal warning).
 
 **Important:** real deletion was never executed during development (demo resources on `techzone1` were preserved). Use `-DryRun` / `--dry-run` to review the commands first. The behaviour of the remove subcommands (confirmation prompts, errors when an agent still references a tool) is untested. Check `orchestrate agents remove --help`, `orchestrate tools remove --help`, and `orchestrate knowledge-bases remove --help` for any required flags before running for real.
 
@@ -164,12 +178,12 @@ Resources are removed in reverse dependency order (agents first, then flows, the
 Build a distributable zip for external users:
 
 ```bash
-python scripts/package.py [--version 1.0.0]
+python scripts/package.py --scenario incident-triage [--version 1.0.0]
 ```
 
-This produces `dist/wxo-incident-triage-<version>.zip`. The zip contains only the incident-triage agent and its dependencies -- it excludes `env.cfg`, `local/`, dev tooling state, and instance-specific artefacts. A post-build security check deletes the zip and exits non-zero if any excluded pattern or secret-bearing string is found.
+This produces `dist/wxo-<zip_prefix>-<version>.zip` (the prefix is in the manifest). The zip contains only that scenario's resources, its demo script, a copy of `presentation.html` that loads only that scenario's slides, the deploy / teardown / smoke-test scripts and the manifest. It excludes `env.cfg`, `local/`, dev tooling state, instance-specific artefacts and every other scenario. A post-build security check deletes the zip and exits non-zero if any excluded pattern or secret-bearing string is found.
 
-The zip includes `INSTALL.md` (generated by `package.py`) with full setup instructions for external users.
+The zip includes `INSTALL.md`, generated by `package.py` from the manifest (known issues of the scenario go in `scenarios/<id>/install-notes.md`).
 
 ## Demo
 
@@ -185,11 +199,35 @@ This is a demo / lab repo. The following items are open as of the current state:
 - **Wrong incident reference in approval requests (3 of 19 vague-opening runs).** On "Hey, checkout is slow...", the agent sometimes investigates the payments service while working INC-1001 and then calls `request_remediation` with `service=payments, incident_id=INC-1001` (mismatched). The instruction change in `agent.yaml` gave no measurable improvement. The human approval gate catches this before any execution; a proper fix is to validate service/incident consistency inside the flow.
 - **Evaluation dependencies installed by hand.** `ibm-watsonx-orchestrate-evaluation-framework==1.5.2` and its transitive dependencies are not installed automatically. On Python 3.14 the `pandas~=2.2.3` pin cannot be satisfied. See `INSTALL.md` in the zip for the workaround.
 - **Bash deploy script tested only via Git Bash on Windows** -- not on native Linux or macOS.
-- **`orchestrate chat ask` hangs** in non-interactive shells. Use the ADK run API instead (see `scripts/smoke_test_triage.py`).
+- **`orchestrate chat ask` hangs** in non-interactive shells. Use the ADK run API instead (see `scripts/smoke_test.py`).
+- **`scripts/smoke_test.py` has only been run with `--dry-run`.** The live path (agent lookup by name, run, poll) was not run against an instance after it replaced `smoke_test_triage.py`.
+- **The reworked deploy / teardown / package scripts were tested against a fake `orchestrate`** (their output matched the old scripts' command sequence) and the new package against the old zip's contents. They have not been run against a live instance.
 
-## Adding a New Agent
+## Adding a New Scenario
+
+Every scenario is a folder of resources described by a manifest, plus a demo script and a section in the presentation.
+
+**Recommended:** open the **Scenario Builder** mode in Bob. It loads the three relevant skills in the right order and enforces the design rules and final consistency checks automatically.
+
+Scaffold the folder skeleton first:
+
+```bash
+python scripts/new-scenario.py customer-returns --name "Customer Returns" --description "One line for the sidebar"
+```
+
+This creates `scenarios/<id>/scenario.yaml` (status `soon`), an agent stub, a `ground_truth.json` stub, the demo script from the template, and registers `docs/demo/scenarios/<id>.js` in `presentation.html`. Then build the tools, knowledge base and flow, list them in the manifest, and check:
+
+```bash
+python scripts/scenario_manifest.py validate --scenario <id>
+python .bob/skills/scenario-demo-docs/check_demo_consistency.py <id>
+```
+
+The skills `wxo-scenario-authoring` (what a scenario must contain and how to build it) and `scenario-demo-docs` (demo script and slides, with templates and a consistency checker) in `.bob/skills/` describe the full procedure. Incident Triage is the reference scenario; its manifest header documents every field. Follow-on plans for each upcoming scenario are in `plans/<id>-plan.md`.
+
+## Adding a Plain Agent
 
 1. Create a directory under `agents/<your-agent-name>/`
 2. Add `agent.yaml` -- see [`agents/hello-world/agent.yaml`](agents/hello-world/agent.yaml) as a template
 3. Add tools to `tools/` (single `.py` file) or `tools/<package_name>/` (multi-file package with `requirements.txt`)
-4. Run `scripts/deploy-all.ps1` -- the new agent is picked up automatically
+4. Add `scenarios/<id>/scenario.yaml` listing the agent and its tools (see [`scenarios/hello-world/scenario.yaml`](scenarios/hello-world/scenario.yaml)). **The deploy scripts only deploy what a manifest lists**, so an agent without a manifest is not picked up.
+5. Run `scripts/deploy-all.ps1 -Scenario <id>`

@@ -1,6 +1,24 @@
 {
   "version": "1.0",
   "description": "Ground truth mappings for incident triage evaluation and baseline benchmark.",
+  "smoke_prompts": [
+    {
+      "id": "INC-1001",
+      "prompt": "Investigate incident INC-1001 on the checkout service. Use your tools to find the root cause. Do NOT call request_remediation \u2014 just report your diagnosis and what remediation action you would recommend."
+    },
+    {
+      "id": "INC-1002",
+      "prompt": "Investigate incident INC-1002 on the payments service. Use your tools to find the root cause. Do NOT call request_remediation \u2014 just report your diagnosis and what remediation action you would recommend."
+    },
+    {
+      "id": "INC-1003",
+      "prompt": "Investigate incident INC-1003. Use your tools to find the root cause. Do NOT call request_remediation \u2014 just report your diagnosis and what remediation action you would recommend."
+    },
+    {
+      "id": "INC-1004",
+      "prompt": "Investigate incident INC-1004. Use your tools to find the root cause. Do NOT call request_remediation \u2014 just report your diagnosis and whether any action is needed."
+    }
+  ],
   "incidents": {
     "INC-1001": {
       "incident_id": "INC-1001",

@@ -278,7 +278,7 @@ This scene is mostly talking, with one artifact on screen (the baseline run). Do
 
 Not seen, so not covered here: clean first deploy from the packaged zip. The packaged zip (`dist/wxo-incident-triage-1.0.0.zip`) was extracted and re-deployed over the existing `techzone1` instance (exit 0, all resources updated). First-deploy on a fresh instance was not tested.
 
-**Note:** `scripts/smoke_test_triage.py` is **not included in the packaged zip** because it hard-codes the agent UUID from the development instance (`2354f514-...`). To run smoke tests on your instance, look up your agent UUID with `orchestrate agents list -v` and write a small script using that UUID.
+**Note:** `scripts/smoke_test.py --scenario incident-triage` sends the four diagnosis-only prompts in `evaluation/incident-triage/ground_truth.json` (`smoke_prompts`) to the deployed agent and prints the tools called and the start of each answer. It looks the agent up by name, so no UUID is needed, and it ships in the zip. It does not grade the answers, and its live path has not yet been run against an instance (only `--dry-run` was).
 
 ## 8. Things not to say
 
