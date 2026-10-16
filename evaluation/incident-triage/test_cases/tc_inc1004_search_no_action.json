@@ -1,0 +1,53 @@
+{
+    "agent": "incident_triage",
+    "goals": {
+        "get_incident-1": [
+            "get_service_health-1"
+        ],
+        "get_service_health-1": [
+            "get_metrics-1"
+        ],
+        "get_metrics-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "get_incident-1",
+            "tool_name": "get_incident",
+            "args": {
+                "incident_id": "INC-1004"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "get_service_health-1",
+            "tool_name": "get_service_health",
+            "args": {
+                "service_name": "search-service"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "get_metrics-1",
+            "tool_name": "get_metrics",
+            "args": {
+                "service_name": "search-service"
+            }
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "INC-1004 on search-service is caused by a scheduled load test (job-8842). Error rate is 0% and the service is self-resolving. No remediation action is needed.",
+            "keywords": [
+                "no_action",
+                "load test",
+                "self-resolving",
+                "0%"
+            ]
+        }
+    ],
+    "story": "You are an on-call engineer. There is an open incident INC-1004 showing elevated p95 latency on search-service. You are concerned and want to know if action is needed. Ask the agent to investigate INC-1004 and report whether any action is required. Do NOT ask the agent to call request_remediation. Accept whatever the agent reports. If the agent says no action is needed, confirm that you understand.",
+    "starting_sentence": "Investigate incident INC-1004. Use your tools to find the root cause and whether any action is needed."
+}

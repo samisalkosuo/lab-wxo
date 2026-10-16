@@ -1,0 +1,51 @@
+{
+    "agent": "incident_triage",
+    "goals": {
+        "list_open_incidents-1": [
+            "get_incident-1"
+        ],
+        "get_incident-1": [
+            "get_service_health-1"
+        ],
+        "get_service_health-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "list_open_incidents-1",
+            "tool_name": "list_open_incidents",
+            "args": {}
+        },
+        {
+            "type": "tool_call",
+            "name": "get_incident-1",
+            "tool_name": "get_incident",
+            "args": {
+                "incident_id": "INC-1001"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "get_service_health-1",
+            "tool_name": "get_service_health",
+            "args": {
+                "service_name": "checkout"
+            }
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "The checkout service is experiencing elevated latency due to INC-1001. The root cause is the v2.14.0 deployment introducing an N+1 query regression. The recommended action is a rollback.",
+            "keywords": [
+                "INC-1001",
+                "checkout",
+                "rollback",
+                "N+1"
+            ]
+        }
+    ],
+    "story": "You are an on-call engineer who has noticed the checkout service feels slow. You do not know the incident ID. You want the agent to figure out what is going on. Start with a vague description — just say checkout is slow. If the agent asks for clarification or an incident ID, say you do not have an incident ID but checkout is slow. Confirm that you want the agent to investigate. Accept the agent's diagnosis. Do NOT ask the agent to call request_remediation.",
+    "starting_sentence": "Hey, checkout is slow. Can you look into it?"
+}

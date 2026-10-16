@@ -1,0 +1,35 @@
+POLICY: Incident Escalation and Remediation Approval
+Runbook ID: RB-ESC-01
+Applies to: all incidents handled by the triage process.
+
+SEVERITY LEVELS
+- critical: direct revenue or customer impact on a tier-1 service (for example failed payments, stalled checkout). Page the owning team immediately. Target: start mitigation within 15 minutes.
+- major: significant user impact on a tier-1 service, with some traffic still working (for example partial login failures). Notify the owning team. Target: start mitigation within 30 minutes.
+- minor: no customer impact, transient, or tier-2 or tier-3 service only. Track it, do not page anyone out of hours.
+
+WHEN TO ESCALATE TO A HUMAN
+- Any remediation that changes production (rollback, db_pool_resize, certificate_rotation, restart) needs explicit human approval before it runs. Never run one without approval.
+- Escalate to the owning team lead if the root cause cannot be identified from health, logs, deployments and metrics.
+- Escalate to the incident commander if two or more tier-1 services are affected at the same time, or if a mitigation fails to restore service.
+- Do not escalate scheduled test noise. Acknowledge it with the no_action action and a clear explanation.
+
+SUPPORTED REMEDIATION ACTIONS
+- rollback: revert a service to the previous stable version after a bad deployment (checkout).
+- db_pool_resize: raise the maximum database connection pool size (payments).
+- certificate_rotation: replace an expired TLS certificate (auth-gateway).
+- restart: graceful rolling restart; a temporary measure that does not fix code regressions, pool limits or expired certificates.
+- no_action: acknowledge an alert without any change (search-service).
+Each action is only valid for the services listed above, plus restart for any service. Do not invent other action names.
+
+HOW TO PROPOSE A REMEDIATION
+1. State the root cause and the evidence that supports it (tool results, log lines, metrics).
+2. Name the one action and its target service and parameters.
+3. Cite the runbook that justifies it.
+4. Submit it through the remediation approval flow and wait for the decision.
+5. Report the outcome exactly as returned. If the request is rejected, do not run it another way; offer to open a ticket for the owning team instead.
+
+TICKETS
+Open a ticket for every critical or major incident, and for any rejected remediation. Include the incident ID, service, root cause, evidence, action taken or proposed, and the owning team.
+
+COMMUNICATION
+Post a status update when mitigation starts and when service is restored. Keep updates factual: what is known, what is not known, next step.

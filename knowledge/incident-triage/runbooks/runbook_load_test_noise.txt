@@ -1,0 +1,31 @@
+RUNBOOK: Scheduled Load Test Noise - No Action Needed
+Runbook ID: RB-NOISE-01
+Applies to: performance and latency alerts that fire during a planned synthetic load test. The supported action is "no_action" and it is available for the search-service.
+
+WHEN TO USE THIS RUNBOOK
+Use this runbook when a latency or CPU alert fires, but the service is otherwise healthy and the traffic comes from a known, scheduled test. Typical symptoms:
+- p95 or p99 latency slightly above the alert threshold, but the error rate is 0.0%.
+- Throughput far above its baseline (for example ten times normal queries per second), with high but stable CPU.
+- A log line announcing a scheduled synthetic load test with a job name, a target rate, and a time window, for example "Scheduled synthetic load test ... started (target: 5000 QPS, window: 14:00-14:30 UTC)".
+- Later log lines say the test is completing and latency is returning toward baseline.
+- Service health reports the service as healthy; the only alert is a transient latency alert.
+- No customer impact is reported.
+
+DIAGNOSIS STEPS
+1. Read the incident summary: is the impact described as transient or tied to a test window?
+2. Check service health. A healthy status with only a latency alert is a hint, not proof.
+3. Query the service logs and look for a scheduled test announcement and a test window. Check that the current time is inside, or just after, the window.
+4. Check metrics: error rate should be at baseline, throughput should be much higher than baseline, and latency elevation should be explained by that extra load.
+5. Confirm no deployment or certificate problem exists for the service.
+
+DECISION
+If a scheduled load test explains the extra traffic, errors are at zero, and the test window is ending, the alert is test noise. Do not escalate, do not page anyone, and do not restart the service. A restart would disrupt a healthy service and spoil the test.
+
+REMEDIATION
+- Action name: no_action
+- Target service: the service under test (for example search-service)
+- no_action only acknowledges the alert. State clearly that no infrastructure change is proposed, give the evidence (test job name, window, zero error rate), and recommend that the alert be re-checked after the test window ends.
+- If the latency is still elevated more than 15 minutes after the test window closes, or errors appear, treat it as a real incident and use the matching runbook.
+
+FOLLOW-UP
+Suggest that planned load tests suppress or annotate their alerts in advance, and note it in the post-incident notes.

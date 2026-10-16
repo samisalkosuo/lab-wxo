@@ -1,0 +1,88 @@
+{
+  "version": "1.0",
+  "description": "Ground truth mappings for incident triage evaluation and baseline benchmark.",
+  "incidents": {
+    "INC-1001": {
+      "incident_id": "INC-1001",
+      "affected_service": "checkout",
+      "symptom_summary": "Checkout API p99 latency spiked from 180ms to 2420ms; 504 Gateway Timeouts elevated to 4.2%.",
+      "root_cause_category": "bad_deployment",
+      "expected_root_cause": "Recent deployment v2.14.0 (commit a9f3b12) introduced an unindexed N+1 database query loop in PricingEngine.apply_bundle_discount.",
+      "expected_remediation_action": "rollback",
+      "expected_remediation_target": "checkout",
+      "expected_remediation_parameters": {
+        "target_version": "v2.13.2"
+      },
+      "requires_human_approval": true,
+      "red_herrings": [],
+      "diagnostic_path": [
+        "get_incident(incident_id='INC-1001')",
+        "get_service_health(service_name='checkout')",
+        "list_recent_deployments(service_name='checkout')",
+        "query_logs(service_name='checkout', level='WARN')",
+        "get_metrics(service_name='checkout')"
+      ]
+    },
+    "INC-1002": {
+      "incident_id": "INC-1002",
+      "affected_service": "payments",
+      "symptom_summary": "Payments charge processing returning HTTP 500 errors; transaction failure rate is 18.5%.",
+      "root_cause_category": "resource_exhaustion",
+      "expected_root_cause": "Database connection pool exhaustion on payments service (100/100 active connections saturated with ConnectionPoolTimeoutException).",
+      "expected_remediation_action": "db_pool_resize",
+      "expected_remediation_target": "payments",
+      "expected_remediation_parameters": {
+        "new_pool_size": 200
+      },
+      "requires_human_approval": true,
+      "red_herrings": [
+        "Recent deployment DEP-4109 on notification-service (v1.8.0) deployed at 14:05 UTC. It is unrelated and healthy."
+      ],
+      "diagnostic_path": [
+        "get_incident(incident_id='INC-1002')",
+        "get_service_health(service_name='payments')",
+        "query_logs(service_name='payments', level='ERROR')",
+        "get_metrics(service_name='payments', metric_name='db_connections')",
+        "list_recent_deployments()"
+      ]
+    },
+    "INC-1003": {
+      "incident_id": "INC-1003",
+      "affected_service": "auth-gateway",
+      "symptom_summary": "Ingress TLS handshake failures and login errors; 45% authentication error rate.",
+      "root_cause_category": "expired_certificate",
+      "expected_root_cause": "TLS certificate *.auth.internal.example.com on auth-gateway expired on 2025-05-10T00:00:00Z.",
+      "expected_remediation_action": "certificate_rotation",
+      "expected_remediation_target": "auth-gateway",
+      "expected_remediation_parameters": {
+        "domain": "*.auth.internal.example.com"
+      },
+      "requires_human_approval": true,
+      "red_herrings": [],
+      "diagnostic_path": [
+        "get_incident(incident_id='INC-1003')",
+        "get_service_health(service_name='auth-gateway')",
+        "query_logs(service_name='auth-gateway', level='ERROR')",
+        "get_metrics(service_name='auth-gateway')"
+      ]
+    },
+    "INC-1004": {
+      "incident_id": "INC-1004",
+      "affected_service": "search-service",
+      "symptom_summary": "Elevated p95 latency alert (820ms) on search-service.",
+      "root_cause_category": "scheduled_test",
+      "expected_root_cause": "Scheduled synthetic load test runner job-8842 generating 5000 QPS (14:00-14:30 UTC). Error rate is 0.0% and system is self-resolving.",
+      "expected_remediation_action": "no_action",
+      "expected_remediation_target": "search-service",
+      "expected_remediation_parameters": {},
+      "requires_human_approval": false,
+      "red_herrings": [],
+      "diagnostic_path": [
+        "get_incident(incident_id='INC-1004')",
+        "get_service_health(service_name='search-service')",
+        "query_logs(service_name='search-service')",
+        "get_metrics(service_name='search-service')"
+      ]
+    }
+  }
+}

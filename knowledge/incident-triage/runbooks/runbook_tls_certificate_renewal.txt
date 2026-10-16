@@ -1,0 +1,37 @@
+RUNBOOK: Expired TLS Certificate - Renewal and Rotation
+Runbook ID: RB-TLS-01
+Applies to: gateways and ingress endpoints that terminate TLS. The supported remediation action is "certificate_rotation" and it is available for the auth-gateway service.
+
+WHEN TO USE THIS RUNBOOK
+Use this runbook when clients cannot complete a secure connection and users report login or authentication failures, while the service process itself is running. Typical symptoms:
+- A large share of requests fail at the TLS handshake (for example 25% to 50% of attempts) while the rest succeed.
+- Log lines such as "SSLHandshakeException", "TLS handshake rejected", "Certificate Expired", "CERT_DATE_INVALID", or "Ingress router rejecting HTTPS connections due to invalid/expired TLS certificate".
+- A certificate warning in the logs that names a domain and an expiry timestamp in the past.
+- Service health shows a TLS certificate with status EXPIRED and a negative days-until-expiration value.
+- Existing sessions or tokens keep working; only new connections or new logins fail.
+- Throughput drops because connections are rejected at the ingress, while CPU is not high.
+
+DIAGNOSIS STEPS
+1. Check service health for the affected service and read its tls_certificate block: domain, status, expires_at and days_until_expiration.
+2. Query ERROR logs and confirm that handshake failures name an expired certificate rather than a protocol or cipher mismatch.
+3. Check the error rate and throughput metrics to size the impact.
+4. Check whether a recent deployment touched the service. A certificate that expired on a date before the problem began is the cause, even if no deployment happened.
+5. Do not restart as a first step. A restart reloads the same expired certificate and does not fix the problem.
+
+DECISION
+If the certificate status is EXPIRED (or the expiry timestamp is in the past) and handshake errors cite certificate expiry, the root cause is an expired certificate.
+
+REMEDIATION
+- Action name: certificate_rotation
+- Target service: the service whose certificate expired (for example auth-gateway)
+- Parameter: domain = the certificate domain shown in the health data (for example a wildcard internal domain).
+- certificate_rotation requires human approval. Propose it through the remediation approval flow with a justification that cites the domain, the expiry timestamp, and the handshake errors.
+- Rotation issues a new certificate and reloads it on the ingress without a full outage.
+
+VERIFICATION AFTER ROTATION
+- Certificate status is VALID with a new expiry date in the future.
+- TLS handshakes succeed and the authentication error rate returns to baseline.
+- Throughput recovers toward its normal level.
+
+PREVENTION
+Add an alert that fires at least 30 days before any certificate expires, and list every certificate with its owner. Record the follow-up in the post-incident notes.

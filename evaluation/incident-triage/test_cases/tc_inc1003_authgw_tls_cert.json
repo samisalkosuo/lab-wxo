@@ -1,0 +1,42 @@
+{
+    "agent": "incident_triage",
+    "goals": {
+        "get_incident-1": [
+            "get_service_health-1"
+        ],
+        "get_service_health-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "get_incident-1",
+            "tool_name": "get_incident",
+            "args": {
+                "incident_id": "INC-1003"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "get_service_health-1",
+            "tool_name": "get_service_health",
+            "args": {
+                "service_name": "auth-gateway"
+            }
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "The root cause of INC-1003 is an expired TLS certificate on auth-gateway. The recommended remediation is certificate_rotation for the domain *.auth.internal.example.com.",
+            "keywords": [
+                "certificate_rotation",
+                "TLS",
+                "certificate",
+                "RB-TLS-01"
+            ]
+        }
+    ],
+    "story": "You are an on-call engineer. There is an open incident INC-1003 affecting the auth-gateway service. Users are unable to log in and there are TLS handshake failures. Ask the agent to diagnose INC-1003. Do NOT ask the agent to call request_remediation — only ask for a diagnosis and remediation recommendation. Accept whatever the agent reports as its final diagnosis.",
+    "starting_sentence": "Investigate incident INC-1003. Use your tools to find the root cause. Do NOT call request_remediation — just report your diagnosis and what remediation action you would recommend."
+}

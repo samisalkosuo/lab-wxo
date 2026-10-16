@@ -1,0 +1,25 @@
+GUIDE: Post-Incident Notes and Review
+Runbook ID: RB-POST-01
+Applies to: every incident after service is restored or the alert is acknowledged as noise.
+
+WHEN TO WRITE POST-INCIDENT NOTES
+- Within one business day for critical and major incidents.
+- A short note is enough for minor incidents and for alerts that turned out to be test noise.
+
+WHAT TO RECORD
+1. Summary: one or two sentences describing what users or systems experienced.
+2. Timeline in UTC: first symptom, alert fired, diagnosis steps, approval requested, remediation executed, service verified.
+3. Root cause: the single cause, stated with the evidence that proves it (log lines, metric values, deployment record, certificate expiry).
+4. What was ruled out: other suspects that were checked and why they were excluded (for example a recent deployment to an unrelated healthy service).
+5. Remediation: the action name, target service, parameters, who approved it, and the verification result.
+6. Impact: affected service, duration, error rate peak, customer impact.
+7. Follow-up actions with an owner and a due date.
+
+TYPICAL FOLLOW-UPS BY CAUSE
+- Bad deployment: add a performance check to the release pipeline, review slow query and N+1 patterns before release, require a canary stage.
+- Connection pool exhaustion: review pool sizing against traffic, look for connection leaks, add an alert at 80% pool utilization.
+- Expired certificate: add expiry alerts at 30 and 7 days, keep a certificate inventory with owners, automate renewal.
+- Scheduled load test noise: annotate or suppress alerts during planned test windows, and announce tests in advance.
+
+STYLE
+Blameless. Describe systems and decisions, not people. Be specific with numbers and times. Keep it short enough to be read by someone who was not there.

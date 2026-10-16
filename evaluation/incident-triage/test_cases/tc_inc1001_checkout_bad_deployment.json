@@ -1,0 +1,75 @@
+{
+    "agent": "incident_triage",
+    "goals": {
+        "get_incident-1": [
+            "get_service_health-1"
+        ],
+        "get_service_health-1": [
+            "list_recent_deployments-1"
+        ],
+        "list_recent_deployments-1": [
+            "query_logs-1"
+        ],
+        "query_logs-1": [
+            "get_metrics-1"
+        ],
+        "get_metrics-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "get_incident-1",
+            "tool_name": "get_incident",
+            "args": {
+                "incident_id": "INC-1001"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "get_service_health-1",
+            "tool_name": "get_service_health",
+            "args": {
+                "service_name": "checkout"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "list_recent_deployments-1",
+            "tool_name": "list_recent_deployments",
+            "args": {
+                "service_name": "checkout"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "query_logs-1",
+            "tool_name": "query_logs",
+            "args": {
+                "service_name": "checkout"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "get_metrics-1",
+            "tool_name": "get_metrics",
+            "args": {
+                "service_name": "checkout"
+            }
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "The root cause of INC-1001 is the v2.14.0 deployment introducing an N+1 query regression. The recommended remediation is a rollback to v2.13.2.",
+            "keywords": [
+                "rollback",
+                "v2.14.0",
+                "N+1",
+                "RB-DEPLOY-01"
+            ]
+        }
+    ],
+    "story": "You are an on-call engineer. There is an open incident INC-1001 affecting the checkout service. Customers are experiencing very slow checkout times and 504 Gateway Timeout errors. You need to investigate the root cause using available tools. Ask the agent to diagnose INC-1001. Do NOT ask the agent to call request_remediation — only ask for a diagnosis and a remediation recommendation. Accept whatever the agent reports as its final diagnosis.",
+    "starting_sentence": "Investigate incident INC-1001 on the checkout service. Use your tools to find the root cause. Do NOT call request_remediation — just report your diagnosis and what remediation action you would recommend."
+}

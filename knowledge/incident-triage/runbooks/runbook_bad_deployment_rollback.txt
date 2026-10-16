@@ -1,0 +1,33 @@
+RUNBOOK: Bad Deployment - Latency Regression and Rollback
+Runbook ID: RB-DEPLOY-01
+Applies to: any service that deploys through the standard rollout pipeline. The supported rollback action is "rollback" and it is available for the checkout service.
+
+WHEN TO USE THIS RUNBOOK
+Use this runbook when a service shows a sudden increase in response latency (p95 or p99 several times above baseline) and an increase in 504 Gateway Timeout or other timeout errors, AND the onset of the problem is within minutes of a deployment to that same service. Typical symptoms:
+- p99 latency 10x or more above baseline while incoming request volume (throughput) is normal.
+- Elevated HTTP 504 Gateway Timeout rate and client aborts.
+- CPU usage elevated and worker threads blocked, without a matching rise in traffic.
+- Log lines such as "Slow query detected", "N+1 query pattern detected", or "Worker thread pool exhaustion warning".
+
+DIAGNOSIS STEPS
+1. Check service health and active alerts for the affected service.
+2. List recent deployments for the affected service. Compare the deployment completion time with the time the latency began to rise. A deployment that completed shortly before onset (within roughly 15 minutes) is a strong suspect.
+3. Query WARN and ERROR logs for the service. Look for slow queries, N+1 query patterns, or new exceptions that first appear after the deployment time.
+4. Check metrics: latency, error rate, CPU, and throughput. If throughput is normal but latency and CPU are high, the cause is inside the service, not extra load.
+5. Do not blame a deployment on a different service unless that service is a dependency of the affected service and shows its own errors. A recent deployment elsewhere with healthy logs is not evidence.
+
+DECISION
+If onset matches a deployment of the same service and the logs show a code-level regression (slow queries, N+1 pattern, thread blocking), the root cause is a bad deployment. Rollback is the preferred fix because it is fast, reversible, and restores the last known good version.
+
+REMEDIATION
+- Action name: rollback
+- Target service: the service that was deployed (for example checkout)
+- Parameter: target_version = the previous stable version taken from the deployment history (the version before the suspect deployment).
+- Rollback requires human approval. Propose it through the remediation approval flow with a short justification that cites the deployment time, the version, and the log evidence. Never execute it directly.
+- If rollback is rejected or not possible, the only other supported action is restart. A restart does not remove a code regression and should be described as a temporary measure only.
+
+VERIFICATION AFTER ROLLBACK
+- p99 latency returns close to baseline.
+- 504 error rate returns to normal levels.
+- Slow query and N+1 warnings stop appearing in the logs.
+Record the rollback in the incident ticket and follow the post-incident notes runbook. Ask the owning team to fix the regression before redeploying.

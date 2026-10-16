@@ -1,0 +1,73 @@
+{
+    "agent": "incident_triage",
+    "goals": {
+        "get_incident-1": [
+            "get_service_health-1"
+        ],
+        "get_service_health-1": [
+            "query_logs-1"
+        ],
+        "query_logs-1": [
+            "get_metrics-1"
+        ],
+        "get_metrics-1": [
+            "list_recent_deployments-1"
+        ],
+        "list_recent_deployments-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "get_incident-1",
+            "tool_name": "get_incident",
+            "args": {
+                "incident_id": "INC-1002"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "get_service_health-1",
+            "tool_name": "get_service_health",
+            "args": {
+                "service_name": "payments"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "query_logs-1",
+            "tool_name": "query_logs",
+            "args": {
+                "service_name": "payments"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "get_metrics-1",
+            "tool_name": "get_metrics",
+            "args": {
+                "service_name": "payments"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "list_recent_deployments-1",
+            "tool_name": "list_recent_deployments",
+            "args": {}
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "The root cause of INC-1002 is DB connection pool exhaustion on the payments service. The recommended remediation is db_pool_resize. The notification-service deployment DEP-4109 is unrelated.",
+            "keywords": [
+                "db_pool_resize",
+                "connection pool",
+                "RB-DBPOOL-01",
+                "notification-service"
+            ]
+        }
+    ],
+    "story": "You are an on-call engineer. There is an open incident INC-1002 affecting the payments service. Charge processing is returning HTTP 500 errors. A recent deployment to the notification-service also happened around the same time — you suspect that might be the cause, but you want the agent to investigate properly. Ask the agent to diagnose INC-1002. Do NOT ask the agent to call request_remediation — only ask for a diagnosis. Accept whatever the agent reports as its final diagnosis. If the agent says the notification-service deployment is a red herring, confirm that you understand.",
+    "starting_sentence": "Investigate incident INC-1002 on the payments service. There was a recent deployment to notification-service — could that be related? Use your tools to find the root cause. Do NOT call request_remediation — just report your diagnosis and recommended action."
+}

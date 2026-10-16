@@ -1,0 +1,18 @@
+spec_version: v1
+kind: knowledge_base
+name: incident_triage_runbooks
+description: |
+  Operational runbooks for incident triage. Contains step-by-step procedures for
+  latency regressions after a bad deployment (rollback), database connection pool
+  exhaustion (HTTP 500 errors), expired TLS certificates (login and handshake
+  failures), scheduled load test alert noise (no action needed), the escalation
+  and remediation approval policy (supported remediation actions), and
+  post-incident notes. Use it to find what to do once symptoms are known and to
+  cite the procedure that justifies a proposed remediation.
+documents:
+  - runbooks/runbook_bad_deployment_rollback.txt
+  - runbooks/runbook_db_connection_pool_exhaustion.txt
+  - runbooks/runbook_tls_certificate_renewal.txt
+  - runbooks/runbook_load_test_noise.txt
+  - runbooks/runbook_escalation_policy.txt
+  - runbooks/runbook_post_incident_notes.txt

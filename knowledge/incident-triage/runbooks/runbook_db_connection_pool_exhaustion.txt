@@ -1,0 +1,35 @@
+RUNBOOK: Database Connection Pool Exhaustion
+Runbook ID: RB-DBPOOL-01
+Applies to: services that talk to a database through a fixed-size connection pool. The supported remediation action is "db_pool_resize" and it is available for the payments service.
+
+WHEN TO USE THIS RUNBOOK
+Use this runbook when a service returns HTTP 500 Internal Server Error responses in large numbers and the errors come from failing to obtain a database connection, rather than from the database itself being down. Typical symptoms:
+- HTTP 500 error rate far above baseline (for example more than 10%) on a transaction endpoint.
+- Log lines such as "ConnectionPoolTimeoutException", "Timeout waiting for free connection from pool", "Database connection acquisition timed out", or error code DB_POOL_EXHAUSTED.
+- Pool utilization warnings that climb (90%, then 100%) shortly before the errors.
+- Metric db_connections shows active connections equal to the maximum pool size and a non-zero queue of waiting requests.
+- CPU usage is normal. The service is waiting, not busy.
+
+DIAGNOSIS STEPS
+1. Check service health and active alerts. A pool saturation alert (for example active connections equal to the maximum) confirms the pattern.
+2. Query ERROR logs for the service and look for pool timeout exceptions and queued threads.
+3. Check the db_connections metric: active_connections, max_pool_size, pool_saturation_pct and queued_requests.
+4. Check the downstream database service health. If the database is healthy (normal connection counts, low replication lag), the limit is the pool size in the application, not the database.
+5. List recent deployments. A deployment to an unrelated service that is healthy and has clean logs is a red herring. Only treat a deployment as the cause if it was made to the failing service itself, or to a direct dependency that shows its own errors.
+6. If the pool is saturated but the database is healthy and no deployment of the failing service lines up with onset, the cause is pool exhaustion under current load.
+
+DECISION
+If the pool is 100% saturated, requests are queuing, and the database itself is healthy, the root cause is database connection pool exhaustion. Rolling back an unrelated deployment will not help.
+
+REMEDIATION
+- Action name: db_pool_resize
+- Target service: the service whose pool is saturated (for example payments)
+- Parameter: new_pool_size = a larger maximum pool size. A common step is to double the current maximum, as long as the database has headroom for the extra connections. Check that the database server connection limit is not exceeded.
+- db_pool_resize requires human approval. Propose it through the remediation approval flow with a justification that cites the saturation numbers and the healthy database.
+- restart is also allowed for the service but only clears the queue temporarily; the pool will saturate again. Use it only if resize is rejected, and say it is temporary.
+
+VERIFICATION AFTER RESIZE
+- Active connections settle well below the new maximum.
+- Pool timeout exceptions stop appearing in the logs.
+- HTTP 500 rate returns to baseline.
+After the incident, open a follow-up to review connection leaks, query duration and pool sizing, and record it in the post-incident notes.

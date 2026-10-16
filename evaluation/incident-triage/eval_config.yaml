@@ -1,0 +1,34 @@
+# Evaluation configuration for the incident_triage agent.
+# Run with:
+#   orchestrate evaluations evaluate --config evaluation/incident-triage/eval_config.yaml
+#
+# Then analyze with:
+#   orchestrate evaluations analyze -d evaluation/incident-triage/results/
+#
+# Prerequisites:
+#   - Run `orchestrate env activate` (or deploy-all.ps1) first to refresh auth.
+#   - Set PYTHONUTF8=1 to avoid cp1252 encoding errors on Windows.
+#   - The incident_triage agent must be live (orchestrate agents deploy --name incident_triage).
+#
+# Notes on what can and cannot be evaluated:
+#   - These test cases evaluate diagnosis (tool selection and root-cause reporting).
+#   - They do NOT cover the request_remediation flow: the approval form requires a
+#     human to click Approve/Reject in the chat UI; the evaluator cannot drive it.
+#   - The vague opening test (tc_vague_checkout_slow) is non-deterministic:
+#     the agent may ask a clarifying question before calling list_open_incidents.
+#     Set n_runs >= 3 to detect this variance.
+
+test_paths:
+  - evaluation/incident-triage/test_cases/
+
+output_dir: evaluation/incident-triage/results/
+
+n_runs: 3
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly. Do not volunteer extra information beyond what the story says."
+    - "If the agent asks for an incident ID and the story says you do not have one, say so."
+    - "Do not ask for remediation to be executed."
