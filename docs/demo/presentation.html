@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>watsonx Orchestrate — Agent Solutions & Live Demo</title>
+  <style>
+    :root {
+      --bg-primary: #121619;
+      --bg-surface: #1a2024;
+      --bg-surface-elevated: #222a30;
+      --bg-card: #263038;
+      --border-subtle: #2d3842;
+      --border-accent: #0f62fe;
+      --text-primary: #f4f6f8;
+      --text-secondary: #c1c7cd;
+      --text-muted: #878d96;
+      --accent-blue: #0f62fe;
+      --accent-blue-hover: #0353e9;
+      --accent-cyan: #1192e8;
+      --accent-purple: #8a3ffc;
+      --accent-teal: #009d9a;
+      --accent-green: #24a148;
+      --accent-amber: #f1c21b;
+      --accent-red: #da1e28;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "IBM Plex Mono", Consolas, Monaco, "Courier New", monospace;
+      --sidebar-width: 280px;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.5);
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f4f6f8;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #ffffff;
+      --bg-card: #f2f4f8;
+      --border-subtle: #dde1e6;
+      --border-accent: #0f62fe;
+      --text-primary: #161616;
+      --text-secondary: #525252;
+      --text-muted: #697077;
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.12);
+      --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* Layout Shell */
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: transform 0.3s ease, width 0.3s ease;
+      z-index: 100;
+    }
+
+    .sidebar.collapsed {
+      transform: translateX(-100%);
+      position: absolute;
+      height: 100%;
+    }
+
+    .sidebar-header {
+      padding: 20px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      padding-left: 8px;
+      font-weight: 600;
+    }
+
+    .scenario-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .scenario-item {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: transparent;
+      transition: var(--transition);
+      text-align: left;
+    }
+
+    .scenario-item:hover {
+      background-color: var(--bg-surface-elevated);
+      border-color: var(--border-subtle);
+    }
+
+    .scenario-item.active {
+      background-color: var(--bg-surface-elevated);
+      border-color: var(--accent-blue);
+      box-shadow: inset 3px 0 0 var(--accent-blue);
+    }
+
+    .scenario-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .scenario-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .scenario-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-active {
+      background: rgba(15, 98, 254, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(15, 98, 254, 0.3);
+    }
+
+    .badge-upcoming {
+      background: rgba(135, 141, 150, 0.15);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .scenario-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slide-toc {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 6px;
+      padding-left: 8px;
+    }
+
+    .toc-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .toc-item:hover {
+      color: var(--text-primary);
+      background-color: var(--bg-card);
+    }
+
+    .toc-item.active {
+      color: var(--accent-cyan);
+      font-weight: 600;
+      background-color: var(--bg-card);
+    }
+
+    .toc-num {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      opacity: 0.7;
+    }
+
+    .sidebar-footer {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .theme-toggle-btn {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+    }
+
+    /* Main Presentation Viewport */
+    .main-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--bg-primary);
+      position: relative;
+    }
+
+    /* Top Control Bar */
+    .top-bar {
+      height: 56px;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+      z-index: 50;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .btn-icon:hover {
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+    }
+
+    .current-scenario-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scenario-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      background: rgba(15, 98, 254, 0.2);
+      color: var(--accent-cyan);
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    .top-bar-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slide-counter {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .kbd-shortcut {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 6px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+    }
+
+    /* Progress bar */
+    .progress-bar-container {
+      height: 3px;
+      width: 100%;
+      background: var(--bg-surface);
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+      width: 16.66%;
+      transition: width 0.3s ease;
+    }
+
+    /* Slide Stage */
+    .slide-stage {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .slide-content-wrapper {
+      width: 100%;
+      max-width: 1100px;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Slide Headers & Typography */
+    .slide-header {
+      margin-bottom: 24px;
+    }
+
+    .slide-tag {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slide-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .slide-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 800px;
+      line-height: 1.5;
+    }
+
+    /* Grid & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .icon-blue { background: rgba(15, 98, 254, 0.15); color: var(--accent-cyan); }
+    .icon-purple { background: rgba(138, 63, 252, 0.15); color: var(--accent-purple); }
+    .icon-teal { background: rgba(0, 157, 154, 0.15); color: var(--accent-teal); }
+    .icon-green { background: rgba(36, 161, 72, 0.15); color: var(--accent-green); }
+    .icon-amber { background: rgba(241, 194, 27, 0.15); color: var(--accent-amber); }
+    .icon-red { background: rgba(218, 30, 40, 0.15); color: var(--accent-red); }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .card-body {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .card-body ul {
+      padding-left: 18px;
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Comparison Table / Matrix */
+    .table-container {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    th {
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      padding: 12px 16px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background-color: var(--bg-surface-elevated);
+    }
+
+    .tool-chip {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--bg-card);
+      color: var(--accent-cyan);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      display: inline-block;
+    }
+
+    .service-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Key Callout Banner */
+    .callout-banner {
+      background: linear-gradient(135deg, rgba(15, 98, 254, 0.1), rgba(138, 63, 252, 0.08));
+      border: 1px solid rgba(15, 98, 254, 0.3);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .callout-icon {
+      font-size: 20px;
+      color: var(--accent-cyan);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .callout-title {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .callout-text {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Prompts Grid Slide Styles */
+    .prompts-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .prompt-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .prompt-card:hover {
+      border-color: var(--accent-blue);
+      box-shadow: var(--shadow-md);
+    }
+
+    .prompt-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .prompt-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .scene-pill {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(15, 98, 254, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(15, 98, 254, 0.3);
+    }
+
+    .prompt-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .copy-btn {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-blue-hover);
+      transform: translateY(-1px);
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-green);
+    }
+
+    .prompt-box {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.5;
+      user-select: all;
+      word-break: break-word;
+    }
+
+    .prompt-tip {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prompt-tip svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      fill: var(--accent-amber);
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-bar {
+      height: 60px;
+      background-color: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+      z-index: 50;
+    }
+
+    .nav-btn {
+      background-color: var(--bg-surface-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background-color: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #fff;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--border-subtle);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .dot.active {
+      background-color: var(--accent-blue);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 74px;
+      right: 28px;
+      background: var(--bg-surface-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--accent-green);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .slide-stage {
+        padding: 20px;
+      }
+      .sidebar {
+        position: absolute;
+        height: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">wx</div>
+        <div>
+          <div class="brand-title">watsonx Orchestrate</div>
+          <div class="brand-sub">Agent Solutions & Demos</div>
+        </div>
+      </div>
+
+      <div class="sidebar-content">
+        <div>
+          <div class="nav-section-title">Demo Scenarios</div>
+          <div class="scenario-list">
+            <button class="scenario-item active" onclick="switchScenario(0)">
+              <div class="scenario-item-header">
+                <span class="scenario-name">1. Incident Triage</span>
+                <span class="scenario-badge badge-active">Live</span>
+              </div>
+              <div class="scenario-desc">Multi-source correlation & governed remediation</div>
+            </button>
+
+            <button class="scenario-item" onclick="switchScenario(1)">
+              <div class="scenario-item-header">
+                <span class="scenario-name">2. HR Onboarding</span>
+                <span class="scenario-badge badge-upcoming">Coming Soon</span>
+              </div>
+              <div class="scenario-desc">Employee provisioning & workflow automation</div>
+            </button>
+
+            <button class="scenario-item" onclick="switchScenario(2)">
+              <div class="scenario-item-header">
+                <span class="scenario-name">3. Cloud FinOps</span>
+                <span class="scenario-badge badge-upcoming">Coming Soon</span>
+              </div>
+              <div class="scenario-desc">Cost optimization & resource rightsizing</div>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="nav-section-title" id="scenario-toc-title">Scenario 1 Slides</div>
+          <div class="slide-toc" id="slide-toc">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="theme-toggle-btn" onclick="toggleTheme()">
+          <span id="theme-icon">☀️</span>
+          <span id="theme-label">Light Mode</span>
+        </button>
+        <span class="kbd-shortcut">v1.0.0</span>
+      </div>
+    </aside>
+
+    <!-- Main Presentation Stage -->
+    <main class="main-viewport">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button class="btn-icon" onclick="toggleSidebar()" title="Toggle Sidebar (S)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="current-scenario-title">
+            <span id="top-scenario-name">Incident Triage Agent</span>
+            <span class="scenario-pill">Production Demo</span>
+          </div>
+        </div>
+
+        <div class="top-bar-center">
+          <div class="slide-counter" id="slide-counter">1 / 6</div>
+        </div>
+
+        <div class="top-bar-right">
+          <div class="kbd-shortcut">← / → to navigate</div>
+          <button class="btn-icon" onclick="toggleFullscreen()" title="Toggle Fullscreen (F)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Progress bar -->
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <!-- Slide Stage Area -->
+      <div class="slide-stage" id="slide-stage">
+        <div class="slide-content-wrapper" id="slide-content">
+          <!-- Slide content injected here -->
+        </div>
+      </div>
+
+      <!-- Bottom Navigation Bar -->
+      <footer class="bottom-bar">
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Previous
+        </button>
+
+        <div class="slide-dots" id="slide-dots">
+          <!-- Dots injected here -->
+        </div>
+
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()">
+          Next
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span>Prompt copied to clipboard!</span>
+  </div>
+
+  <script>
+    // Scenarios Data Model
+    const scenariosData = [
+      {
+        id: "incident-triage",
+        name: "Incident Triage Agent",
+        slides: [
+          // Slide 1: Overview
+          {
+            title: "Production Incident Triage",
+            tag: "Scenario 1 • Overview",
+            subtitle: "Autonomous multi-service diagnostics and governed remediation for high-severity production incidents.",
+            render: () => `
+              <div class="callout-banner">
+                <div class="callout-icon">⚡</div>
+                <div>
+                  <div class="callout-title">The High-Pressure SRE Challenge</div>
+                  <div class="callout-text">During production outages, engineers face high cognitive load, alert fatigue, and fragmented observability tools across logs, metrics, and deployment pipelines. Diagnosing root causes under tight SLAs is often slow and error-prone.</div>
+                </div>
+              </div>
+
+              <div class="grid-3">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-red">🚨</div>
+                    <div class="card-title">Alert Storms & Noise</div>
+                  </div>
+                  <div class="card-body">
+                    Multiple microservices fire alerts concurrently. Engineers must separate genuine service regressions from planned maintenance or load tests.
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-amber">🔍</div>
+                    <div class="card-title">Fragmented Data</div>
+                  </div>
+                  <div class="card-body">
+                    Evidence is scattered across log aggregators, APM metrics, Git deployment commits, and internal runbook wikis.
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-blue">🛡️</div>
+                    <div class="card-title">Remediation Risk</div>
+                  </div>
+                  <div class="card-body">
+                    Applying fixes (rollbacks, pool resizes, restarts) carries high risk. Infrastructure modifications require governed human-in-the-loop sign-off.
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-icon icon-teal">🎯</div>
+                  <div class="card-title">Scenario Objectives</div>
+                </div>
+                <div class="card-body">
+                  <ul>
+                    <li><strong>Accelerate MTTR:</strong> Correlate health checks, error logs, saturation metrics, and recent deployments in seconds.</li>
+                    <li><strong>Evidence-Based Runbook Guidance:</strong> Match symptoms directly against standard operating procedures with explicit citations.</li>
+                    <li><strong>Strict Governance:</strong> Propose remediations through interactive approval forms while completely blocking direct execution permissions from the LLM.</li>
+                  </ul>
+                </div>
+              </div>
+            `
+          },
+
+          // Slide 2: Why & How Agent is Used
+          {
+            title: "Why & How the Agent is Used",
+            tag: "Scenario 1 • Agent Paradigm",
+            subtitle: "Moving from manual dashboard hopping to intelligent conversational investigation.",
+            render: () => `
+              <div class="grid-2">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-red">⏱️</div>
+                    <div class="card-title">Traditional Manual Triage</div>
+                  </div>
+                  <div class="card-body">
+                    <ul>
+                      <li>Engineer receives vague alert (e.g. "checkout slow").</li>
+                      <li>Manually switches between 4+ browser tabs: Grafana, Kibana, GitHub Deployments, Confluence Runbooks.</li>
+                      <li>Runs repetitive grep commands and interprets complex stack traces.</li>
+                      <li>High risk of pursuing red herrings or applying wrong remediation procedures.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-green">🤖</div>
+                    <div class="card-title">Agent-Assisted Triage</div>
+                  </div>
+                  <div class="card-body">
+                    <ul>
+                      <li>Engineer queries WXO chat with natural language or incident IDs.</li>
+                      <li>Agent autonomously queries relevant diagnostic tools based on initial symptoms.</li>
+                      <li>Synthesizes findings into concise, evidence-backed root cause explanations.</li>
+                      <li>Presents a pre-filled remediation proposal for 1-click human approval.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-icon icon-purple">🧠</div>
+                  <div class="card-title">Why an Agentic Solution?</div>
+                </div>
+                <div class="card-body">
+                  <div class="grid-3" style="margin-bottom:0;">
+                    <div>
+                      <strong>Dynamic Investigation Path:</strong> Unlike rigid scripts, the agent adapts its tool calls based on intermediate findings (e.g. querying logs first, then metrics, or skipping unnecessary checks).
+                    </div>
+                    <div>
+                      <strong>Natural Language Synthesis:</strong> Translates raw JSON payloads, N+1 query logs, and latency spikes into clear executive summaries with actionable recommendations.
+                    </div>
+                    <div>
+                      <strong>Unifying Disparate Silos:</strong> Acts as an intelligent orchestration layer across monitoring, logging, CI/CD, and knowledge bases.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `
+          },
+
+          // Slide 3: How & Why Agent Works
+          {
+            title: "How & Why the Agent Works",
+            tag: "Scenario 1 • Agent Architecture",
+            subtitle: "An evidence-based ReAct loop coupled with bounded tools, vectorized knowledge, and a governed flow.",
+            render: () => `
+              <div class="grid-3">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-blue">🔄</div>
+                    <div class="card-title">ReAct Core Loop</div>
+                  </div>
+                  <div class="card-body">
+                    Powered by <code>gpt-oss-120b</code>. Operates on a strict evidence standard: requires at least two corroborating pieces of evidence before asserting root cause.
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-purple">📚</div>
+                    <div class="card-title">Runbook Knowledge Base</div>
+                  </div>
+                  <div class="card-body">
+                    Retrieves vetted SRE runbooks via <code>ibm/slate-125m</code> embeddings. Agent cites specific runbook IDs (e.g. <code>RB-DEPLOY-01</code>) in all recommendations.
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-amber">🛡️</div>
+                    <div class="card-title">Approval Flow Gate</div>
+                  </div>
+                  <div class="card-body">
+                    The agent calls <code>request_remediation</code> to trigger a governed flow. The dangerous tool (<code>execute_remediation</code>) is decoupled from the agent entirely.
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-icon icon-teal">🛠️</div>
+                  <div class="card-title">Specialized Diagnostic Toolset</div>
+                </div>
+                <div class="card-body">
+                  <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;">
+                    <span class="tool-chip">list_open_incidents</span>
+                    <span class="tool-chip">get_incident</span>
+                    <span class="tool-chip">get_service_health</span>
+                    <span class="tool-chip">query_logs</span>
+                    <span class="tool-chip">get_metrics</span>
+                    <span class="tool-chip">list_recent_deployments</span>
+                    <span class="tool-chip">open_ticket</span>
+                    <span class="tool-chip">request_remediation</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="callout-banner" style="margin-top: 20px;">
+                <div class="callout-icon">🔍</div>
+                <div>
+                  <div class="callout-title">Full OpenTelemetry Observability</div>
+                  <div class="callout-text">Every reasoning step, tool invocation, token count, and execution latency is captured as an OpenTelemetry trace in watsonx Orchestrate for compliance and auditability.</div>
+                </div>
+              </div>
+            `
+          },
+
+          // Slide 4: Real-Life Backend Services
+          {
+            title: "Real-Life Backend Services Mapping",
+            tag: "Scenario 1 • Enterprise Integration",
+            subtitle: "How agent tools translate to production enterprise systems in your technology stack.",
+            render: () => `
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Agent Capability / Tool</th>
+                      <th>Mock Environment</th>
+                      <th>Enterprise Real-Life Systems</th>
+                      <th>Integration Protocol</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="tool-chip">list_open_incidents</span><br><span class="tool-chip">get_incident</span></td>
+                      <td>Static Incident Store (INC-1001–INC-1004)</td>
+                      <td><span class="service-tag">PagerDuty, ServiceNow ITSM, OpsGenie, Jira Service Management</span></td>
+                      <td>REST API / Webhooks</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tool-chip">get_service_health</span><br><span class="tool-chip">get_metrics</span></td>
+                      <td>Mock In-Memory Metrics (Latency, DB Pool)</td>
+                      <td><span class="service-tag">Datadog, Dynatrace, Prometheus / Grafana, Instana, CloudWatch</span></td>
+                      <td>OpenAPI / PromQL Query API</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tool-chip">query_logs</span></td>
+                      <td>Mock Error & Warning Log Filter</td>
+                      <td><span class="service-tag">Splunk, ElasticSearch, OpenSearch, AWS CloudWatch Logs</span></td>
+                      <td>Log Search APIs / Lucene Query</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tool-chip">list_recent_deployments</span></td>
+                      <td>Mock Deployment History (DEP-4108)</td>
+                      <td><span class="service-tag">GitHub Deployments, ArgoCD, GitLab CI, Harness, Octopus</span></td>
+                      <td>GitHub API / Kubernetes API</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tool-chip">incident_triage_runbooks</span></td>
+                      <td>Local Markdown Runbooks</td>
+                      <td><span class="service-tag">Confluence, Notion, ServiceNow Knowledge Base, Git Docs</span></td>
+                      <td>watsonx Vector Store / Milvus</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tool-chip">execute_remediation</span></td>
+                      <td>Mock Rollback & Pool Resize Script</td>
+                      <td><span class="service-tag">Argo Rollouts, Kubernetes API, Ansible Automation Platform, Terraform</span></td>
+                      <td>Governed WXO Action Flow</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="callout-banner">
+                <div class="callout-icon">💡</div>
+                <div>
+                  <div class="callout-title">Zero Custom Glue Code Required</div>
+                  <div class="callout-text">watsonx Orchestrate natively connects OpenAPI specifications and enterprise pre-built connectors directly to the agent without requiring bespoke integration middle layers.</div>
+                </div>
+              </div>
+            `
+          },
+
+          // Slide 5: Benefits of Using the Agent
+          {
+            title: "Business & Operational Benefits",
+            tag: "Scenario 1 • Value Proposition",
+            subtitle: "Measurable improvements in operational resilience, speed, and safety.",
+            render: () => `
+              <div class="grid-2">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-green">📉</div>
+                    <div class="card-title">Dramatic MTTR Reduction</div>
+                  </div>
+                  <div class="card-body">
+                    Reduces mean time to resolution from 30–45 minutes of manual triage to under 15 seconds of automated data aggregation and correlation.
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-blue">🧠</div>
+                    <div class="card-title">Cognitive Relief for On-Call</div>
+                  </div>
+                  <div class="card-body">
+                    Eliminates context switching across multiple monitoring dashboards and wikis during 3 AM high-severity outage alerts.
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-teal">📋</div>
+                    <div class="card-title">Consistent, Auditable Triage</div>
+                  </div>
+                  <div class="card-body">
+                    Standardizes diagnostic rigor across the organization. Every conclusion is backed by explicit citations from approved company runbooks.
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-icon icon-purple">🛡️</div>
+                    <div class="card-title">Human-Governed Safety Gate</div>
+                  </div>
+                  <div class="card-body">
+                    Guarantees safety by preventing autonomous destructive actions. Remediation tools remain gated behind explicit interactive approval flows.
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-icon icon-amber">⚖️</div>
+                  <div class="card-title">Agent vs. Plain Script Trade-off</div>
+                </div>
+                <div class="card-body">
+                  While simple static scripts work well for fixed, predictable rules, <strong>Agents excel when inputs vary, log formats evolve, or cross-system hypothesis testing is required</strong> — while providing natural language explanations to the human approver.
+                </div>
+              </div>
+            `
+          },
+
+          // Slide 6: Live Demo Prompts Board
+          {
+            title: "Live Demo Prompts",
+            tag: "Scenario 1 • WXO Chat Assistant",
+            subtitle: "Copy and paste these prompts directly into the watsonx Orchestrate chat interface during your live demo.",
+            render: () => `
+              <div class="prompts-container">
+                <!-- Scene 1 -->
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 1</span>
+                      <span class="prompt-title">Vague Opening • Autonomous Discovery</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-1', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-1">Hey, checkout is slow. Can you look into it?</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Demonstrates agent discovering open incidents and picking INC-1001 without being given the ID.</span>
+                  </div>
+                </div>
+
+                <!-- Scene 2 -->
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 2</span>
+                      <span class="prompt-title">Diagnosis • Bad Deployment Correlation (INC-1001)</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-2', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-2">Investigate incident INC-1001 on the checkout service. Use your tools to find the root cause. Do NOT call request_remediation - just report your diagnosis and what remediation action you would recommend.</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Demonstrates multi-tool evidence collection (latency metric + N+1 query logs + deployment DEP-4108 + RB-DEPLOY-01).</span>
+                  </div>
+                </div>
+
+                <!-- Scene 3 -->
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 3</span>
+                      <span class="prompt-title">Red Herring • Dismissing False Leads (INC-1002)</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-3', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-3">Investigate incident INC-1002 on the payments service. There was a recent deployment to notification-service - could that be related? Use your tools to find the root cause. Do NOT call request_remediation - just report your diagnosis and recommended action.</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Demonstrates checking user-suggested suspect, dismissing it via runbook rules, and isolating DB pool exhaustion.</span>
+                  </div>
+                </div>
+
+                <!-- Scene 4 -->
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 4</span>
+                      <span class="prompt-title">Approval Flow • Interactive Form (Approve / Reject)</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-4', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-4">There is a critical incident on the checkout service, INC-1001. Logs show an N+1 query regression introduced by a recent deployment. Investigate and propose a fix.</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Triggers interactive approval form card in WXO UI. Demo 'Approve' in one thread and 'Reject' in a second thread.</span>
+                  </div>
+                </div>
+
+                <!-- Scene 5 -->
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 5</span>
+                      <span class="prompt-title">Restraint • Non-Incident & Noise Filtering (INC-1004)</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-5', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-5">Investigate incident INC-1004. Use your tools to find the root cause and whether any action is needed.</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Demonstrates intelligent restraint: recognizes scheduled load test and correctly recommends NO action.</span>
+                  </div>
+                </div>
+              </div>
+            `
+          }
+        ]
+      },
+
+      // Scenario 2 Placeholder (Future Expansion)
+      {
+        id: "hr-onboarding",
+        name: "HR Onboarding Agent",
+        slides: [
+          {
+            title: "HR Onboarding Automation",
+            tag: "Scenario 2 • Overview",
+            subtitle: "End-to-end employee provisioning, access governance, and department workflows.",
+            render: () => `
+              <div class="callout-banner">
+                <div class="callout-icon">🚀</div>
+                <div>
+                  <div class="callout-title">Scenario Under Development</div>
+                  <div class="callout-text">This scenario template is ready for your team's upcoming HR Onboarding agent workflows and demo scripts.</div>
+                </div>
+              </div>
+            `
+          }
+        ]
+      },
+
+      // Scenario 3 Placeholder (Future Expansion)
+      {
+        id: "cloud-finops",
+        name: "Cloud FinOps Agent",
+        slides: [
+          {
+            title: "Cloud FinOps & Cost Optimization",
+            tag: "Scenario 3 • Overview",
+            subtitle: "Automated cloud spend anomaly detection, idle resource reclamation, and rightsizing.",
+            render: () => `
+              <div class="callout-banner">
+                <div class="callout-icon">🚀</div>
+                <div>
+                  <div class="callout-title">Scenario Under Development</div>
+                  <div class="callout-text">This scenario template is ready for your team's upcoming Cloud FinOps agent workflows and demo scripts.</div>
+                </div>
+              </div>
+            `
+          }
+        ]
+      }
+    ];
+
+    // State
+    let currentScenarioIdx = 0;
+    let currentSlideIdx = 0;
+
+    // Elements
+    const slideStage = document.getElementById("slide-stage");
+    const slideContent = document.getElementById("slide-content");
+    const slideCounter = document.getElementById("slide-counter");
+    const progressBar = document.getElementById("progress-bar");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const slideDots = document.getElementById("slide-dots");
+    const slideToc = document.getElementById("slide-toc");
+    const topScenarioName = document.getElementById("top-scenario-name");
+    const scenarioTocTitle = document.getElementById("scenario-toc-title");
+    const sidebar = document.getElementById("sidebar");
+    const toast = document.getElementById("toast");
+
+    // Initialize
+    function init() {
+      // Check URL hash if available (e.g. #scenario0/slide2)
+      if (window.location.hash) {
+        const parts = window.location.hash.replace("#", "").split("/");
+        if (parts.length === 2) {
+          const sIdx = parseInt(parts[0], 10);
+          const slIdx = parseInt(parts[1], 10);
+          if (!isNaN(sIdx) && sIdx < scenariosData.length) currentScenarioIdx = sIdx;
+          if (!isNaN(slIdx) && slIdx < scenariosData[currentScenarioIdx].slides.length) currentSlideIdx = slIdx;
+        }
+      }
+
+      renderScenario();
+      document.addEventListener("keydown", handleKeydown);
+    }
+
+    function switchScenario(index) {
+      if (index === currentScenarioIdx) return;
+      currentScenarioIdx = index;
+      currentSlideIdx = 0;
+      updateScenarioItems();
+      renderScenario();
+    }
+
+    function updateScenarioItems() {
+      const items = document.querySelectorAll(".scenario-item");
+      items.forEach((item, idx) => {
+        item.classList.toggle("active", idx === currentScenarioIdx);
+      });
+    }
+
+    function renderScenario() {
+      const scenario = scenariosData[currentScenarioIdx];
+      topScenarioName.textContent = scenario.name;
+      scenarioTocTitle.textContent = `Scenario ${currentScenarioIdx + 1} Slides`;
+
+      // Build Table of Contents
+      slideToc.innerHTML = "";
+      scenario.slides.forEach((slide, idx) => {
+        const tocItem = document.createElement("div");
+        tocItem.className = `toc-item ${idx === currentSlideIdx ? "active" : ""}`;
+        tocItem.onclick = () => goToSlide(idx);
+        tocItem.innerHTML = `<span class="toc-num">0${idx + 1}</span><span>${slide.title}</span>`;
+        slideToc.appendChild(tocItem);
+      });
+
+      // Build Dots
+      slideDots.innerHTML = "";
+      scenario.slides.forEach((_, idx) => {
+        const dot = document.createElement("div");
+        dot.className = `dot ${idx === currentSlideIdx ? "active" : ""}`;
+        dot.onclick = () => goToSlide(idx);
+        slideDots.appendChild(dot);
+      });
+
+      renderCurrentSlide();
+    }
+
+    function renderCurrentSlide() {
+      const scenario = scenariosData[currentScenarioIdx];
+      const slide = scenario.slides[currentSlideIdx];
+
+      // Update Top Counter & Progress
+      slideCounter.textContent = `${currentSlideIdx + 1} / ${scenario.slides.length}`;
+      const progressPercent = ((currentSlideIdx + 1) / scenario.slides.length) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      // Update Nav Buttons
+      prevBtn.disabled = currentSlideIdx === 0;
+      nextBtn.disabled = currentSlideIdx === scenario.slides.length - 1;
+
+      // Update TOC and Dots active classes
+      const tocItems = slideToc.querySelectorAll(".toc-item");
+      tocItems.forEach((item, idx) => item.classList.toggle("active", idx === currentSlideIdx));
+
+      const dots = slideDots.querySelectorAll(".dot");
+      dots.forEach((dot, idx) => dot.classList.toggle("active", idx === currentSlideIdx));
+
+      // Update Hash
+      window.location.hash = `${currentScenarioIdx}/${currentSlideIdx}`;
+
+      // Render Slide Content
+      slideContent.innerHTML = `
+        <div class="slide-header">
+          <div class="slide-tag">${slide.tag}</div>
+          <h1 class="slide-title">${slide.title}</h1>
+          <p class="slide-subtitle">${slide.subtitle}</p>
+        </div>
+        ${slide.render()}
+      `;
+
+      // Scroll top
+      slideStage.scrollTop = 0;
+    }
+
+    function goToSlide(index) {
+      const scenario = scenariosData[currentScenarioIdx];
+      if (index >= 0 && index < scenario.slides.length) {
+        currentSlideIdx = index;
+        renderCurrentSlide();
+      }
+    }
+
+    function nextSlide() {
+      const scenario = scenariosData[currentScenarioIdx];
+      if (currentSlideIdx < scenario.slides.length - 1) {
+        currentSlideIdx++;
+        renderCurrentSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlideIdx > 0) {
+        currentSlideIdx--;
+        renderCurrentSlide();
+      }
+    }
+
+    function handleKeydown(e) {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === "ArrowRight" || e.key === "Space") {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key.toLowerCase() === "f") {
+        toggleFullscreen();
+      } else if (e.key.toLowerCase() === "s") {
+        toggleSidebar();
+      }
+    }
+
+    function toggleSidebar() {
+      sidebar.classList.toggle("collapsed");
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    let isLight = false;
+    function toggleTheme() {
+      isLight = !isLight;
+      document.body.setAttribute("data-theme", isLight ? "light" : "dark");
+      document.getElementById("theme-icon").textContent = isLight ? "🌙" : "☀️";
+      document.getElementById("theme-label").textContent = isLight ? "Dark Mode" : "Light Mode";
+    }
+
+    // Copy to clipboard utility
+    function copyPrompt(elementId, btn) {
+      const text = document.getElementById(elementId).innerText.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.classList.add("copied");
+        btn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Copied!
+        `;
+        showToast("Prompt copied to clipboard!");
+        setTimeout(() => {
+          btn.classList.remove("copied");
+          btn.innerHTML = originalText;
+        }, 2200);
+      }).catch(err => {
+        console.error("Copy failed: ", err);
+      });
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      clearTimeout(toastTimer);
+      toast.querySelector("span").textContent = msg;
+      toast.classList.add("show");
+      toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2500);
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
