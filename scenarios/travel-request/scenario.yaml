@@ -1,0 +1,51 @@
+# scenario.yaml - manifest for the Travel Request scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Status stays `soon` until the scenario is deployed and its demo script is written.
+
+id: travel-request
+name: Travel Request
+description: Policy-aware travel authorisation from free text, grounded in a Finnish regulation
+status: live
+
+agents:
+  - name: travel_request
+    path: agents/travel-request
+    kind: native
+
+tools:
+  - path: tools/travel_request
+    entry: travel_request.py
+    names:
+      - travel_get_employee_profile
+      - travel_get_budget_status
+      - travel_get_per_diem_rate
+      - travel_estimate_reimbursement
+      - travel_issue_request_id
+    # travel_issue_request_id is deliberately NOT attached to the agent; only the
+    # travel_submit_request flow calls it after human approval (least privilege).
+    attached:
+      - travel_get_employee_profile
+      - travel_get_budget_status
+      - travel_get_per_diem_rate
+      - travel_estimate_reimbursement
+
+knowledge_bases:
+  - name: travel_state_rules
+    path: knowledge/travel-request
+  - name: travel_agency_policy
+    path: knowledge/travel-request
+
+flows:
+  - name: travel_submit_request
+    path: flows/travel_request
+
+evaluation:
+  path: evaluation/travel-request
+  tier: core
+  package_include: []
+
+demo:
+  script: docs/demo/travel-request-demo.md
+
+package:
+  zip_prefix: travel-request

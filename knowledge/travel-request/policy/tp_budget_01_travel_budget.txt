@@ -1,0 +1,15 @@
+DOCUMENT: TP-BUDGET-01
+TITLE: Travel budget and exceeding the budget
+NOTE: This is a fictional agency policy written for a demo. It is not a real policy.
+
+When this policy applies
+The estimated cost of a trip is higher than the remaining travel budget of the employee's cost center, or the question is whether the budget is enough.
+
+Rules
+Every cost center has a yearly travel budget. Check the budget with the tool travel_get_budget_status and give its result as it is. Do not compare the numbers yourself.
+
+If the budget is not enough
+The trip is not automatically denied. It needs the approval of the director of the cost center (level director, policy TP-APPR-01). The traveler must explain why the trip is necessary this year.
+
+If the budget is enough
+The budget alone does not decide the approval level. The approval level is set by policy TP-APPR-01.

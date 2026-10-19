@@ -1,0 +1,18 @@
+DOCUMENT: TP-PURPOSE-01
+TITLE: Combining leave with a business trip, and the purpose of the trip
+NOTE: This is a fictional agency policy written for a demo. It is not a real policy.
+
+When this policy applies
+An employee wants to add leave days to a business trip, for example a holiday week after a conference trip, or the purpose of the trip is unclear (work or holiday).
+
+Principle
+Combining leave with a business trip should be avoided. Without a special reason and the consent of the person who gives the travel order it is not allowed. The business trip itself is not forbidden: when the trip has a work purpose, the result is NEEDS APPROVAL, level manager (Valtion matkustussääntö 2026, 4 §).
+
+If there is a particularly weighty reason to combine
+Leave days are attached to the trip only if the consent of the person who gives the travel order has been obtained. The approval level is at least manager (policy TP-APPR-01). The leave days must be listed in the travel order. Travel costs that fall in the leave period are not reimbursed.
+
+Procedure
+Mark includes_leave as true in the request. If the traveler has already said which days are leave, do not ask again. Do not give a request id before the manager has approved. Estimate only the work trip, not the leave days.
+
+Holiday trip
+If the only purpose of the trip is a holiday or leisure, it is not a business trip and gets no request id.

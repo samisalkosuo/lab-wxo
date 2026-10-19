@@ -1,0 +1,15 @@
+spec_version: v1
+kind: knowledge_base
+name: travel_state_rules
+description: >
+  Valtion matkustussääntö 2026 (Valtiovarainministeriön julkaisuja 2025:63), the Finnish state
+  collective agreement on compensation of travel costs, in Finnish. Use it to explain and cite
+  the rules for what counts as an official trip (3 §), travel mode (5 §), own-car mileage (6 §),
+  per diems and their time limits (9-12 §), free meals (13 §), meal allowance (14 §),
+  accommodation (15 §), night travel allowance (16 §), travel day compensation (19 §) and the
+  travel claim deadline (21 §). Do not take amounts from it for foreign trips or calculations:
+  use the rate and estimate tools for numbers.
+documents:
+  - VM_2025_63.pdf
+vector_index:
+  embeddings_model_name: ibm/granite-embedding-278m-multilingual

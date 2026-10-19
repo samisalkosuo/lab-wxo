@@ -1,0 +1,21 @@
+DOCUMENT: TP-AUTH-01
+TITLE: Basic principle of business travel and the travel order
+NOTE: This is a fictional agency policy written for a demo. It is not a real policy.
+
+When this policy applies
+An employee asks whether a business trip may go ahead, or whether a trip needs permission. The question may be vague, for example "I need a trip to Brussels next month".
+
+Basic principle
+A business trip is made only to carry out a work task. A trip always needs a travel order (Valtion matkustussääntö 2026, 3 §). The travel order is given before the trip, and its identifier is the request id (TR-2026-nnnnnn).
+
+What is needed to assess a request
+The traveler (employee id or name), the destination, the start date, the duration or the end date, and the purpose of the trip. If any of these is missing, ask for all missing items in one question. All other facts are optional and have a default: no leave days, no free meals, and no known lodging cost. State the defaults you used in the answer.
+
+Purpose of the trip
+Allowed purposes are customer meeting (customer), training (training), internal meeting (internal_meeting) and conference (conference). A holiday trip (leisure) is not a business trip and gets no request id.
+
+Result of the decision
+The result is always one of three: APPROVED, NEEDS APPROVAL or DENIED. The approval level that is needed (none, manager or director) is set by policy TP-APPR-01.
+
+What this policy does not cover
+Booking trips, expense claims and paying reimbursements. These are handled in other systems with the help of the request id (policy TP-HANDOFF-01).

@@ -1,0 +1,150 @@
+{
+  "version": "1.1",
+  "description": "Ground truth for the Travel Request scenario (core evaluation tier). The user writes English only; the source document (Valtion matkustussääntö 2026) is Finnish and is cited in Finnish. Amounts are the output of travel_estimate_reimbursement for the stated inputs; they are not read from the PDF at run time. Approval levels follow the fictional agency policy (TP-APPR-01). Amounts and levels come from the tools and the policy; the TR-007 expected outcome was refined after earlier runs.",
+  "smoke_prompts": [
+    {
+      "id": "TR-001",
+      "prompt": "I am Aino Virtanen (E-1001). I want to hold a customer meeting in Tampere on Tuesday 14 April 2026. I leave home in the morning and return in the evening, about 8 hours in total. May I go, and how much reimbursement can I expect? Do not call travel_submit_request, just give the decision."
+    },
+    {
+      "id": "TR-002",
+      "prompt": "I am Jukka Korhonen (E-1002). I want to go to Brussels for training on 11-13 May 2026, about 50 hours in total. The organiser provides lunch and dinner every day. The hotel costs 280 EUR in total and breakfast is included in the room price. May I go, and how much reimbursement will I get? Do not call travel_submit_request, just give the decision."
+    },
+    {
+      "id": "TR-003",
+      "prompt": "I need a trip to Brussels next month."
+    },
+    {
+      "id": "TR-004",
+      "prompt": "I am Sofia Lindholm (E-1003). I am invited to a conference in Berlin, 8-10 June 2026, about 58 hours including travel. Train and flight tickets are 280 EUR and the hotel is 300 EUR. After the conference I would like to stay one more week on my own holiday in Berlin. May I go? Do not call travel_submit_request, just give your decision."
+    },
+    {
+      "id": "TR-005",
+      "prompt": "I am Aino Virtanen (E-1001). I want to drive my own car to a customer meeting on 2 June 2026. The trip is 400 km in total and takes about 9 hours. The same trip by train would cost 60 EUR. May I use my own car, and how much reimbursement will I get? Do not call travel_submit_request."
+    },
+    {
+      "id": "TR-006",
+      "prompt": "Where is the refund for my trip last month? I submitted the expense claim two weeks ago."
+    },
+    {
+      "id": "TR-007",
+      "prompt": "I am Sofia Lindholm (E-1003). I want to travel to a customer meeting in Tampere on 10 February 2027, about 8 hours. May I go, and how much reimbursement will I get? Do not call travel_submit_request."
+    },
+    {
+      "id": "TR-008",
+      "prompt": "I am Mikko Nieminen (E-1004). I need to visit a customer in Rovaniemi on 16-17 September 2026, about 30 hours. Tickets are 450 EUR and the hotel is 180 EUR. May I go and what will be reimbursed? Do not call travel_submit_request."
+    }
+  ],
+  "cases": {
+    "TR-001": {
+      "case_id": "TR-001",
+      "language": "en",
+      "employee_id": "E-1001",
+      "teaches": "Happy path: partial per diem, no approval needed",
+      "expected_outcome": "APPROVED",
+      "expected_approval_level": "none",
+      "expected_estimate_eur": 25.0,
+      "expected_estimate_basis": "8 h trip over 15 km: partial per diem 25 EUR (10 §, 11 §)",
+      "expected_references": ["Valtion matkustussääntö 2026, 10 §", "Valtion matkustussääntö 2026, 11 §", "TP-APPR-01"],
+      "requires_human_approval": false,
+      "red_herrings": [],
+      "expected_tools": ["travel_get_employee_profile", "travel_estimate_reimbursement", "travel_get_budget_status"]
+    },
+    "TR-002": {
+      "case_id": "TR-002",
+      "language": "en",
+      "employee_id": "E-1002",
+      "teaches": "Reading the free-meal rule exactly: hotel breakfast is not a free meal",
+      "expected_outcome": "NEEDS APPROVAL",
+      "expected_approval_level": "manager",
+      "expected_approver": "Mika Laine",
+      "expected_estimate_eur": 361.0,
+      "expected_estimate_basis": "50 h abroad, 2 full days at 81 EUR (Belgium) reduced 50 % for two free meals = 81 EUR; remainder 2 h does not exceed 2 h; hotel 280 EUR by receipt",
+      "expected_references": ["Valtion matkustussääntö 2026, 13 §", "Valtion matkustussääntö 2026, 12 §", "TP-ABROAD-01", "TP-APPR-01"],
+      "requires_human_approval": true,
+      "red_herrings": ["Breakfast included in the hotel room price must NOT be counted as a free meal (13 § application guidance)", "The estimate is below 600 EUR, but a trip abroad needs the manager regardless of cost"],
+      "expected_tools": ["travel_get_employee_profile", "travel_estimate_reimbursement", "travel_get_budget_status"]
+    },
+    "TR-003": {
+      "case_id": "TR-003",
+      "language": "en",
+      "teaches": "Vague input: ask the missing items in one question, no decision yet",
+      "expected_outcome": "CLARIFYING_QUESTION",
+      "expected_missing_items": ["traveler", "start date", "duration or end date", "purpose"],
+      "requires_human_approval": false,
+      "red_herrings": [],
+      "expected_tools": [],
+      "multi_turn_note": "The demo script continues this case with a second message that supplies the facts (employee E-1002, training, 11-13 May 2026, about 50 hours, lunch and dinner provided, hotel 280 EUR). The smoke prompt covers only the first turn. The answer to the second turn should match TR-002."
+    },
+    "TR-004": {
+      "case_id": "TR-004",
+      "language": "en",
+      "employee_id": "E-1003",
+      "teaches": "Exception handling: holiday combined with a work trip",
+      "expected_outcome": "NEEDS APPROVAL",
+      "expected_approval_level": "manager",
+      "expected_approver": "Katri Heikkinen",
+      "expected_estimate_eur": 763.3,
+      "expected_estimate_basis": "58 h in Germany (78 EUR): 2 full days = 156 + 10 h remainder over 2 h but not over 10 h = 35 % = 27.30; tickets 280; hotel 300. Holiday week excluded from reimbursement.",
+      "expected_references": ["Valtion matkustussääntö 2026, 3 §", "Valtion matkustussääntö 2026, 4 §", "TP-PURPOSE-01", "TP-ABROAD-01"],
+      "requires_human_approval": true,
+      "red_herrings": ["The holiday week must not be added to the duration passed to the estimate"],
+      "expected_tools": ["travel_get_employee_profile", "travel_estimate_reimbursement", "travel_get_budget_status"],
+      "language_check": "Reply in English; the section references to the Finnish document appear in Finnish; no translated quotation of the document"
+    },
+    "TR-005": {
+      "case_id": "TR-005",
+      "language": "en",
+      "employee_id": "E-1001",
+      "teaches": "Policy beats the request: car reimbursement capped to the cheaper train fare",
+      "expected_outcome": "APPROVED",
+      "expected_approval_level": "none",
+      "expected_estimate_eur": 85.0,
+      "expected_estimate_basis": "per diem 25 EUR (9 h) + car 400 km would be 220 EUR but is capped to the train price 60 EUR (5 §)",
+      "expected_references": ["Valtion matkustussääntö 2026, 5 §", "Valtion matkustussääntö 2026, 6 §"],
+      "requires_human_approval": false,
+      "red_herrings": ["The uncapped mileage of 220 EUR is the obvious but wrong number"],
+      "expected_tools": ["travel_get_employee_profile", "travel_estimate_reimbursement", "travel_get_budget_status"]
+    },
+    "TR-006": {
+      "case_id": "TR-006",
+      "language": "en",
+      "teaches": "Restraint: expense claims are out of scope",
+      "expected_outcome": "OUT_OF_SCOPE",
+      "expected_action": "no_action",
+      "requires_human_approval": false,
+      "red_herrings": [],
+      "expected_tools": [],
+      "must_not": ["issue a decision", "issue a request id", "comment on payment status"]
+    },
+    "TR-007": {
+      "case_id": "TR-007",
+      "language": "en",
+      "employee_id": "E-1003",
+      "teaches": "Honest limits: rates for 2027 are agreed separately",
+      "expected_outcome": "APPROVED",
+      "expected_approval_level": "none",
+      "expected_estimate_eur": null,
+      "expected_estimate_basis": "travel_estimate_reimbursement returns RATES_NOT_AVAILABLE for 2027; the agent must give the decision on the other rules and no amount",
+      "expected_references": ["Valtion matkustussääntö 2026"],
+      "requires_human_approval": false,
+      "red_herrings": ["The 2026 amounts look applicable but are valid only until 31.12.2026", "A missing estimate must not turn into DENIED"],
+      "expected_tools": ["travel_get_employee_profile", "travel_estimate_reimbursement"]
+    },
+    "TR-008": {
+      "case_id": "TR-008",
+      "language": "en",
+      "employee_id": "E-1004",
+      "teaches": "Deterministic budget check forces director approval",
+      "expected_outcome": "NEEDS APPROVAL",
+      "expected_approval_level": "director",
+      "expected_approver": "Pekka Salonen",
+      "expected_estimate_eur": 709.0,
+      "expected_estimate_basis": "30 h domestic: full per diem 54 + partial 25 = 79; tickets 450; hotel 180. Cost center CC-200 has 700 EUR left, so 709 exceeds it by 9 EUR.",
+      "expected_references": ["TP-BUDGET-01", "TP-APPR-01"],
+      "requires_human_approval": true,
+      "red_herrings": ["The estimate is only 9 EUR above the budget; the agent must still require the director"],
+      "expected_tools": ["travel_get_employee_profile", "travel_estimate_reimbursement", "travel_get_budget_status"]
+    }
+  }
+}

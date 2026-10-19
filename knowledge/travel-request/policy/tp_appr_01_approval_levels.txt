@@ -1,0 +1,19 @@
+DOCUMENT: TP-APPR-01
+TITLE: Approval levels by total cost of the trip
+NOTE: This is a fictional agency policy written for a demo. It is not a real policy.
+
+When this policy applies
+The trip has been found to be a business trip and its estimated total cost is known. The question is who approves the trip.
+
+Total cost
+The total cost is the estimated reimbursement (per diem, travel costs and lodging) from the tool travel_estimate_reimbursement. Do not calculate the amount yourself.
+
+Approval levels
+1. No separate approval (level none): a domestic trip with no leave days, a total cost of at most 600 euros, and enough travel budget in the cost center.
+2. Manager approval (level manager): the trip is abroad, or leave days are attached, or the total cost is over 600 euros but at most 2500 euros.
+3. Director approval (level director): the total cost is over 2500 euros, or the remaining travel budget of the cost center is not enough (policy TP-BUDGET-01).
+
+If more than one condition is met, the highest level applies.
+
+Procedure
+Tell the traveler the level that is needed and the reason. Name the approver: the manager comes from the employee data (travel_get_employee_profile), the director from the cost center data (travel_get_budget_status). The request id is given only after the approval has been recorded in the approval flow (travel_submit_request).

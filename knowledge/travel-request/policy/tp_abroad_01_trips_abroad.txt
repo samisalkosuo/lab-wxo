@@ -1,0 +1,18 @@
+DOCUMENT: TP-ABROAD-01
+TITLE: Trips abroad
+NOTE: This is a fictional agency policy written for a demo. It is not a real policy.
+
+When this policy applies
+The trip goes outside Finland.
+
+Rules
+Every trip abroad needs at least the approval of the manager (level manager, policy TP-APPR-01), even if the cost is small.
+
+Foreign per diem
+The amount of the foreign per diem depends on the destination country. Always get the amount with the tool travel_get_per_diem_rate or travel_estimate_reimbursement. Do not use a number read from the knowledge base. The annex of the Valtion matkustussääntö has the country-specific amounts for 2026 (12 § ja liite).
+
+What is recorded in the request
+Destination country, departure and return day, and whether any meal is free of charge (for example a lunch or dinner provided by the organiser). A breakfast included in the hotel room price is not a free meal (Valtion matkustussääntö 2026, 13 §).
+
+Trips in 2027
+The per diems for 2027 are agreed separately. Tell the traveler that a reimbursement estimate cannot be given yet, but still give the decision on the trip itself.

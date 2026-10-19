@@ -109,6 +109,13 @@ def extract_results(messages: object) -> tuple:
         elif role == "tool" and tool_name:
             tool_names.append(tool_name)
 
+        # Current ADK thread messages record tool calls inside step_history.
+        steps = msg.get("step_history") if isinstance(msg, dict) else getattr(msg, "step_history", None)
+        for step in steps or []:
+            for detail in (step.get("step_details", []) if isinstance(step, dict) else []):
+                if isinstance(detail, dict) and detail.get("type") == "tool_call" and detail.get("name"):
+                    tool_names.append(detail["name"])
+
         if role == "assistant":
             if isinstance(content, str):
                 last_assistant = content

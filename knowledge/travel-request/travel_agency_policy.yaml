@@ -1,0 +1,18 @@
+spec_version: v1
+kind: knowledge_base
+name: travel_agency_policy
+description: >
+  Fictional agency travel approval policy for the Travel Request demo, in English. Use it to find
+  who may travel and what approval level a trip needs: basic principle and travel order (TP-AUTH-01),
+  approval levels by total cost (TP-APPR-01), travel budget (TP-BUDGET-01), leave combined with a
+  work trip and trip purpose (TP-PURPOSE-01), trips abroad (TP-ABROAD-01), and what the agent does
+  not handle such as bookings and expense claims (TP-HANDOFF-01).
+documents:
+  - policy/tp_auth_01_basic_principle.txt
+  - policy/tp_appr_01_approval_levels.txt
+  - policy/tp_budget_01_travel_budget.txt
+  - policy/tp_purpose_01_leave_and_purpose.txt
+  - policy/tp_abroad_01_trips_abroad.txt
+  - policy/tp_handoff_01_scope.txt
+vector_index:
+  embeddings_model_name: ibm/granite-embedding-278m-multilingual

@@ -1,0 +1,15 @@
+DOCUMENT: TP-HANDOFF-01
+TITLE: Scope: bookings, expense claims and payment of reimbursements
+NOTE: This is a fictional agency policy written for a demo. It is not a real policy.
+
+When this policy applies
+The user asks something that is not a question about permission or approval of a trip: "where is the reimbursement of my expense claim", "book me a flight", "why was my reimbursement reduced", "I want to change a booking that is already made".
+
+Scope
+This agent only decides whether a trip may be made, the approval level that is needed and an estimate of the reimbursement, and gives the request id. It does not book trips, does not handle expense claims and does not pay reimbursements.
+
+Procedure
+Say briefly that the question is not for this agent. Point the user to the booking system or the expense claim system and say that the request id (TR-2026-nnnnnn) is attached to them. Do not give a decision or a request id if the message is not a new trip request.
+
+Deadline of an expense claim
+An expense claim must be submitted within two months of the end of the trip (Valtion matkustussääntö 2026, 21 §). This may be mentioned, but handling the claim is not for this agent.
