@@ -42,6 +42,10 @@ lab-wxo/
 │       ├── incident-triage-demo.md   # Human-readable demo script
 │       ├── presentation.html         # Slide shell; loads scenarios/*.js
 │       └── scenarios/                # One slides file per scenario (4 are "coming soon" placeholders)
+├── standalone/
+│   ├── README.md                 # What standalone means, manage.py usage
+│   ├── manage.py                 # Deploy / undeploy standalone agents
+│   └── travel-rules-qa/          # Finnish travel regulation PDF Q&A agent
 ├── connections/                  # Connection templates (empty for this demo)
 ├── scripts/
 │   ├── deploy-all.ps1            # Deploy live scenarios, or one with -Scenario (PowerShell)
@@ -250,3 +254,27 @@ The skills `wxo-scenario-authoring` (what a scenario must contain and how to bui
 3. Add tools to `tools/` (single `.py` file) or `tools/<package_name>/` (multi-file package with `requirements.txt`)
 4. Add `scenarios/<id>/scenario.yaml` listing the agent and its tools (see [`scenarios/hello-world/scenario.yaml`](scenarios/hello-world/scenario.yaml)). **The deploy scripts only deploy what a manifest lists**, so an agent without a manifest is not picked up.
 5. Run `scripts/deploy-all.ps1 -Scenario <id>`
+
+## Standalone Agents
+
+**Standalone agents** are ad-hoc agents that a developer builds and deploys directly,
+without creating a scenario manifest, demo script, or evaluation ground truth. They live
+in `standalone/<agent-name>/` and are managed with `standalone/manage.py` — the scenario
+deploy scripts in `scripts/` do not touch them.
+
+Use `standalone/` when an agent answers a focused question (a document, an API, a quick
+tool test) rather than driving a structured demo. For a scenario-quality agent with
+evaluation, packaging, and demo requirements, use `scenarios/` + `agents/` instead.
+
+See [`standalone/README.md`](standalone/README.md) for conventions, the directory layout,
+and full deploy/undeploy instructions.
+
+**Quick reference:**
+
+```bash
+python standalone/manage.py list                           # show all standalone agents
+python standalone/manage.py deploy                         # deploy all
+python standalone/manage.py deploy --agent travel_rules_qa # deploy one
+python standalone/manage.py deploy --dry-run               # preview
+python standalone/manage.py undeploy --agent travel_rules_qa
+```
