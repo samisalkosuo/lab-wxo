@@ -281,3 +281,16 @@ python standalone/manage.py deploy --agent travel_rules_qa # deploy one
 python standalone/manage.py deploy --dry-run               # preview
 python standalone/manage.py undeploy --agent travel_rules_qa
 ```
+
+## Backing Up Agent Chats
+
+To back up and archive all agent conversation histories and interactive chats from your WXO instance:
+
+```bash
+# Zero-config default: reads env.cfg and exports all agent chats into export/YYYYMMDDHHMMSS/
+python scripts/export_agent_chats.py
+
+# Optional: filter by agent or time window
+python scripts/export_agent_chats.py --agent translator
+python scripts/export_agent_chats.py --last 30d
+```
