@@ -55,7 +55,10 @@ lab-wxo/
 ├── dist/                         # Packaged zip output (git-ignored)
 ├── env.cfg                       # Secrets -- DO NOT COMMIT
 ├── env.cfg.example               # Template -- safe to commit
-├── activate-wxo.ps1              # Standalone environment activation
+├── activate-lab-wxo.ps1          # Convenience setup: creates/activates venv, installs deps & activates WXO (PowerShell)
+├── activate-lab-wxo.sh           # Convenience setup (Bash)
+├── activate-wxo.ps1              # Standalone environment activation (PowerShell)
+├── activate-wxo.sh               # Standalone environment activation (Bash)
 └── requirements.txt              # ibm-watsonx-orchestrate and pinned deps
 ```
 
@@ -75,7 +78,23 @@ lab-wxo/
 pip install ibm-watsonx-orchestrate==2.18.2
 ```
 
-## Setup
+## Quickstart / Setup
+
+### Quick Setup (One Step)
+
+Run the convenience script, which automatically sets up `.venv`, installs `requirements.txt`, reads or prompts for credentials (`env.cfg` / API key), and activates the watsonx Orchestrate environment:
+
+```powershell
+.\activate-lab-wxo.ps1    # Windows PowerShell (or: . .\activate-lab-wxo.ps1 to keep .venv active)
+```
+
+```bash
+source ./activate-lab-wxo.sh   # Linux / macOS / Git Bash
+```
+
+---
+
+### Manual Setup (Step-by-Step)
 
 ### 1. Create and activate a virtual environment
 
