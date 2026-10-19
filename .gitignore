@@ -1,4 +1,5 @@
 ﻿local/
+export/
 
 # Environment & Secrets
 env.cfg
