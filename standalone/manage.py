@@ -5,6 +5,9 @@ Standalone agents live in subdirectories of this directory. Every subdirectory t
 contains an agent.yaml file is treated as a standalone agent. No manifest or scenario
 registration is needed — just add a subdirectory and run this script.
 
+Python tools: any *.py file in an agent's subdirectory is imported as a Python tool
+before the agent (deploy) and its @tool functions are removed after it (undeploy).
+
 Knowledge bases are NOT managed by this script. KBs used by standalone agents are
 typically shared with scenario deployments (managed by scripts/deploy-all.ps1 /
 teardown.ps1). Import or remove KBs manually, or via those scripts. See each
@@ -27,6 +30,7 @@ Prerequisites:
 """
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -51,6 +55,9 @@ except ImportError:
 STANDALONE_DIR = Path(__file__).resolve().parent
 ROOT = STANDALONE_DIR.parent
 
+# Same pattern as scripts/scenario_manifest.py
+TOOL_RE = re.compile(r"^@tool(?:\([^)]*\))?\s*\r?\n\s*def (\w+)", re.M)
+
 
 # ---------------------------------------------------------------------------
 # Discovery
@@ -69,10 +76,16 @@ def discover_agents() -> list[dict]:
             print(f"WARNING: {yaml_path.relative_to(ROOT)} has no 'name' field — skipping",
                   file=sys.stderr)
             continue
+        tools = []
+        for py in sorted(subdir.glob("*.py")):
+            names = TOOL_RE.findall(py.read_text(encoding="utf-8-sig"))
+            if names:
+                tools.append({"path": py, "names": names})
         agents.append({
             "name": data["name"],
             "yaml_path": yaml_path,
             "dir": subdir,
+            "tools": tools,
         })
     return agents
 
@@ -222,6 +235,16 @@ def cmd_deploy(agents: list[dict], args):
         print(f"\n  -> {a['name']}  ({a['yaml_path'].relative_to(ROOT)})")
         rel_yaml = str(a["yaml_path"].relative_to(ROOT))
 
+        # tools first (fatal — the agent references them)
+        for t in a["tools"]:
+            rel_tool = str(t["path"].relative_to(ROOT))
+            run_orchestrate(
+                ["tools", "import", "-k", "python", "-f", str(t["path"])],
+                dry_run=args.dry_run,
+                description=f"tools import -k python -f {rel_tool}",
+                fatal=True,
+            )
+
         # import (fatal — a failed import means the agent isn't there)
         run_orchestrate(
             ["agents", "import", "--file", str(a["yaml_path"])],
@@ -271,6 +294,15 @@ def cmd_undeploy(agents: list[dict], args):
             description=f"agents remove --name {a['name']} --kind native",
             fatal=False,
         )
+        # tools after the agent that references them
+        for t in a["tools"]:
+            for tool_name in t["names"]:
+                run_orchestrate(
+                    ["tools", "remove", "--name", tool_name],
+                    dry_run=args.dry_run,
+                    description=f"tools remove --name {tool_name}",
+                    fatal=False,
+                )
 
     if args.dry_run:
         print("\n=== Dry run complete ===")

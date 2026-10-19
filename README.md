@@ -9,9 +9,6 @@ Agents, tools, knowledge bases, and flows in this repo are version-controlled an
 ```
 lab-wxo/
 ├── agents/
-│   ├── hello-world/
-│   │   ├── agent.yaml            # Agent definition
-│   │   └── README.md
 │   ├── incident-triage/
 │   │   ├── agent.yaml
 │   │   └── README.md
@@ -19,7 +16,6 @@ lab-wxo/
 │       ├── agent.yaml
 │       └── README.md
 ├── tools/
-│   ├── greetings.py              # Single-file Python tool
 │   ├── incident_triage/          # Multi-file Python tool package
 │   │   ├── incident_triage.py    # Entry file (8 @tool functions)
 │   │   ├── requirements.txt
@@ -51,8 +47,7 @@ lab-wxo/
 │       └── ground_truth.json
 ├── scenarios/
 │   ├── incident-triage/scenario.yaml   # Manifest: every resource the scenario owns
-│   ├── travel-request/scenario.yaml
-│   └── hello-world/scenario.yaml
+│   └── travel-request/scenario.yaml
 ├── docs/
 │   └── demo/
 │       ├── incident-triage-demo.md   # Human-readable demo script
@@ -62,6 +57,7 @@ lab-wxo/
 ├── standalone/
 │   ├── README.md                 # What standalone means, manage.py usage
 │   ├── manage.py                 # Deploy / undeploy standalone agents
+│   ├── hello-world/              # ADK setup check (agent + greeting tool)
 │   ├── translator/               # Translation agent (fixed language list, optional tone)
 │   └── travel-rules-qa/          # Finnish travel regulation PDF Q&A agent
 ├── connections/                  # Connection templates (empty for this demo)
@@ -91,7 +87,6 @@ Deployed with `scripts/deploy-all` from the scenario manifests in `scenarios/`.
 
 | Agent | Name in WXO | Scenario | Description |
 |---|---|---|---|
-| [hello-world](agents/hello-world/) | `hello_world` | `hello-world` | Simple greeting agent -- verifies ADK setup |
 | [incident-triage](agents/incident-triage/) | `incident_triage` | `incident-triage` | Diagnoses mock production incidents; routes remediation through a human-approval flow |
 | [travel-request](agents/travel-request/) | `travel_request` | `travel-request` | Decides whether a business trip is approved, needs approval, or is denied under the Finnish state travel rules; estimates reimbursement with tools and issues a request id only through a human-approval flow |
 
@@ -101,6 +96,7 @@ Deployed with `standalone/manage.py` (see [Standalone Agents](#standalone-agents
 
 | Agent | Name in WXO | Description |
 |---|---|---|
+| [hello-world](standalone/hello-world/) | `hello_world` | Simple greeting agent with a `greeting` tool -- verifies ADK setup |
 | [translator](standalone/translator/) | `translator` | Translates user text into a named target language from a fixed supported list, with an optional tone or style; no tools, no knowledge base |
 | [travel-rules-qa](standalone/travel-rules-qa/) | `travel_rules_qa` | Answers English questions about the Finnish state travel regulation (Valtion matkustussääntö 2026) from a PDF knowledge base, citing Finnish sections |
 
@@ -295,9 +291,9 @@ The skills `wxo-scenario-authoring` (what a scenario must contain and how to bui
 ## Adding a Plain Agent
 
 1. Create a directory under `agents/<your-agent-name>/`
-2. Add `agent.yaml` -- see [`agents/hello-world/agent.yaml`](agents/hello-world/agent.yaml) as a template
+2. Add `agent.yaml` -- see [`agents/incident-triage/agent.yaml`](agents/incident-triage/agent.yaml) as a template
 3. Add tools to `tools/` (single `.py` file) or `tools/<package_name>/` (multi-file package with `requirements.txt`)
-4. Add `scenarios/<id>/scenario.yaml` listing the agent and its tools (see [`scenarios/hello-world/scenario.yaml`](scenarios/hello-world/scenario.yaml)). **The deploy scripts only deploy what a manifest lists**, so an agent without a manifest is not picked up.
+4. Add `scenarios/<id>/scenario.yaml` listing the agent and its tools (see [`scenarios/travel-request/scenario.yaml`](scenarios/travel-request/scenario.yaml)). **The deploy scripts only deploy what a manifest lists**, so an agent without a manifest is not picked up.
 5. Run `scripts/deploy-all.ps1 -Scenario <id>`
 
 ## Standalone Agents

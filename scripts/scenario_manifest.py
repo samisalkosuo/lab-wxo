@@ -253,7 +253,7 @@ def validate_one(m: dict) -> list:
             err(f"evaluation.tier must be one of {TIERS}")
         if not (ROOT / ev["path"] / "ground_truth.json").is_file():
             err(f"{ev['path']}/ground_truth.json not found (the core evaluation tier is required)")
-    elif m.get("status") == "live" and sid != "hello-world":
+    elif m.get("status") == "live":
         err("evaluation section missing (ground_truth.json is required for a live scenario)")
     if ev and m.get("status") == "live" and (ROOT / ev["path"] / "ground_truth.json").is_file():
         try:
@@ -268,7 +268,7 @@ def validate_one(m: dict) -> list:
                 err(f"{ev['path']}/ground_truth.json needs a non-empty 'smoke_prompts' list "
                     f"of {{id, prompt}} objects (used by scripts/smoke_test.py)")
     demo = (m.get("demo") or {}).get("script")
-    if m.get("status") == "live" and sid != "hello-world":
+    if m.get("status") == "live":
         if not demo or not (ROOT / demo).is_file():
             err(f"live scenario needs demo.script that exists (got {demo!r})")
         if not (ROOT / "docs" / "demo" / "scenarios" / f"{sid}.js").is_file():

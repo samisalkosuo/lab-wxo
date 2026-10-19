@@ -40,7 +40,7 @@ Names: folders and files that humans browse are `kebab-case`; Python package fol
 | Demo script | `docs/demo/<id>-demo.md` | From the `scenario-demo-docs` template. |
 | Presentation | `docs/demo/scenarios/<id>.js` + one `<script src>` line in `presentation.html` | Slide `tag` text ("Scenario N • ...") must match the sidebar position, which is the order of the script tags. |
 
-`agents/hello-world` and `tools/greetings.py` are setup checks, not a scenario.
+The `hello-world` setup-check agent is not a scenario; it lives in `standalone/hello-world/`.
 
 ## 4. Design rules carried over from Phase A
 

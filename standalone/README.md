@@ -23,11 +23,15 @@ standalone/
 └── <agent-name>/
     ├── agent.yaml          # ADK native-agent definition
     ├── README.md           # purpose, dependencies, deploy commands, known limits
-    └── examples.md         # example prompts (mandatory; consumed by future tools)
+    ├── examples.md         # example prompts (mandatory; consumed by future tools)
+    └── <tool>.py           # optional: Python tool(s) the agent needs
 ```
 
 One subdirectory per agent. Every subdirectory that contains `agent.yaml` is
-automatically discovered by `manage.py`.
+automatically discovered by `manage.py`. Any `*.py` file in the subdirectory that
+contains `@tool` functions is imported as a Python tool before the agent on deploy,
+and its tools are removed after the agent on undeploy (see
+[`hello-world/`](hello-world/) for an example).
 
 ## Adding a new agent
 
