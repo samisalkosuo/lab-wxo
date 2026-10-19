@@ -24,8 +24,7 @@
 #                 agent may call; names not listed are internal, e.g. called only by a flow)
 #   knowledge_bases[]  name, path (folder holding the KB yaml)
 #   flows[]       name (tool name once imported), path (folder holding the flow .py)
-#   evaluation    path; tier: core (ground_truth.json only) | full (also baseline.py and
-#                 ADK test cases)
+#   evaluation    path; tier: core (ground_truth.json only) | full (also ADK test cases)
 #   demo          script = detailed demo markdown
 
 id: incident-triage

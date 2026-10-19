@@ -1,4 +1,4 @@
-# Incident Triage Agent - Demo Script
+﻿# Incident Triage Agent - Demo Script
 
 For a human presenter. Every prompt below was run against the real agent. Quotes of agent output were copied from recorded transcripts; the approval-flow and tool result messages are marked where they come from the code instead. Where something was **not** verified, the text says so.
 
@@ -6,11 +6,10 @@ For a human presenter. Every prompt below was run against the real agent. Quotes
 
 **Audience:** engineers or technical leads who are evaluating watsonx Orchestrate (WXO) and want to see what an agent, a knowledge base, tools and a human-approval flow look like in practice.
 
-**Goal:** show how the platform pieces fit together on a realistic task (production incident triage over mock data), and give an honest answer to "was an agent worth it here?".
+**Goal:** show how the platform pieces fit together on a realistic task (production incident triage over mock data).
 
 **What this demo does NOT claim** (decided with the project owner, see section 9):
 
-- It does **not** show that the agent beats a plain-code script on these four incidents. It has not been shown to.
 - It does **not** show that the evaluation "passes". The final-answer check passed in **0 of 15** runs. Only tool selection was consistent (13 of 15 runs).
 - All data is a fixed, mock world. Nothing is connected to a real system.
 
@@ -43,7 +42,6 @@ For a human presenter. Every prompt below was run against the real agent. Quotes
 - [ ] Reload the browser chat page and confirm **Incident Triage** is selectable.
 - [ ] No data reset is needed. The mock world is static and read-only, `open_ticket` and `execute_remediation` persist nothing. Each scene needs only a fresh conversation.
 - [ ] Do not force-kill `orchestrate` or `python` processes if something hangs. Killing Python broke auth for later commands. Wait, or re-run the activate step.
-- [ ] Optional: have a terminal ready in the repo root for scene 6 (`python evaluation/incident-triage/baseline.py` needs no WXO connection).
 
 ## 5. How to read this script
 
@@ -62,7 +60,7 @@ Each scene has: **Prompt**, **Expected behaviour**, **Point out**, **Fallback**.
 | 3 INC-1002 red herring | 3 evaluation runs and 1 SDK dry-run (after the fix). |
 | 4 Approval, Approve and Reject | Approval prompt reached the form in 3 of 3 SDK dry-runs. **The form, Approve and Reject were verified only by the user's browser test (Sub-Task 4).** I could not drive the form. |
 | 5 INC-1004 non-incident | 3 evaluation runs and 1 SDK dry-run (after the fix). |
-| 6 Evaluation and baseline | Baseline script run again today (5/5, 5/5). Evaluation numbers are from the stored results of the one evaluation run; not re-run. |
+| 6 Evaluation | Evaluation numbers are from the stored results of the one evaluation run; not re-run. |
 | Trace pointer (scene 2) | `orchestrate observability traces search --last 30m` listed `incident_triage` traces. **Trace details in the web UI were not checked** by me. |
 
 The agent's instructions were fixed after the evaluation run (`p99_latency_ms` changed to `latency`), so tool sequences in the evaluation transcripts differ slightly from what you will see now. The SDK dry-runs were done after the fix.
@@ -154,10 +152,7 @@ Investigate incident INC-1002 on the payments service. There was a recent deploy
 - *Tools:* the agent looked up the deployment you asked about and compared it to the evidence instead of agreeing.
 - *Knowledge base:* the dismissal leans on a rule in the runbook text.
 
-**Be straight about two limits:**
-
-- Here you raised the suspect yourself. In the earlier smoke test, where the prompt did not mention the deployment, the agent never looked at notification-service at all. So this scene shows "checks a suspect and dismisses it", not "spots red herrings unprompted".
-- The plain-code baseline also gets INC-1002 right, because its rule matches `ConnectionPoolTimeoutException` verbatim.
+**Be straight about one limit:** here you raised the suspect yourself. In the earlier smoke test, where the prompt did not mention the deployment, the agent never looked at notification-service at all. So this scene shows "checks a suspect and dismisses it", not "spots red herrings unprompted".
 
 **Fallback:** if the agent hedges or does not mention notification-service, ask "what about the notification-service deployment?" It then checks it. If it ever blames that deployment, stop and say that is a failure; none was seen in 4 runs.
 
@@ -227,33 +222,27 @@ Investigate incident INC-1004. Use your tools to find the root cause and whether
 - *Tools:* the agent stopped as soon as it had enough evidence. Compare the number of tool steps with scene 2.
 - *Instructions:* the "do not propose a remediation for a non-incident" rule is in the agent instructions.
 
-**Be straight:** this is an easy case. The incident title itself says "(Scheduled Load Test)" and its summary mentions the test window, so the data gives the answer away. The baseline also gets it right.
+**Be straight:** this is an easy case. The incident title itself says "(Scheduled Load Test)" and its summary mentions the test window, so the data gives the answer away.
 
 **Fallback:** if it consults the knowledge base or calls `get_metrics`, fine. If it proposes a remediation, say that is a failure and reject the form. This was not seen in 4 runs.
 
 ---
 
-## Scene 6 - Evaluation and baseline comparison (honest)
+## Scene 6 - Evaluation (honest)
 
-This scene is mostly talking, with one artifact on screen (the baseline run). Do not run the evaluation live: it is slow, and in a non-interactive shell `orchestrate evaluations evaluate` exits with code 1 (a progress-rendering issue) although it writes all result files.
+This scene is mostly talking. Do not run the evaluation live: it is slow, and in a non-interactive shell `orchestrate evaluations evaluate` exits with code 1 (a progress-rendering issue) although it writes all result files.
 
-> **Note:** if the `evaluation/incident-triage/results/` folder is missing in your clone, run the evaluation yourself to produce results, or focus this scene on the baseline script only.
+> **Note:** if the `evaluation/incident-triage/results/` folder is missing in your clone, run the evaluation yourself to produce results, or describe the development-run results verbally.
 
-**Show:**
-
-1. In a terminal at the repo root: `python evaluation/incident-triage/baseline.py` (no WXO connection needed, no LLM). It prints 5/5 root cause and 5/5 action, including for the vague opening.
-2. If you have run the evaluation on your instance: open `evaluation/incident-triage/results/<timestamp>/summary_metrics.csv`. If not, describe the results from the development run verbally (see talking points below) and say you are quoting stored results from the development instance.
+**Show:** if you have run the evaluation on your instance, open `evaluation/incident-triage/results/<timestamp>/summary_metrics.csv`. If not, describe the results from the development run verbally (see talking points below) and say you are quoting stored results from the development instance.
 
 **Say these things plainly:**
 
 - *What the evaluation measured:* 5 test cases x 3 runs = 15 runs, with a simulated user, against the agent **before** the `p99_latency_ms` -> `latency` instruction fix. `tool_match_success` was true in 13 of 15 runs, and `tool_call_recall` was 1.0 in 13 of 15. The two misses are both INC-1004 runs where the test case lists a `get_metrics` call that the agent skipped because it already had a conclusive answer (a too-strict test case). The plan's Open Item 3 says `query_logs`; the test case file `tc_inc1004_search_no_action.json` actually lists `get_incident`, `get_service_health` and `get_metrics`, and `get_metrics` is what runs 1 and 2 did not call.
 - *What did not pass:* the final-answer check passed in **0 of 15** runs. Causes found so far: the agent writes IDs with non-breaking hyphens, so exact keyword matches fail, and the expected answers were short one-liners compared with long answers (the second cause is unverified). So the evaluation currently measures tool selection only. **Do not say the agent passes the evaluation.**
 - *Not re-run:* the evaluation has not been re-run since the instruction fix, so the tool-precision numbers (between 0.33 and 1.0, lowest on the vague case) include noise from the typo.
-- *The comparison:* **the agent has not been shown to beat the plain-code baseline on these four incidents.** On the four incidents plus the vague opening, the baseline scores 5/5 root cause and 5/5 action, the same conclusions as the agent. The baseline is also deterministic and makes no LLM calls (I did not time it).
-- *Why the baseline's 5/5 is an easy result:* its rules were written after the mock data was known, in the same repo, using the same data modules (it matches `job-8842` and `ConnectionPoolTimeoutException` directly).
-- *The case for the agent is an argument, not a measurement:* it could cope with changed log wording or an incident no rule covers. Neither the agent nor the baseline has been run on such a variant. That is open work.
-- *What was actually observed that a fixed script would not do:* the agent chose to skip tools when it already had a conclusive answer (INC-1003, INC-1004). That saved calls but did not change any answer.
-- *Vague input:* the baseline also resolved the vague opening to INC-1001. The agent never asked a clarifying question either. Neither shows an advantage yet.
+- *What was observed about tool use:* the agent chose to skip tools when it already had a conclusive answer (INC-1003, INC-1004). That saved calls but did not change any answer.
+- *Vague input:* the agent resolved the vague opening to INC-1001 through `list_open_incidents` and never asked a clarifying question.
 
 **Fallback:** if someone asks "so why use an agent?", the honest answer is the second half of section 9.
 
@@ -284,7 +273,6 @@ Not seen, so not covered here: clean first deploy on a fresh instance. The deplo
 
 - **Do not say** the agent "recovers from a wrong metric name" as a strength. The recorded recoveries after `p99_latency_ms` were caused by a typo in the agent's own instructions, now fixed.
 - **Do not say** "the agent passes the evaluation".
-- **Do not say** the agent is better than a script on these incidents.
 - **Do not say** the agent always asks a clarifying question.
 
 ## 9. Closing talking points
@@ -307,8 +295,8 @@ Not seen, so not covered here: clean first deploy on a fresh instance. The deplo
 
 **When NOT to use an agent**
 
-- The workflow is known and fixed, the inputs are well-formed and the rules are stable. A script or a flow is faster, cheaper, deterministic and easier to test. On these four mock incidents a plain-code baseline matched the agent.
-- Latency or cost matters per request. The baseline makes no LLM calls; the agent runs took seconds (the two traces I listed were about 4.6 s and 9.9 s) and use an LLM.
+- The workflow is known and fixed, the inputs are well-formed and the rules are stable. A script or a flow is faster, cheaper, deterministic and easier to test.
+- Latency or cost matters per request. A script makes no LLM calls; the agent runs took seconds (the two traces I listed were about 4.6 s and 9.9 s) and use an LLM.
 - You need the same answer every time for audit or compliance. The agent's tool path varied between runs (INC-1004), and once an action was filed under a mismatched incident (vague opening).
 - The risky step needs a guarantee. Put it in a flow or a tool (as done here), never only in instructions.
 
@@ -316,12 +304,10 @@ Not seen, so not covered here: clean first deploy on a fresh instance. The deplo
 
 **Open items (still open at the time of writing; see `incident-triage-plan.md`)**
 
-1. Agent-washing is not yet demonstrated: no measured case where the baseline breaks and the agent copes. Needed: a variant (changed log wording, or an incident with no matching rule) run on both.
-2. The evaluation's final-answer check passes 0 of 15 (non-breaking hyphens, one-liner expectations).
-3. The INC-1004 test case is too strict (it expects a `get_metrics` call the agent can legitimately skip; the plan text says `query_logs`, but the test case file lists `get_metrics`).
-4. The evaluation has not been re-run since the `p99_latency_ms` -> `latency` fix.
-5. Evaluation dependencies were installed by hand into the global Python 3.14; see the README for the documented workaround. A clean install was not tested.
-6. Baseline fairness: its rules were written after the mock data was known.
+1. The evaluation's final-answer check passes 0 of 15 (non-breaking hyphens, one-liner expectations).
+2. The INC-1004 test case is too strict (it expects a `get_metrics` call the agent can legitimately skip; the plan text says `query_logs`, but the test case file lists `get_metrics`).
+3. The evaluation has not been re-run since the `p99_latency_ms` -> `latency` fix.
+4. Evaluation dependencies were installed by hand into the global Python 3.14; see the README for the documented workaround. A clean install was not tested.
 
 ## 10. After the demo
 

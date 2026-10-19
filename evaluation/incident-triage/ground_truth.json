@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "description": "Ground truth mappings for incident triage evaluation and baseline benchmark.",
+  "description": "Ground truth mappings for incident triage evaluation.",
   "smoke_prompts": [
     {
       "id": "INC-1001",

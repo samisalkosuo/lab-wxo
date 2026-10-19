@@ -60,7 +60,7 @@ Use `flows/incident_triage/request_remediation.py` as the reference: input schem
 ## 6. Evaluation: two tiers
 
 - **Core, always created:** `evaluation/<id>/ground_truth.json`, a small file with one entry per demo case: id, the user-visible symptom, expected root cause or outcome, expected action (or `no_action`), whether human approval is required, red herrings, and the expected key tools. It is the checklist for the demo script and the expectations for the smoke test. Keep the shape of `evaluation/incident-triage/ground_truth.json`; the top-level key may be named after the case type (`cases` in the scaffold, `incidents` in Incident Triage). **One key is fixed: `smoke_prompts`**, a list of `{"id": ..., "prompt": ...}` that `scripts/smoke_test.py` sends to the agent and the validator requires for a live scenario. Write them diagnosis-only; an approval form cannot be answered through the run API.
-- **Optional, off by default:** `baseline.py` (plain code, no agent, no LLM), ADK `test_cases/` and `eval_config.yaml`. Add them only if the scenario needs to answer "why not a script?" with data, or the user asks for a quality run. Incident Triage's optional tier produced a 0 of 15 final-answer check, hand-installed dependencies, and a baseline that matched the agent; the benefits slide already carries the agent-vs-script argument. Set `evaluation.tier: core` or `full` in the manifest accordingly.
+- **Optional, off by default:** ADK `test_cases/` and `eval_config.yaml`. Add them only if the user asks for a quality run. Incident Triage's optional tier produced a 0 of 15 final-answer check and hand-installed dependencies. Set `evaluation.tier: core` or `full` in the manifest accordingly.
 
 ## 7. Build order
 

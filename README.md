@@ -12,39 +12,57 @@ lab-wxo/
 │   ├── hello-world/
 │   │   ├── agent.yaml            # Agent definition
 │   │   └── README.md
-│   └── incident-triage/
+│   ├── incident-triage/
+│   │   ├── agent.yaml
+│   │   └── README.md
+│   └── travel-request/
 │       ├── agent.yaml
 │       └── README.md
 ├── tools/
 │   ├── greetings.py              # Single-file Python tool
-│   └── incident_triage/          # Multi-file Python tool package
-│       ├── incident_triage.py    # Entry file (8 @tool functions)
+│   ├── incident_triage/          # Multi-file Python tool package
+│   │   ├── incident_triage.py    # Entry file (8 @tool functions)
+│   │   ├── requirements.txt
+│   │   └── data/                 # Static mock-world data modules
+│   └── travel_request/           # Multi-file Python tool package
+│       ├── travel_request.py     # Entry file (employee, budget, rates, reimbursement tools)
 │       ├── requirements.txt
-│       └── data/                 # Static mock-world data modules
+│       └── data/                 # Static mock employees, policy and rate data
 ├── knowledge/
-│   └── incident-triage/
-│       ├── incident_triage_runbooks.yaml
-│       └── runbooks/             # Six .txt runbook files
+│   ├── incident-triage/
+│   │   ├── incident_triage_runbooks.yaml
+│   │   └── runbooks/             # Six .txt runbook files
+│   └── travel-request/
+│       ├── travel_state_rules.yaml    # Finnish state travel regulation (PDF)
+│       ├── travel_agency_policy.yaml  # English fictional agency policy
+│       ├── VM_2025_63.pdf
+│       └── policy/               # Policy .txt files
 ├── flows/
-│   └── incident_triage/
-│       └── request_remediation.py
+│   ├── incident_triage/
+│   │   └── request_remediation.py
+│   └── travel_request/
+│       └── travel_submit_request.py
 ├── evaluation/
-│   └── incident-triage/
-│       ├── baseline.py           # Plain-code baseline (no WXO needed)
-│       ├── eval_config.yaml
-│       ├── ground_truth.json
-│       └── test_cases/           # 5 evaluation test cases (.json)
+│   ├── incident-triage/
+│   │   ├── eval_config.yaml
+│   │   ├── ground_truth.json
+│   │   └── test_cases/           # 5 evaluation test cases (.json)
+│   └── travel-request/
+│       └── ground_truth.json
 ├── scenarios/
 │   ├── incident-triage/scenario.yaml   # Manifest: every resource the scenario owns
+│   ├── travel-request/scenario.yaml
 │   └── hello-world/scenario.yaml
 ├── docs/
 │   └── demo/
 │       ├── incident-triage-demo.md   # Human-readable demo script
+│       ├── travel-request-demo.md
 │       ├── presentation.html         # Slide shell; loads scenarios/*.js
 │       └── scenarios/                # One slides file per scenario (4 are "coming soon" placeholders)
 ├── standalone/
 │   ├── README.md                 # What standalone means, manage.py usage
 │   ├── manage.py                 # Deploy / undeploy standalone agents
+│   ├── translator/               # Translation agent (fixed language list, optional tone)
 │   └── travel-rules-qa/          # Finnish travel regulation PDF Q&A agent
 ├── connections/                  # Connection templates (empty for this demo)
 ├── scripts/
@@ -67,10 +85,24 @@ lab-wxo/
 
 ## Agents
 
+### Demo scenario agents
+
+Deployed with `scripts/deploy-all` from the scenario manifests in `scenarios/`.
+
+| Agent | Name in WXO | Scenario | Description |
+|---|---|---|---|
+| [hello-world](agents/hello-world/) | `hello_world` | `hello-world` | Simple greeting agent -- verifies ADK setup |
+| [incident-triage](agents/incident-triage/) | `incident_triage` | `incident-triage` | Diagnoses mock production incidents; routes remediation through a human-approval flow |
+| [travel-request](agents/travel-request/) | `travel_request` | `travel-request` | Decides whether a business trip is approved, needs approval, or is denied under the Finnish state travel rules; estimates reimbursement with tools and issues a request id only through a human-approval flow |
+
+### Standalone agents
+
+Deployed with `standalone/manage.py` (see [Standalone Agents](#standalone-agents)); not part of any scenario.
+
 | Agent | Name in WXO | Description |
 |---|---|---|
-| [hello-world](agents/hello-world/) | `hello_world` | Simple greeting agent -- verifies ADK setup |
-| [incident-triage](agents/incident-triage/) | `incident_triage` | Diagnoses mock production incidents; routes remediation through a human-approval flow |
+| [translator](standalone/translator/) | `translator` | Translates user text into a named target language from a fixed supported list, with an optional tone or style; no tools, no knowledge base |
+| [travel-rules-qa](standalone/travel-rules-qa/) | `travel_rules_qa` | Answers English questions about the Finnish state travel regulation (Valtion matkustussääntö 2026) from a PDF knowledge base, citing Finnish sections |
 
 ## Prerequisites
 
@@ -218,7 +250,7 @@ Once the dependencies are installed (Incident Triage):
 orchestrate evaluations evaluate --config evaluation/incident-triage/eval_config.yaml
 ```
 
-The command exits with code 1 when its output is piped or redirected (a progress-rendering issue); the result files are still written to `evaluation/incident-triage/results/<timestamp>/`. The plain-code baseline needs no WXO connection: `python evaluation/incident-triage/baseline.py`.
+The command exits with code 1 when its output is piped or redirected (a progress-rendering issue); the result files are still written to `evaluation/incident-triage/results/<timestamp>/`.
 
 To send a scenario's diagnosis-only prompts to the deployed agent, use `python scripts/smoke_test.py --scenario <id>` (`--dry-run` prints the prompts without calling the instance). It does not grade the answers.
 
@@ -231,7 +263,6 @@ See [`docs/demo/incident-triage-demo.md`](docs/demo/incident-triage-demo.md) for
 This is a demo / lab repo. The following items are open as of the current state:
 
 - **No clean-instance install tested.** The only tested deploy was a re-install over an existing environment (`techzone1`). First-import on a fresh WXO instance was not verified.
-- **Agent not shown to beat the plain-code baseline.** The baseline script (`evaluation/incident-triage/baseline.py`) scores 5/5 on all four mock incidents, the same as the agent. The reported agent advantages (handling new incident types, recovering from changed log wording) are arguments, not measurements -- neither was run against a variant scenario.
 - **Evaluation final-answer check: 0 of 15 runs pass.** Tool-selection metrics are good (recall 1.0 in 13 of 15 runs, `tool_match_success` true in 13 of 15), but `is_success` requires the text check to also pass. The text check fails because the agent writes IDs with non-breaking hyphens (U+2011, e.g. `RB-TLS-01`) which break exact keyword matches, and produces long answers compared with the one-sentence expected responses. The overall score is not a useful signal in its current form.
 - **Wrong incident reference in approval requests (3 of 19 vague-opening runs).** On "Hey, checkout is slow...", the agent sometimes investigates the payments service while working INC-1001 and then calls `request_remediation` with `service=payments, incident_id=INC-1001` (mismatched). The instruction change in `agent.yaml` gave no measurable improvement. The human approval gate catches this before any execution; a proper fix is to validate service/incident consistency inside the flow.
 - **Evaluation dependencies installed by hand.** `ibm-watsonx-orchestrate-evaluation-framework==1.5.2` and its transitive dependencies are not installed automatically. On Python 3.14 the `pandas~=2.2.3` pin cannot be satisfied. See [Running the evaluation](#running-the-evaluation-optional) for the workaround.

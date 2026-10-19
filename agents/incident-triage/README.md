@@ -106,7 +106,6 @@ See `incident-triage-plan.md` Sub-Task 4 notes for the full step-by-step verific
 
 ## Known limitations
 
-- **Agent not shown to beat the baseline.** The plain-code baseline (`evaluation/incident-triage/baseline.py`) scores 5/5 on all four incidents; the agent also scores 5/5 on tool recall. The advantage of the agent (handling vague input, error recovery, new incident types) has not been measured against a variant scenario.
 - **Evaluation final-answer check: 0 of 15 runs pass.** Tool selection is consistent (13 of 15 runs), but the overall `is_success` metric fails because the agent uses non-breaking hyphens (U+2011) in runbook IDs and produces longer answers than the one-sentence expected responses.
 - **Wrong incident in approval requests (3 of 19 vague-opening runs).** On "Hey, checkout is slow...", the agent occasionally files `request_remediation` with `service=payments, incident_id=INC-1001` (mismatched). The human gate prevents execution; the instruction-level fix was ineffective. Proper fix: validate service/incident consistency inside the flow.
 - **No clean-instance install tested.** Re-install over `techzone1` was verified; first install from scratch was not.

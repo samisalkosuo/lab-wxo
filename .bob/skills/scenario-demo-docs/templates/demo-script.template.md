@@ -126,7 +126,7 @@ Each scene has: **Prompt**, **Expected behaviour**, **Point out**, **Fallback**.
      "Approval flow" structure of Scene 4 in incident-triage-demo.md (fresh conversation per path, what the
      form shows, Approve path, Reject path, what is code-sourced versus recorded, fallback for a stuck thread). -->
 
-## Scene {{EVAL}} - Evaluation and baseline comparison (optional)
+## Scene {{EVAL}} - Evaluation (optional)
 
 <!-- AUTHOR NOTE: delete this whole scene unless the scenario has the optional evaluation tier
      (evaluation.tier: full in scenario.yaml). If kept, report only measured numbers and say plainly what did not pass. -->
