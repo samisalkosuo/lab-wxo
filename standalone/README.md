@@ -22,7 +22,8 @@ standalone/
 ├── manage.py               # deploy / undeploy script (see below)
 └── <agent-name>/
     ├── agent.yaml          # ADK native-agent definition
-    └── README.md           # purpose, dependencies, deploy commands, known limits
+    ├── README.md           # purpose, dependencies, deploy commands, known limits
+    └── examples.md         # example prompts (mandatory; consumed by future tools)
 ```
 
 One subdirectory per agent. Every subdirectory that contains `agent.yaml` is
@@ -38,7 +39,13 @@ and enforces the conventions below.
 2. Create `standalone/<your-agent-name>/README.md` — document the purpose,
    dependencies (KBs or tools that must already be deployed), deploy commands, and
    known limits.
-3. Deploy with `manage.py` (see below).
+3. Create `standalone/<your-agent-name>/examples.md` — **mandatory**. Future tools read
+   it. Format: a `# <agent_name> — Examples` heading, one intro sentence, then a numbered
+   list of `N. *"prompt"* — expected behaviour` items (see
+   [`translator/examples.md`](translator/examples.md)). Include at least 3 examples,
+   covering the normal path and any refusal or clarification path. The agent `README.md`
+   links to this file and does not repeat the examples.
+4. Deploy with `manage.py` (see below).
 
 No manifest, no scenario.yaml, no scripts change required.
 

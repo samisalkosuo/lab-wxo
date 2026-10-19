@@ -80,24 +80,9 @@ orchestrate agents remove --name travel_rules_qa --kind native
 | No tool access | Employee profiles, budget data, and per-diem rate tables are in tools used by `travel_request`. This agent has no tools. |
 | Language | Search queries must be in Finnish. The agent handles this internally, but very unusual topics may not map to a Finnish term the agent knows. |
 
-## Example questions
+## Examples
 
-These questions are well covered by the document:
-
-1. *"What counts as an official business trip under the Finnish regulation?"*
-   — Section 3 § (virkamatkan määritelmä)
-
-2. *"How many hours does a domestic trip need to last before per diem is paid?"*
-   — Sections 9–11 § (päiväraha, kotimaa)
-
-3. *"Can I use my own car, and how is the mileage reimbursed?"*
-   — Section 6 § (omalla autolla matkustaminen)
-
-4. *"What is the deadline for submitting a travel expense claim?"*
-   — Section 21 § (matkalasku, määräaika)
-
-5. *"Does a free hotel breakfast reduce my per diem?"*
-   — Section 13 § (ateriat, aamiainen)
+See [`examples.md`](examples.md).
 
 ## Document attribution
 

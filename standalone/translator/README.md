@@ -56,10 +56,6 @@ orchestrate agents remove --name translator --kind native
 | Variants | Ambiguous variants (Chinese, Portuguese, Spanish, Norwegian, Serbian) trigger a clarifying question rather than a default. |
 | Quality | Machine translation. Idioms and domain terms may need human review. |
 
-## Example prompts
+## Examples
 
-1. *"Translate 'Our quarterly results are in' to German."* — plain translation.
-2. *"Translate 'The launch was delayed' to French, but make it sound enthusiastic."* — style applied.
-3. *"Translate this to Chinese: ..."* — agent asks Simplified or Traditional.
-4. *"Translate 'Good morning' to Klingon."* — agent declines, offers a supported language.
-5. *"Translate 'Good morning'."* — agent asks for the target language.
+See [`examples.md`](examples.md).

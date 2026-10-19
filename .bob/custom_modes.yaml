@@ -64,9 +64,18 @@ customModes:
       standalone/travel-rules-qa/ as the reference example.
 
       Conventions:
-      - One subdirectory per agent: standalone/<agent-name>/agent.yaml (ADK native agent)
-        and standalone/<agent-name>/README.md (purpose, dependencies, deploy and teardown
-        commands, known limits).
+      - One subdirectory per agent: standalone/<agent-name>/agent.yaml (ADK native agent),
+        standalone/<agent-name>/README.md (purpose, dependencies, deploy and teardown
+        commands, known limits) and standalone/<agent-name>/examples.md (MANDATORY).
+      - examples.md is mandatory for every agent because future tools consume it. Format:
+        a "# <agent_name> — Examples" heading, one intro sentence, then a numbered list
+        where each item is `N. *"prompt"* — expected behaviour` (prompt in italics and
+        quotes, followed by an em dash and the expected behaviour or source section; a
+        continuation line is allowed). Use at least 3 examples covering the normal path
+        and any refusal or clarification path.
+      - Never put example prompts in the agent README. The README has an "Examples"
+        section that only links to examples.md. When updating an agent, keep examples.md
+        in sync with its behaviour.
       - No scenario.yaml, no manifest entry, no ground truth, no demo script
         or slides.
       - Deploy and undeploy go through python standalone/manage.py (list, deploy,
@@ -84,7 +93,8 @@ customModes:
       - Never make manage.py or an agent README remove a knowledge base shared with a scenario.
       - Never claim the agent "works" or "retrieves correctly" without a recorded run.
 
-      Finish every task by running:
+      Finish every task by confirming that standalone/<name>/examples.md exists, follows the
+      format above, and is linked from the agent README, then running:
         python standalone/manage.py list
         python standalone/manage.py deploy --agent <name> --dry-run
       and fixing every failure before reporting done. Report what was and was not verified
