@@ -165,24 +165,55 @@ def resolve_threads_base_url(base_url: str, token: str) -> str:
     return f"{clean_base}/v1/orchestrate/threads"
 
 
-def fetch_all_threads(threads_base_url: str, token: str, agent_id: str | None = None, page_size: int = 50) -> list[dict]:
-    """Retrieve all message threads using pagination."""
+def fetch_agent_catalog(base_url: str, token: str) -> dict[str, str]:
+    """Fetch map of agent_id -> agent_name from WXO instance."""
+    clean_base = base_url.rstrip("/")
+    for path in ("/v1/orchestrate/agents", "/v1/agents"):
+        try:
+            res = make_api_request(f"{clean_base}{path}", token)
+            if isinstance(res, list):
+                return {a["id"]: a.get("name") or a["id"] for a in res if "id" in a}
+            if isinstance(res, dict) and "data" in res:
+                return {a["id"]: a.get("name") or a["id"] for a in res["data"] if "id" in a}
+        except Exception:
+            continue
+    return {}
+
+
+def fetch_all_threads(threads_base_url: str, token: str, agent_id: str | None = None) -> list[dict]:
+    """Retrieve all message threads without early pagination cutoff."""
+    params = {}
+    if agent_id:
+        params["agent_id"] = agent_id
+
+    # First attempt: request full list without pagination params
+    initial_url = f"{threads_base_url}" + (f"?{urllib.parse.urlencode(params)}" if params else "")
+    res = make_api_request(initial_url, token)
+
+    if isinstance(res, list):
+        return res
+
+    if isinstance(res, dict):
+        total = res.get("total")
+        items = res.get("data") or res.get("items") or []
+        if total is None or len(items) >= total:
+            return items
+
+    # Fallback pagination loop
     threads = []
     offset = 0
-
     while True:
-        params = {"limit": str(page_size), "offset": str(offset)}
+        p = {"offset": str(offset), "limit": "100"}
         if agent_id:
-            params["agent_id"] = agent_id
+            p["agent_id"] = agent_id
+        url_page = f"{threads_base_url}?{urllib.parse.urlencode(p)}"
+        resp = make_api_request(url_page, token)
 
-        url = f"{threads_base_url}?{urllib.parse.urlencode(params)}"
-        response = make_api_request(url, token)
-
-        if isinstance(response, dict):
-            items = response.get("data") or response.get("items") or []
-            total = response.get("total")
-        elif isinstance(response, list):
-            items = response
+        if isinstance(resp, dict):
+            items = resp.get("data") or resp.get("items") or []
+            total = resp.get("total")
+        elif isinstance(resp, list):
+            items = resp
             total = len(items)
         else:
             items = []
@@ -195,8 +226,6 @@ def fetch_all_threads(threads_base_url: str, token: str, agent_id: str | None = 
         offset += len(items)
 
         if total is not None and len(threads) >= total:
-            break
-        if len(items) < page_size:
             break
 
     return threads
@@ -217,16 +246,29 @@ def fetch_thread_messages(threads_base_url: str, token: str, thread_id: str) -> 
         return []
 
 
-def export_threads_data(base_url: str, token: str, output_dir: Path, agent_id: str | None = None, max_workers: int = 10) -> dict:
-    """Export all threads and their messages to disk concurrently."""
+def export_threads_data(base_url: str, token: str, output_dir: Path, agent_filter: str | None = None, max_workers: int = 10) -> dict:
+    """Export all threads and their messages to disk concurrently across all agents."""
     threads_dir = output_dir / "threads"
     threads_dir.mkdir(parents=True, exist_ok=True)
 
+    agent_catalog = fetch_agent_catalog(base_url, token)
+    resolved_agent_id = None
+    if agent_filter:
+        # Check if filter matches agent name or agent UUID
+        for aid, aname in agent_catalog.items():
+            if agent_filter.lower() in (aid.lower(), aname.lower()):
+                resolved_agent_id = aid
+                break
+        if not resolved_agent_id:
+            resolved_agent_id = agent_filter
+
     threads_base_url = resolve_threads_base_url(base_url, token)
-    print(f"[*] Querying WXO REST API for message threads (agent_id={agent_id or 'all'})...")
+    print(f"[*] Querying WXO REST API for all message threads (agent filter: {agent_filter or 'all'})...")
+    if agent_catalog:
+        print(f"    Registered agents in instance: {', '.join(agent_catalog.values())}")
     
-    threads = fetch_all_threads(threads_base_url, token, agent_id=agent_id)
-    print(f"    Found {len(threads)} message thread(s).")
+    threads = fetch_all_threads(threads_base_url, token, agent_id=resolved_agent_id)
+    print(f"    Found {len(threads)} total message thread(s).")
 
     summary_records = []
     total_messages = 0
@@ -471,10 +513,12 @@ def parse_args() -> argparse.Namespace:
         help="Path to env.cfg file (defaults to env.cfg in repository root).",
     )
     parser.add_argument(
+        "--agent",
         "--agent-id",
+        dest="agent",
         type=str,
         default=None,
-        help="Optional agent UUID to filter message threads.",
+        help="Optional agent name (e.g., 'translator', 'incident_triage') or UUID to filter message threads.",
     )
     parser.add_argument(
         "--last",
@@ -557,7 +601,7 @@ def main() -> None:
             base_url=wxo_url,
             token=token,
             output_dir=target_export_dir,
-            agent_id=args.agent_id,
+            agent_filter=args.agent,
             max_workers=args.workers,
         )
         manifest["components"]["threads"] = threads_stats
