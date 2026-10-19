@@ -55,7 +55,8 @@ lab-wxo/
 │   ├── scenario_manifest.py      # Reads/validates manifests; builds deploy and teardown plans
 │   ├── new-scenario.py           # Scaffold a new scenario
 │   ├── smoke_test.py             # Send a scenario's prompts to its deployed agent
-│   └── package.py                # Build distributable zip for one scenario
+│   ├── package.py                # Build distributable zip for one scenario
+│   └── export_agent_chats.py     # Backup all agent chats (REST API) & traces (ADK CLI)
 ├── dist/                         # Packaged zip output (git-ignored)
 ├── env.cfg                       # Secrets -- DO NOT COMMIT
 ├── env.cfg.example               # Template -- safe to commit
