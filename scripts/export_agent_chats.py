@@ -2,21 +2,21 @@
 """Export and backup agent conversation threads and observability traces from watsonx Orchestrate.
 
 By default, this script runs with zero arguments, reading credentials from env.cfg,
-querying the WXO REST API for all message threads and their messages, and saving them
-into a timestamped directory (YYYYMMDDHHMMSS).
+querying the WXO REST API for all message threads and their messages, and organizing them
+into agent-specific subdirectories with human-friendly filenames and Markdown transcripts.
 
-To also download observability traces, provide the `--trace` flag.
+To also download observability execution traces, provide the `--trace` flag.
 
 Usage:
     python scripts/export_agent_chats.py
     python scripts/export_agent_chats.py --trace
-    python scripts/export_agent_chats.py --trace --last 24h
-    python scripts/export_agent_chats.py --agent-id <UUID>
-    python scripts/export_agent_chats.py --traces-only
+    python scripts/export_agent_chats.py --agent translator
+    python scripts/export_agent_chats.py --last 24h
 """
 
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import ctypes
 import datetime
 import json
 import os
@@ -128,7 +128,6 @@ def make_api_request(url: str, token: str, method: str = "GET", body: dict | Non
                 return json.loads(content) if content else {}
         except urllib.error.HTTPError as e:
             err = e.read().decode("utf-8", errors="replace")
-            # If 429 rate limit, wait and retry
             if e.code == 429 and attempt < retries - 1:
                 time.sleep(2 * (attempt + 1))
                 continue
@@ -144,24 +143,249 @@ def make_api_request(url: str, token: str, method: str = "GET", body: dict | Non
 
 
 # ---------------------------------------------------------------------------
+# File Timestamp and Utility Helpers
+# ---------------------------------------------------------------------------
+
+def parse_iso_datetime(dt_str: str | None) -> datetime.datetime:
+    """Parse ISO date string into datetime object with fallback to now."""
+    if not dt_str:
+        return datetime.datetime.now(datetime.timezone.utc)
+    try:
+        clean = dt_str.replace("Z", "+00:00")
+        return datetime.datetime.fromisoformat(clean)
+    except Exception:
+        return datetime.datetime.now(datetime.timezone.utc)
+
+
+def set_file_timestamps(file_path: Path, dt: datetime.datetime) -> None:
+    """Set file Modified, Accessed, and Created timestamps."""
+    ts = dt.timestamp()
+    try:
+        os.utime(file_path, (ts, ts))
+    except Exception:
+        pass
+
+    if sys.platform == "win32":
+        try:
+            from ctypes import wintypes
+            # Convert unix timestamp to Windows FILETIME (100-nanosecond intervals since Jan 1, 1601)
+            filetime_val = int((ts + 11644473600) * 10000000)
+            low = filetime_val & 0xFFFFFFFF
+            high = (filetime_val >> 32) & 0xFFFFFFFF
+
+            class FILETIME(ctypes.Structure):
+                _fields_ = [("dwLowDateTime", wintypes.DWORD), ("dwHighDateTime", wintypes.DWORD)]
+
+            ft = FILETIME(low, high)
+            GENERIC_WRITE = 0x40000000
+            FILE_SHARE_READ = 0x00000001
+            FILE_SHARE_WRITE = 0x00000002
+            OPEN_EXISTING = 3
+            FILE_ATTRIBUTE_NORMAL = 0x80
+
+            handle = ctypes.windll.kernel32.CreateFileW(
+                str(file_path),
+                GENERIC_WRITE,
+                FILE_SHARE_READ | FILE_SHARE_WRITE,
+                None,
+                OPEN_EXISTING,
+                FILE_ATTRIBUTE_NORMAL,
+                None,
+            )
+            if handle not in (-1, 0):
+                ctypes.windll.kernel32.SetFileTime(handle, ctypes.byref(ft), None, ctypes.byref(ft))
+                ctypes.windll.kernel32.CloseHandle(handle)
+        except Exception:
+            pass
+
+
+def sanitize_filename_slug(text: str, max_length: int = 50) -> str:
+    """Convert text into a clean filesystem-friendly slug."""
+    if not text:
+        return "Untitled"
+    # Remove markdown/formatting artifacts
+    clean = re.sub(r"[\r\n\t]+", " ", text).strip()
+    clean = re.sub(r"[^\w\s-]", "", clean)
+    clean = re.sub(r"[\s_]+", "_", clean).strip("_")
+    if not clean:
+        return "Untitled"
+    return clean[:max_length].rstrip("_")
+
+
+# ---------------------------------------------------------------------------
+# Message Extraction & Agent Detection Engine
+# ---------------------------------------------------------------------------
+
+def extract_message_text(content_item: dict | str) -> str:
+    """Extract plain text from various WXO message content blocks."""
+    if isinstance(content_item, str):
+        return content_item
+    if isinstance(content_item, dict):
+        if "text" in content_item:
+            return content_item["text"]
+        if content_item.get("response_type") == "forms":
+            schema = content_item.get("json_schema") or {}
+            title = schema.get("title") or "Form"
+            return f"[Form: {title}]"
+    return ""
+
+
+def parse_clean_transcript(messages: list[dict]) -> tuple[list[dict], str]:
+    """Parse messages into clean turns and extract first user message."""
+    transcript = []
+    first_user_prompt = ""
+
+    for msg in messages:
+        role = msg.get("role") or "unknown"
+        created_on = msg.get("created_on") or msg.get("created_at")
+        content_items = msg.get("content") or []
+        
+        texts = []
+        citations = []
+        for c in content_items:
+            t = extract_message_text(c)
+            if t:
+                texts.append(t)
+            if isinstance(c, dict) and "citations" in c:
+                for cit in c.get("citations") or []:
+                    c_title = cit.get("title") or cit.get("url") or "Document"
+                    citations.append(c_title)
+
+        combined_text = "\n\n".join(texts) if texts else "[No text content]"
+
+        # Collect tools used
+        tools_used = []
+        step_hist = msg.get("step_history") or []
+        for step in step_hist:
+            for sd in step.get("step_details") or []:
+                for tc in sd.get("tool_calls") or []:
+                    t_name = tc.get("name")
+                    if t_name and t_name not in tools_used:
+                        tools_used.append(t_name)
+
+        turn = {
+            "role": role,
+            "timestamp": created_on,
+            "text": combined_text,
+        }
+        if tools_used:
+            turn["tools_used"] = tools_used
+        if citations:
+            turn["citations"] = list(dict.fromkeys(citations))
+
+        transcript.append(turn)
+
+        if role == "user" and not first_user_prompt and combined_text:
+            first_user_prompt = combined_text
+
+    return transcript, first_user_prompt
+
+
+def detect_agent_for_thread(thread: dict, messages: list[dict], catalog: dict[str, str]) -> str:
+    """Identify which agent handled this conversation."""
+    # 1. Direct thread agent_id
+    tid = thread.get("agent_id") or thread.get("assistant_id")
+    if tid and tid in catalog:
+        return catalog[tid]
+
+    # 2. Inspect messages and step history
+    for m in messages:
+        step_hist = m.get("step_history") or []
+        for step in step_hist:
+            for sd in step.get("step_details") or []:
+                agent_name = sd.get("agent_display_name")
+                if agent_name and agent_name not in ("kb_retrieval_probe_tmp", "default", "unknown"):
+                    return agent_name
+
+                for tc in sd.get("tool_calls") or []:
+                    t_name = tc.get("name", "").lower()
+                    if any(k in t_name for k in ("incident", "remediation", "service", "cluster", "deployment")):
+                        return "incident_triage"
+                    if "greeting" in t_name:
+                        return "hello_world"
+                    if "translate" in t_name:
+                        return "translator"
+
+        # 3. Inspect message contents
+        for c in m.get("content") or []:
+            if isinstance(c, dict):
+                r_type = c.get("response_type")
+                if r_type == "conversational_search":
+                    cits = c.get("citations") or []
+                    for cit in cits:
+                        cit_title = str(cit.get("title", "")).lower()
+                        if "runbook" in cit_title:
+                            return "incident_triage"
+                    return "travel_rules_qa"
+
+                if r_type == "forms" or "Travel Request" in str(c):
+                    return "travel_request"
+
+                txt = c.get("text", "")
+                if any(k in txt for k in ("Finnish travel", "hotel price", "per diem", "allowance", "reimbursement")):
+                    return "travel_rules_qa"
+                if any(k in txt for k in ("INC-", "Runbook ID", "RB-DEPLOY", "remediation action")):
+                    return "incident_triage"
+                if "Hello World!" in txt:
+                    return "hello_world"
+
+    return "general"
+
+
+def generate_markdown_transcript(agent_name: str, thread: dict, transcript: list[dict], thread_id: str) -> str:
+    """Format conversation transcript into clean human-readable Markdown."""
+    created_on = thread.get("created_on") or "N/A"
+    title = thread.get("title") or "Untitled Conversation"
+    
+    md_lines = [
+        f"# Chat Transcript: {agent_name}",
+        f"**Title:** {title}  ",
+        f"**Date:** {created_on} | **Messages:** {len(transcript)} | **Thread ID:** `{thread_id}`",
+        "\n---\n",
+    ]
+
+    for turn in transcript:
+        role = turn["role"].capitalize()
+        ts = turn.get("timestamp") or ""
+        ts_display = f" ({ts.split('T')[1][:8]} UTC)" if "T" in ts else ""
+        icon = "👤" if turn["role"] == "user" else "🤖"
+        
+        md_lines.append(f"### {icon} {role}{ts_display}\n")
+        
+        # Quote user text, regular paragraph for agent text
+        text = turn.get("text", "")
+        if turn["role"] == "user":
+            quoted = "\n".join(f"> {line}" for line in text.splitlines())
+            md_lines.append(f"{quoted}\n")
+        else:
+            md_lines.append(f"{text}\n")
+
+        if turn.get("tools_used"):
+            tools_str = ", ".join(f"`{t}`" for t in turn["tools_used"])
+            md_lines.append(f"🛠️ *Tools Used:* {tools_str}\n")
+
+        if turn.get("citations"):
+            citations_str = ", ".join(f"_{c}_" for c in turn["citations"])
+            md_lines.append(f"📚 *Sources:* {citations_str}\n")
+
+        md_lines.append("")
+
+    return "\n".join(md_lines)
+
+
+# ---------------------------------------------------------------------------
 # Message Threads & Chat Exporter (REST API)
 # ---------------------------------------------------------------------------
 
 def resolve_threads_base_url(base_url: str, token: str) -> str:
     """Determine whether threads are hosted under /v1/orchestrate/threads or /v1/threads."""
     clean_base = base_url.rstrip("/")
-    candidates = [
-        f"{clean_base}/v1/orchestrate/threads",
-        f"{clean_base}/v1/threads",
-    ]
-    for candidate in candidates:
-        test_url = f"{candidate}?limit=1&offset=0"
+    for candidate in (f"{clean_base}/v1/orchestrate/threads", f"{clean_base}/v1/threads"):
         try:
-            make_api_request(test_url, token)
+            make_api_request(f"{candidate}?limit=1&offset=0", token)
             return candidate
         except Exception:
             continue
-    # Default to SaaS endpoint if probe fails
     return f"{clean_base}/v1/orchestrate/threads"
 
 
@@ -186,7 +410,6 @@ def fetch_all_threads(threads_base_url: str, token: str, agent_id: str | None = 
     if agent_id:
         params["agent_id"] = agent_id
 
-    # First attempt: request full list without pagination params
     initial_url = f"{threads_base_url}" + (f"?{urllib.parse.urlencode(params)}" if params else "")
     res = make_api_request(initial_url, token)
 
@@ -199,7 +422,6 @@ def fetch_all_threads(threads_base_url: str, token: str, agent_id: str | None = 
         if total is None or len(items) >= total:
             return items
 
-    # Fallback pagination loop
     threads = []
     offset = 0
     while True:
@@ -247,14 +469,10 @@ def fetch_thread_messages(threads_base_url: str, token: str, thread_id: str) -> 
 
 
 def export_threads_data(base_url: str, token: str, output_dir: Path, agent_filter: str | None = None, max_workers: int = 10) -> dict:
-    """Export all threads and their messages to disk concurrently across all agents."""
-    threads_dir = output_dir / "threads"
-    threads_dir.mkdir(parents=True, exist_ok=True)
-
+    """Export all threads organized into agent-specific subdirectories with clean JSON and Markdown."""
     agent_catalog = fetch_agent_catalog(base_url, token)
     resolved_agent_id = None
     if agent_filter:
-        # Check if filter matches agent name or agent UUID
         for aid, aname in agent_catalog.items():
             if agent_filter.lower() in (aid.lower(), aname.lower()):
                 resolved_agent_id = aid
@@ -270,7 +488,7 @@ def export_threads_data(base_url: str, token: str, output_dir: Path, agent_filte
     threads = fetch_all_threads(threads_base_url, token, agent_id=resolved_agent_id)
     print(f"    Found {len(threads)} total message thread(s).")
 
-    summary_records = []
+    agent_records: dict[str, list[dict]] = {}
     total_messages = 0
 
     def process_thread(thread: dict) -> dict:
@@ -278,29 +496,58 @@ def export_threads_data(base_url: str, token: str, output_dir: Path, agent_filte
         if not thread_id:
             return {}
 
-        thread_title = thread.get("title") or "Untitled"
         created_on = thread.get("created_on") or thread.get("created_at")
-        thread_agent_id = thread.get("agent_id")
+        thread_dt = parse_iso_datetime(created_on)
 
         messages = fetch_thread_messages(threads_base_url, token, thread_id)
         msg_count = len(messages)
 
-        thread_payload = {
-            "thread": thread,
-            "message_count": msg_count,
-            "messages": messages,
-        }
+        transcript, first_user_prompt = parse_clean_transcript(messages)
+        agent_name = detect_agent_for_thread(thread, messages, agent_catalog)
 
-        thread_file = threads_dir / f"{thread_id}.json"
-        thread_file.write_text(json.dumps(thread_payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        # Build human-friendly filename: YYYYMMDD_HHMMSS_<prompt_slug>_<short_id>
+        time_prefix = thread_dt.strftime("%Y%m%d_%H%M%S")
+        slug = sanitize_filename_slug(first_user_prompt or thread.get("title") or "chat")
+        short_id = thread_id[:6]
+        base_filename = f"{time_prefix}_{slug}_{short_id}"
+
+        agent_dir = output_dir / agent_name
+        agent_dir.mkdir(parents=True, exist_ok=True)
+
+        json_path = agent_dir / f"{base_filename}.json"
+        md_path = agent_dir / f"{base_filename}.md"
+
+        # Structured JSON payload
+        thread_payload = {
+            "thread_id": thread_id,
+            "agent": agent_name,
+            "created_on": created_on,
+            "message_count": msg_count,
+            "first_prompt": first_user_prompt,
+            "transcript": transcript,
+            "raw_thread": thread,
+            "raw_messages": messages,
+        }
+        json_path.write_text(json.dumps(thread_payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
+        # Markdown transcript
+        md_content = generate_markdown_transcript(agent_name, thread, transcript, thread_id)
+        md_path.write_text(md_content, encoding="utf-8")
+
+        # Adjust creation and modification times to match thread conversation start
+        set_file_timestamps(json_path, thread_dt)
+        set_file_timestamps(md_path, thread_dt)
 
         return {
             "id": thread_id,
-            "title": thread_title,
-            "agent_id": thread_agent_id,
+            "agent": agent_name,
+            "title": thread.get("title") or "Untitled",
             "created_on": created_on,
+            "first_prompt": first_user_prompt[:80],
             "message_count": msg_count,
-            "file": f"threads/{thread_id}.json",
+            "json_file": json_path.relative_to(output_dir).as_posix(),
+            "md_file": md_path.relative_to(output_dir).as_posix(),
+            "created_dt": thread_dt,
         }
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -309,29 +556,40 @@ def export_threads_data(base_url: str, token: str, output_dir: Path, agent_filte
         for f in as_completed(futures):
             res = f.result()
             if res:
-                summary_records.append(res)
+                agent = res["agent"]
+                if agent not in agent_records:
+                    agent_records[agent] = []
+                agent_records[agent].append(res)
                 total_messages += res["message_count"]
             done_count += 1
-            if done_count % 25 == 0 or done_count == len(threads):
+            if done_count % 50 == 0 or done_count == len(threads):
                 print(f"    Exported {done_count}/{len(threads)} threads...")
 
-    # Sort summary records by created_on descending or id
-    summary_records.sort(key=lambda r: str(r.get("created_on") or ""), reverse=True)
-
-    # Write summary index
-    summary_file = threads_dir / "summary.json"
-    summary_payload = {
-        "total_threads": len(threads),
-        "total_messages": total_messages,
-        "exported_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "threads": summary_records,
-    }
-    summary_file.write_text(json.dumps(summary_payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    # Write per-agent summary.json
+    agent_summary_counts = {}
+    for agent, records in agent_records.items():
+        records.sort(key=lambda r: r["created_dt"], reverse=True)
+        agent_dir = output_dir / agent
+        summary_payload = {
+            "agent": agent,
+            "total_threads": len(records),
+            "total_messages": sum(r["message_count"] for r in records),
+            "threads": [
+                {k: v for k, v in r.items() if k != "created_dt"}
+                for r in records
+            ],
+        }
+        summary_file = agent_dir / "summary.json"
+        summary_file.write_text(json.dumps(summary_payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        agent_summary_counts[agent] = {
+            "threads": len(records),
+            "messages": sum(r["message_count"] for r in records),
+        }
 
     return {
         "total_threads": len(threads),
         "total_messages": total_messages,
-        "threads_summary_file": summary_file.relative_to(output_dir).as_posix(),
+        "agents": agent_summary_counts,
     }
 
 
@@ -407,7 +665,6 @@ def fetch_and_export_traces(base_url: str, token: str, output_dir: Path, last_wi
             try:
                 resp = make_api_request(url, token)
             except Exception as e:
-                # If chunk request fails, log warning and continue
                 print(f"    [!] Note: Trace search interval {from_ts} - {to_ts}: {e}", file=sys.stderr)
                 break
 
@@ -438,17 +695,24 @@ def fetch_and_export_traces(base_url: str, token: str, output_dir: Path, last_wi
         if not trace_id:
             return {}
 
-        trace_file = traces_dir / f"{trace_id}.json"
+        trace_dt = parse_iso_datetime(trace_meta.get("timestamp"))
+        time_prefix = trace_dt.strftime("%Y%m%d_%H%M%S")
+        trace_name = sanitize_filename_slug(trace_meta.get("name") or "trace")
+        short_id = trace_id[:6]
+        base_filename = f"{time_prefix}_{trace_name}_{short_id}"
+
+        trace_file = traces_dir / f"{base_filename}.json"
         detail_url = f"{agentops_base}/traces/{urllib.parse.quote(trace_id)}"
 
         try:
             full_trace = make_api_request(detail_url, token)
             trace_file.write_text(json.dumps(full_trace, indent=2, ensure_ascii=False), encoding="utf-8")
+            set_file_timestamps(trace_file, trace_dt)
             return {
                 "trace_id": trace_id,
                 "timestamp": trace_meta.get("timestamp"),
                 "name": trace_meta.get("name"),
-                "file": f"traces/{trace_id}.json",
+                "file": trace_file.relative_to(output_dir).as_posix(),
                 "status": "exported",
             }
         except Exception as e:
@@ -471,7 +735,6 @@ def fetch_and_export_traces(base_url: str, token: str, output_dir: Path, last_wi
             if done_count % 50 == 0 or done_count == len(trace_summaries):
                 print(f"    Exported {done_count}/{len(trace_summaries)} traces...")
 
-    # Sort traces by timestamp descending
     trace_records.sort(key=lambda r: str(r.get("timestamp") or ""), reverse=True)
 
     summary_file = traces_dir / "summary.json"
@@ -489,6 +752,51 @@ def fetch_and_export_traces(base_url: str, token: str, output_dir: Path, last_wi
         "exported_count": summary_payload["exported_count"],
         "traces_summary_file": summary_file.relative_to(output_dir).as_posix(),
     }
+
+
+# ---------------------------------------------------------------------------
+# Root Export Documentation (README.md)
+# ---------------------------------------------------------------------------
+
+def write_root_export_readme(export_dir: Path, manifest: dict) -> None:
+    """Generate a clean overview README.md in the export folder."""
+    timestamp = manifest.get("timestamp", "")
+    created_at = manifest.get("created_at", "")
+    instance_url = manifest.get("instance_url", "")
+    env_name = manifest.get("environment_name", "")
+
+    threads_stat = manifest.get("components", {}).get("threads", {})
+    traces_stat = manifest.get("components", {}).get("traces", {})
+
+    lines = [
+        f"# WXO Agent Chats Export Report",
+        f"**Export Timestamp:** `{timestamp}` ({created_at})  ",
+        f"**Environment:** `{env_name}`  ",
+        f"**Instance:** `{instance_url}`\n",
+        "## Agent Breakdown\n",
+        "| Agent Directory | Total Conversations | Total Messages | Link |",
+        "| :--- | :--- | :--- | :--- |",
+    ]
+
+    agents_info = threads_stat.get("agents", {})
+    for agent, counts in sorted(agents_info.items(), key=lambda x: x[0]):
+        lines.append(f"| **`{agent}/`** | {counts['threads']} | {counts['messages']} | [{agent}/summary.json]({agent}/summary.json) |")
+
+    lines.append(f"\n**Total Conversations:** {threads_stat.get('total_threads', 0)} | **Total Messages:** {threads_stat.get('total_messages', 0)}\n")
+
+    if traces_stat:
+        lines.append("## Observability Traces\n")
+        lines.append(f"- **Discovered Traces:** {traces_stat.get('total_traces', 0)}")
+        lines.append(f"- **Exported Traces:** {traces_stat.get('exported_count', 0)}")
+        lines.append(f"- **Traces Index:** [traces/summary.json](traces/summary.json)\n")
+
+    lines.append("## File Formats\n")
+    lines.append("- **`.md` files**: Clean, human-readable Markdown chat transcripts ready to view in any text editor.")
+    lines.append("- **`.json` files**: Complete structured data including clean turn summaries and raw WXO schemas.")
+    lines.append("- **File timestamps**: Set to each conversation's initial start time for intuitive sorting.\n")
+
+    readme_path = export_dir / "README.md"
+    readme_path.write_text("\n".join(lines), encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
@@ -521,6 +829,13 @@ def parse_args() -> argparse.Namespace:
         help="Optional agent name (e.g., 'translator', 'incident_triage') or UUID to filter message threads.",
     )
     parser.add_argument(
+        "--trace",
+        "--traces",
+        dest="trace",
+        action="store_true",
+        help="Enable downloading observability traces (skipped by default).",
+    )
+    parser.add_argument(
         "--last",
         type=str,
         default="24h",
@@ -537,13 +852,6 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=10,
         help="Concurrent worker threads for downloading chat messages and traces.",
-    )
-    parser.add_argument(
-        "--trace",
-        "--traces",
-        dest="trace",
-        action="store_true",
-        help="Enable downloading observability traces (skipped by default).",
     )
     parser.add_argument(
         "--threads-only",
@@ -596,7 +904,7 @@ def main() -> None:
 
     # 3. Message Threads via REST API
     if should_export_threads:
-        print("\n--- [1/2] Exporting Message Threads via REST API ---")
+        print("\n--- [1/2] Exporting Message Threads into Agent Directories ---")
         threads_stats = export_threads_data(
             base_url=wxo_url,
             token=token,
@@ -623,11 +931,12 @@ def main() -> None:
     else:
         print("\n--- [2/2] Skipping Observability Traces (pass --trace to enable) ---")
 
-    # 5. Write Manifest
+    # 5. Write Manifest and Root Report
     duration_sec = round(time.time() - start_time, 2)
     manifest["duration_seconds"] = duration_sec
     manifest_file = target_export_dir / "manifest.json"
     manifest_file.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    write_root_export_readme(target_export_dir, manifest)
 
     # 6. Final Summary Report
     print("\n" + "=" * 70)
@@ -635,16 +944,18 @@ def main() -> None:
     print("=" * 70)
     if "threads" in manifest["components"]:
         t_stat = manifest["components"]["threads"]
-        print(f"  * Threads exported:  {t_stat.get('total_threads', 0)}")
-        print(f"  * Messages exported: {t_stat.get('total_messages', 0)}")
-        print(f"  * Threads Index:     {target_export_dir / t_stat.get('threads_summary_file', '')}")
+        print(f"  * Total Conversations: {t_stat.get('total_threads', 0)}")
+        print(f"  * Total Messages:      {t_stat.get('total_messages', 0)}")
+        agents_info = t_stat.get("agents", {})
+        for ag, cnts in sorted(agents_info.items()):
+            print(f"    - {ag}/: {cnts['threads']} chats ({cnts['messages']} messages)")
     if "traces" in manifest["components"]:
         tr_stat = manifest["components"]["traces"]
-        print(f"  * Traces discovered: {tr_stat.get('total_traces', 0)}")
-        print(f"  * Traces exported:   {tr_stat.get('exported_count', 0)}")
-        print(f"  * Traces Index:      {target_export_dir / tr_stat.get('traces_summary_file', '')}")
-    print(f"  * Top-level Manifest: {manifest_file}")
-    print(f"  * Time Elapsed:       {duration_sec}s")
+        print(f"  * Traces Discovered:   {tr_stat.get('total_traces', 0)}")
+        print(f"  * Traces Exported:     {tr_stat.get('exported_count', 0)}")
+    print(f"  * Overview Report:     {target_export_dir / 'README.md'}")
+    print(f"  * Manifest:            {manifest_file}")
+    print(f"  * Time Elapsed:        {duration_sec}s")
     print("=" * 70 + "\n")
 
 
