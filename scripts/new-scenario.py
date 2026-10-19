@@ -77,13 +77,9 @@ flows: []
 evaluation:
   path: evaluation/{sid}
   tier: core
-  package_include: []
 
 demo:
   script: docs/demo/{sid}-demo.md
-
-package:
-  zip_prefix: {sid}
 """
 
 

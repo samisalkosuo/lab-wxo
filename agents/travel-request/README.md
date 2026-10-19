@@ -38,7 +38,7 @@ Amounts and thresholds are not read from the knowledge bases. They come from the
 
 ### Source attribution
 
-*Valtion matkustussääntö 2026*, Valtiovarainministeriön julkaisuja 2025:63, Ministry of Finance, Finland. URN: https://urn.fi/URN:ISBN:978-952-367-397-7. Licence: CC BY-NC-ND 4.0. The PDF is shipped unmodified. The rates keyed into `tools/travel_request/data/rates.py` are a small subset, valid until 31.12.2026 per the document. Whether shipping the PDF in this repo and in the scenario zip is acceptable has not been confirmed (open item 1 in the plan).
+*Valtion matkustussääntö 2026*, Valtiovarainministeriön julkaisuja 2025:63, Ministry of Finance, Finland. URN: https://urn.fi/URN:ISBN:978-952-367-397-7. Licence: CC BY-NC-ND 4.0. The PDF is shipped unmodified. The rates keyed into `tools/travel_request/data/rates.py` are a small subset, valid until 31.12.2026 per the document. Whether shipping the PDF in this public repo is acceptable has not been confirmed (open item 1 in the plan).
 
 ## Mock data
 

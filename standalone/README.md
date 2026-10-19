@@ -8,7 +8,7 @@ rules, and not touched by the scenario deploy or teardown scripts in `scripts/`.
 
 Use `standalone/` when an agent:
 - answers a focused question (e.g. "explain this document") rather than driving a demo
-- does not need evaluation ground truth, demo slides, or a packaging zip
+- does not need evaluation ground truth, demo slides
 - is built opportunistically during development, not as part of a structured scenario
 
 Scenario-owned agents belong in `agents/<name>/` and must be listed in a

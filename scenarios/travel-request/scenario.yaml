@@ -42,10 +42,6 @@ flows:
 evaluation:
   path: evaluation/travel-request
   tier: core
-  package_include: []
 
 demo:
   script: docs/demo/travel-request-demo.md
-
-package:
-  zip_prefix: travel-request

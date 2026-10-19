@@ -31,7 +31,7 @@ Names: folders and files that humans browse are `kebab-case`; Python package fol
 
 | Item | Path | Notes |
 |---|---|---|
-| Manifest | `scenarios/<id>/scenario.yaml` | Created by `python scripts/new-scenario.py <id> --name ... --description ...`; `scenarios/incident-triage/scenario.yaml` documents every field. Real resource names, not file names. `deploy-all`, `teardown`, `package.py` and `smoke_test.py` read it; check it with `python scripts/scenario_manifest.py validate --scenario <id>`. |
+| Manifest | `scenarios/<id>/scenario.yaml` | Created by `python scripts/new-scenario.py <id> --name ... --description ...`; `scenarios/incident-triage/scenario.yaml` documents every field. Real resource names, not file names. `deploy-all`, `teardown` and `smoke_test.py` read it; check it with `python scripts/scenario_manifest.py validate --scenario <id>`. |
 | Agent | `agents/<id>/agent.yaml`, `README.md` | `spec_version: v1`, `kind: native`, `style: react_core`, `llm: groq/openai/gpt-oss-120b` (the repo default). README: tools table, KB, mock data table, limitations. |
 | Tools | `tools/<pkg>/<pkg>.py`, `tools/<pkg>/data/*.py`, `tools/<pkg>/requirements.txt`, `__init__.py` | One top-level entry file with `@tool` functions. Mock world in `data/`. `requirements.txt` pins `ibm-watsonx-orchestrate==2.18.2`. Copy the import fallback from `tools/incident_triage/incident_triage.py` (`try: from .data import ... except ImportError: from data import ...`). |
 | Knowledge base | `knowledge/<id>/<name>.yaml` + `runbooks/*.txt` (or policy docs) | Built-in KB takes xlsx, docx, pdf, pptx, csv, html, txt; **markdown is not supported**, use `.txt`. Give every document a stable ID (like `RB-DEPLOY-01`) that the agent can cite. |

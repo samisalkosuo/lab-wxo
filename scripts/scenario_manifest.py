@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Read scenario manifests (scenarios/<id>/scenario.yaml) for the deploy, teardown,
-package and smoke-test scripts, and validate them.
+"""Read scenario manifests (scenarios/<id>/scenario.yaml) for the deploy, teardown
+and smoke-test scripts, and validate them.
 
 Usage:
     python scripts/scenario_manifest.py list
@@ -253,12 +253,6 @@ def validate_one(m: dict) -> list:
             err(f"evaluation.tier must be one of {TIERS}")
         if not (ROOT / ev["path"] / "ground_truth.json").is_file():
             err(f"{ev['path']}/ground_truth.json not found (the core evaluation tier is required)")
-        for item in ev.get("package_include") or []:
-            if ".." in Path(item).parts or Path(item).is_absolute():
-                err(f"evaluation.package_include '{item}' must be a relative path inside {ev['path']} (no '..')")
-                continue
-            if not (ROOT / ev["path"] / item).exists():
-                err(f"evaluation.package_include '{item}' not found in {ev['path']}")
     elif m.get("status") == "live" and sid != "hello-world":
         err("evaluation section missing (ground_truth.json is required for a live scenario)")
     if ev and m.get("status") == "live" and (ROOT / ev["path"] / "ground_truth.json").is_file():

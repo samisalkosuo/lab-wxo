@@ -231,7 +231,7 @@ window.SCENARIOS.push(
                 <div class="callout-icon">💡</div>
                 <div>
                   <div class="callout-title">Source document licence</div>
-                  <div class="callout-text">The PDF is published under CC BY-NC-ND 4.0 and ships unmodified with attribution. Whether it may be redistributed in a packaged demo is an open question.</div>
+                  <div class="callout-text">The PDF is published under CC BY-NC-ND 4.0 and ships unmodified with attribution. Whether it may be redistributed in this public repo is an open question.</div>
                 </div>
               </div>
             `

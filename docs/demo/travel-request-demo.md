@@ -19,7 +19,7 @@ For a human presenter. Every prompt below was run against the real agent, except
 
 ## 2. Prerequisites
 
-- The repo (or the packaged zip) has been deployed to your WXO instance with `scripts/deploy-all.ps1` or `deploy-all.sh` (scenario: `travel-request`). This imports the tools, the two knowledge bases, the approval flow and the agent.
+- The repo has been deployed to your WXO instance with `scripts/deploy-all.ps1` or `deploy-all.sh` (scenario: `travel-request`). This imports the tools, the two knowledge bases, the approval flow and the agent.
 - **Imported agents are draft until deployed.** The deploy scripts already run `orchestrate agents deploy --name travel_request`. If you imported by hand, run that command, then reload the chat page. Until then the chat UI shows only `AskOrchestrate`.
 - **Remote auth expires after 2 hours.** Re-activate before the demo (see the reset checklist).
 - The agent uses `groq/openai/gpt-oss-120b`. The instance must offer that model. Both knowledge bases use the embedding model `ibm/granite-embedding-278m-multilingual`; the instance must offer that too (it was accepted on `techzone1`; other instances were not tried).
@@ -397,7 +397,7 @@ Not seen, so not covered here: the approval form in a browser (render, Approve, 
 **Open items (still open at the time of writing; see `plans/travel-request-plan.md`)**
 
 1. The approval flow has not been tested in a browser: form render, Approve issues an id, Reject issues none, and the agent reports the flow message.
-2. PDF licensing (CC BY-NC-ND 4.0) for shipping the unmodified document in a packaged zip is unconfirmed.
+2. PDF licensing (CC BY-NC-ND 4.0) for shipping the unmodified document in this public repo is unconfirmed.
 3. The PDF is used in only a minority of answers. A test that shows when it is and is not consulted has not been done.
 4. No baseline script and no evaluation run exist for this scenario; the answers were read by hand.
 5. A clean install on a fresh instance, a Developer Edition deploy and the effect of auth expiry mid-demo have not been tested.
@@ -406,4 +406,3 @@ Not seen, so not covered here: the approval form in a browser (render, Approve, 
 ## 10. After the demo
 
 - The run-API tests behind this script started at least one approval-flow instance that nobody answered (the form cannot be answered from the API). They only touch mock data and may show up in traces or conversation lists. I did not check how the instance treats them.
-- This file is included in the packaged zip under `docs/demo/`. The `INSTALL.md` at the zip root covers prerequisites and deployment.

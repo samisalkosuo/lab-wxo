@@ -30,7 +30,7 @@ For a human presenter. Every prompt below was run against the real agent. Quotes
 
 ## 2. Prerequisites
 
-- The repo (or the packaged zip) has been deployed to your WXO instance with `scripts/deploy-all.ps1` or `deploy-all.sh` (scenario: `{{ID}}`). This imports the tools, the knowledge base, {{FLOW_NOTE}} and the agent.
+- The repo has been deployed to your WXO instance with `scripts/deploy-all.ps1` or `deploy-all.sh` (scenario: `{{ID}}`). This imports the tools, the knowledge base, {{FLOW_NOTE}} and the agent.
 - **Imported agents are draft until deployed.** The deploy scripts already run `orchestrate agents deploy --name {{AGENT_NAME}}`. If you imported by hand, run that command, then reload the chat page. Until then the chat UI shows only `AskOrchestrate`.
 - **Remote auth expires after 2 hours.** Re-activate before the demo (see the reset checklist).
 - The agent uses `{{LLM}}`. The instance must offer that model.
@@ -181,4 +181,3 @@ Not seen, so not covered here: {{NOT_SEEN}}.
 ## 10. After the demo
 
 - {{AFTER_1}}
-- This file is included in the packaged zip under `docs/demo/`. The `INSTALL.md` at the zip root covers prerequisites and deployment.

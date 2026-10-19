@@ -67,7 +67,7 @@ customModes:
       - One subdirectory per agent: standalone/<agent-name>/agent.yaml (ADK native agent)
         and standalone/<agent-name>/README.md (purpose, dependencies, deploy and teardown
         commands, known limits).
-      - No scenario.yaml, no manifest entry, no packaging, no ground truth, no demo script
+      - No scenario.yaml, no manifest entry, no ground truth, no demo script
         or slides.
       - Deploy and undeploy go through python standalone/manage.py (list, deploy,
         undeploy, --agent, --dry-run). It discovers agents automatically; do not edit it

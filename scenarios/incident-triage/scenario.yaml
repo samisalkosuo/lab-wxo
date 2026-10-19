@@ -1,7 +1,7 @@
 # scenario.yaml - manifest for one demo scenario.
 #
 # Purpose: one machine-readable list of every resource a scenario owns, so deploy,
-# package, teardown and smoke-test scripts stop hard-coding names. This file is the
+# teardown and smoke-test scripts stop hard-coding names. This file is the
 # reference example; copy it for a new scenario.
 #
 # Rules
@@ -15,7 +15,7 @@
 # Field reference
 #   id            kebab-case id; equals the folder name under scenarios/ and the
 #                 file name docs/demo/scenarios/<id>.js
-#   name          display name (sidebar, zip INSTALL.md title)
+#   name          display name (sidebar)
 #   description   one line (sidebar subtitle)
 #   status        live | soon
 #   agents[]      name, path (folder holding agent.yaml), kind (native|external)
@@ -25,10 +25,8 @@
 #   knowledge_bases[]  name, path (folder holding the KB yaml)
 #   flows[]       name (tool name once imported), path (folder holding the flow .py)
 #   evaluation    path; tier: core (ground_truth.json only) | full (also baseline.py and
-#                 ADK test cases); package_include = files/folders (relative to path)
-#                 that ship in the zip. results/ and logs are never packaged.
+#                 ADK test cases)
 #   demo          script = detailed demo markdown
-#   package       zip_prefix = zip name is wxo-<zip_prefix>-<version>.zip
 
 id: incident-triage
 name: Incident Triage
@@ -74,14 +72,6 @@ flows:
 evaluation:
   path: evaluation/incident-triage
   tier: full
-  package_include:
-    - test_cases
-    - eval_config.yaml
-    - baseline.py
-    - ground_truth.json
 
 demo:
   script: docs/demo/incident-triage-demo.md
-
-package:
-  zip_prefix: incident-triage

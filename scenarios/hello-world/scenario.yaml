@@ -19,6 +19,3 @@ tools:
       - greeting
     attached:
       - greeting
-
-package:
-  zip_prefix: hello-world
