@@ -266,6 +266,8 @@ Use `standalone/` when an agent answers a focused question (a document, an API, 
 tool test) rather than driving a structured demo. For a scenario-quality agent with
 evaluation, packaging, and demo requirements, use `scenarios/` + `agents/` instead.
 
+**Recommended:** open the **Standalone Builder** mode in Bob to author a new standalone agent.
+
 See [`standalone/README.md`](standalone/README.md) for conventions, the directory layout,
 and full deploy/undeploy instructions.
 

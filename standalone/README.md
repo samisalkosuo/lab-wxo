@@ -30,6 +30,9 @@ automatically discovered by `manage.py`.
 
 ## Adding a new agent
 
+**Recommended:** open the **Standalone Builder** mode in Bob. It loads the `wxo-adk` skill
+and enforces the conventions below.
+
 1. Create `standalone/<your-agent-name>/agent.yaml` — use an existing agent as a
    template (e.g. [`standalone/travel-rules-qa/agent.yaml`](travel-rules-qa/agent.yaml)).
 2. Create `standalone/<your-agent-name>/README.md` — document the purpose,
