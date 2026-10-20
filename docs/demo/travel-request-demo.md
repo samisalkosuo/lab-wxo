@@ -19,8 +19,8 @@ For a human presenter. Every prompt below was run against the real agent, except
 
 ## 2. Prerequisites
 
-- The repo has been deployed to your WXO instance with `scripts/deploy-all.ps1` or `deploy-all.sh` (scenario: `travel-request`). This imports the tools, the two knowledge bases, the approval flow and the agent.
-- **Imported agents are draft until deployed.** The deploy scripts already run `orchestrate agents deploy --name travel_request`. If you imported by hand, run that command, then reload the chat page. Until then the chat UI shows only `AskOrchestrate`.
+- The repo has been deployed to your WXO instance with `python wxodemo.py deploy travel-request`. This imports the tools, the two knowledge bases, the approval flow and the agent.
+- **Imported agents are draft until deployed.** `wxodemo deploy` already runs `orchestrate agents deploy --name travel_request`. If you imported by hand, run that command, then reload the chat page. Until then the chat UI shows only `AskOrchestrate`.
 - **Remote auth expires after 2 hours.** Re-activate before the demo (see the reset checklist).
 - The agent uses `groq/openai/gpt-oss-120b`. The instance must offer that model. Both knowledge bases use the embedding model `ibm/granite-embedding-278m-multilingual`; the instance must offer that too (it was accepted on `techzone1`; other instances were not tried).
 - The browser needs access to your WXO instance web UI. The approval form (scene 8) only renders there.
@@ -46,7 +46,7 @@ For a human presenter. Every prompt below was run against the real agent, except
 - [ ] Reload the browser chat page and confirm **travel_request** is selectable.
 - [ ] No data reset is needed. The mock world is static. From reading the tool code, the request id is derived from the trip data and nothing is stored (a direct call of the tool returned the same kind of id; the flow was not run).
 - [ ] Do not force-kill `orchestrate` or `python` processes if something hangs. Wait, or re-run the activate step.
-- [ ] Optional smoke check before the demo: `python scripts/smoke_test.py --scenario travel-request` sends the eight diagnosis-only prompts in `evaluation/travel-request/ground_truth.json` and prints the tools called and the start of each answer. It does not grade the answers.
+- [ ] Optional smoke check before the demo: `python wxodemo.py smoke travel-request` sends the eight diagnosis-only prompts in `evaluation/travel-request/ground_truth.json` and prints the tools called and the start of each answer. It does not grade the answers.
 
 ## 5. How to read this script
 
@@ -59,7 +59,7 @@ Each scene has: **Prompt**, **Expected behaviour**, **Point out**, **Fallback**.
 
 ### What was and was not verified
 
-Unless a row says otherwise, "3 runs" means three runs of the same prompt through the run API (`scripts/smoke_test.py` style, no browser), with the final answers read by me against `ground_truth.json`. Eight prompts were run three times each (24 answers); an earlier build had several wrong outcomes that were fixed by instruction changes, so this evidence covers the **current** configuration only.
+Unless a row says otherwise, "3 runs" means three runs of the same prompt through the run API (`wxodemo smoke` style, no browser), with the final answers read by me against `ground_truth.json`. Eight prompts were run three times each (24 answers); an earlier build had several wrong outcomes that were fixed by instruction changes, so this evidence covers the **current** configuration only.
 
 | Scene | Verified how |
 |---|---|
@@ -351,11 +351,11 @@ Where is the refund for my trip last month? I submitted the expense claim two we
 | `orchestrate chat ask` prints nothing and hangs | Non-interactive shell | Do not use it. Use the browser chat |
 | Different tool order or wording than this script | LLM variation | Expected. State the conclusions that matched in recorded runs |
 | A transcript shows `submit_travel_request_for_approval`, not `travel_submit_request` | The agent calls the flow under its display name | Expected, not an error |
-| Knowledge base `travel_state_rules` shows "1 document(s) failed in ingestion" after you updated it in place | Updating the PDF knowledge base in place failed twice | Remove it and import it again: `orchestrate knowledge-bases remove --name travel_state_rules`, then in `knowledge/travel-request` run `orchestrate knowledge-bases import -f travel_state_rules.yaml`. The same remove-and-import was needed for the policy knowledge base after its files changed; `deploy-all` alone did not refresh them reliably |
+| Knowledge base `travel_state_rules` shows "1 document(s) failed in ingestion" after you updated it in place | Updating the PDF knowledge base in place failed twice | Remove it and import it again: `orchestrate knowledge-bases remove --name travel_state_rules`, then in `knowledge/travel-request` run `orchestrate knowledge-bases import -f travel_state_rules.yaml`. The same remove-and-import was needed for the policy knowledge base after its files changed; a plain deploy did not refresh them reliably |
 | Knowledge base import is rejected with "embedding model not found" | `ibm/multilingual-e5-large` and `virtual-model/openai/text-embedding-3-small` were not found on `techzone1`; a failed import still left a `ready` knowledge base record | Use the embedding model in the YAML files. Delete the leftover record by hand |
 | Chat page "stuck" after the form | The thread is waiting for a click | Click Approve or Reject, or start a new conversation |
 
-Not seen, so not covered here: the approval form in a browser (render, Approve, Reject, the id shown to the user), a clean first deploy on a fresh instance, a Developer Edition deploy, and what happens when the model or embedding model is not offered on another instance. The `scripts/smoke_test.py` helper needed a small fix to list the tools called (it now reads them from `step_history`); that edit is in a shared script.
+Not seen, so not covered here: the approval form in a browser (render, Approve, Reject, the id shown to the user), a clean first deploy on a fresh instance, a Developer Edition deploy, and what happens when the model or embedding model is not offered on another instance. The smoke helper (now `wxodemo smoke`) needed a small fix to list the tools called (it now reads them from `step_history`); that edit is in shared code.
 
 ## 8. Things not to say
 

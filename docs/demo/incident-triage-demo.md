@@ -1,4 +1,4 @@
-﻿# Incident Triage Agent - Demo Script
+# Incident Triage Agent - Demo Script
 
 For a human presenter. Every prompt below was run against the real agent. Quotes of agent output were copied from recorded transcripts; the approval-flow and tool result messages are marked where they come from the code instead. Where something was **not** verified, the text says so.
 
@@ -15,8 +15,8 @@ For a human presenter. Every prompt below was run against the real agent. Quotes
 
 ## 2. Prerequisites
 
-- The repo has been deployed to your WXO instance with `scripts/deploy-all.ps1` (or `deploy-all.sh`). This imports tools, the runbook knowledge base, the approval flow and the agent.
-- **Imported agents are draft until deployed.** The deploy scripts already run `orchestrate agents deploy --name incident_triage`. If you imported by hand, run that command, then reload the chat page. Until then the chat UI shows only `AskOrchestrate`.
+- The repo has been deployed to your WXO instance with `python wxodemo.py deploy incident-triage`. This imports tools, the runbook knowledge base, the approval flow and the agent.
+- **Imported agents are draft until deployed.** `wxodemo deploy` already runs `orchestrate agents deploy --name incident_triage`. If you imported by hand, run that command, then reload the chat page. Until then the chat UI shows only `AskOrchestrate`.
 - **Remote auth expires after 2 hours.** Re-activate before the demo (see the reset checklist).
 - The agent uses `groq/openai/gpt-oss-120b`. The instance must offer that model.
 - The browser needs access to your WXO instance web UI. The approval form (scene 4) only renders there. It cannot be driven from the CLI or the run API.
@@ -267,7 +267,7 @@ This scene is mostly talking. Do not run the evaluation live: it is slow, and in
 
 Not seen, so not covered here: clean first deploy on a fresh instance. The deploy was only re-run over the existing `techzone1` instance (exit 0, all resources updated).
 
-**Note:** `scripts/smoke_test.py --scenario incident-triage` sends the four diagnosis-only prompts in `evaluation/incident-triage/ground_truth.json` (`smoke_prompts`) to the deployed agent and prints the tools called and the start of each answer. It looks the agent up by name, so no UUID is needed. It does not grade the answers, and its live path has not yet been run against an instance (only `--dry-run` was).
+**Note:** `python wxodemo.py smoke incident-triage` sends the four diagnosis-only prompts in `evaluation/incident-triage/ground_truth.json` (`smoke_prompts`) to the deployed agent and prints the tools called and the start of each answer. It looks the agent up by name, so no UUID is needed. It does not grade the answers, and its live path has not yet been run against an instance (only `--dry-run` was).
 
 ## 8. Things not to say
 

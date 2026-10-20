@@ -28,7 +28,7 @@ in the target instance (`orchestrate models list`).
 Run from the **repo root** with the virtual environment activated:
 
 ```bash
-python standalone/manage.py deploy --agent translator
+python wxodemo.py deploy translator
 
 # Or manually:
 orchestrate agents import --file standalone/translator/agent.yaml
@@ -40,7 +40,7 @@ Re-running import is safe — it updates in place.
 ## Teardown
 
 ```bash
-python standalone/manage.py undeploy --agent translator
+python wxodemo.py undeploy translator
 
 # Or manually:
 orchestrate agents remove --name translator --kind native

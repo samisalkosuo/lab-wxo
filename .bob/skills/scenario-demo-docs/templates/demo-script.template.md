@@ -1,11 +1,11 @@
 <!--
-AUTHOR NOTES (delete every "AUTHOR NOTE" comment before you finish; check_demo_consistency.py fails on leftovers):
+AUTHOR NOTES (delete every "AUTHOR NOTE" comment before you finish; `python wxodemo.py validate {{ID}}` fails on leftovers):
 - Copy this file to docs/demo/{{ID}}-demo.md and replace every {{PLACEHOLDER}}.
 - It mirrors docs/demo/incident-triage-demo.md (10 sections). Keep the section numbers and order.
 - Honesty rule: "Expected behaviour (observed)" may only contain what you saw in real runs. State how many runs.
   If you did not run something, write "not verified". Never write a number, quote or tool order you did not observe.
 - Prompts in "Prompt (type exactly)" blocks must be identical, word for word, to the prompt-box text in
-  docs/demo/scenarios/{{ID}}.js (the checker compares them).
+  docs/demo/scenarios/{{ID}}.js (`wxodemo validate` compares them).
 - Scenes: keep at least one messy/vague-input scene, one main-path scene, one trap scene (red herring or tempting
   wrong answer), one governed-action scene if the scenario has an approval flow, and one restraint scene if the
   scenario has a "do nothing" case. Delete scenes that do not apply; renumber.
@@ -30,8 +30,8 @@ For a human presenter. Every prompt below was run against the real agent. Quotes
 
 ## 2. Prerequisites
 
-- The repo has been deployed to your WXO instance with `scripts/deploy-all.ps1` or `deploy-all.sh` (scenario: `{{ID}}`). This imports the tools, the knowledge base, {{FLOW_NOTE}} and the agent.
-- **Imported agents are draft until deployed.** The deploy scripts already run `orchestrate agents deploy --name {{AGENT_NAME}}`. If you imported by hand, run that command, then reload the chat page. Until then the chat UI shows only `AskOrchestrate`.
+- The repo has been deployed to your WXO instance with `python wxodemo.py deploy {{ID}}`. This imports the tools, the knowledge base, {{FLOW_NOTE}} and the agent.
+- **Imported agents are draft until deployed.** `wxodemo deploy` already runs `orchestrate agents deploy --name {{AGENT_NAME}}`. If you imported by hand, run that command, then reload the chat page. Until then the chat UI shows only `AskOrchestrate`.
 - **Remote auth expires after 2 hours.** Re-activate before the demo (see the reset checklist).
 - The agent uses `{{LLM}}`. The instance must offer that model.
 - {{BROWSER_NOTE}}
@@ -46,11 +46,9 @@ For a human presenter. Every prompt below was run against the real agent. Quotes
 
 ## 4. Reset checklist (run through this before every demo)
 
-- [ ] Re-activate the environment so auth is fresh (valid for 2 hours). In PowerShell, using the values from your own `env.cfg` via variables only, never pasting or printing the key:
-  ```powershell
-  $env:PYTHONUTF8 = "1"
-  # load WXO_API_KEY and WXO_ENV_NAME from env.cfg into variables, then:
-  orchestrate env activate $envName --api-key $apiKey
+- [ ] Re-activate the environment so auth is fresh (valid for 2 hours). `wxodemo` reads the key from your own `env.cfg` and never prints it:
+  ```
+  python wxodemo.py login
   ```
 - [ ] Confirm the agent exists: `orchestrate agents list` should list `{{AGENT_NAME}}`. If not, deploy it (section 3).
 - [ ] Reload the browser chat page and confirm **{{AGENT_DISPLAY}}** is selectable.
@@ -143,8 +141,8 @@ Each scene has: **Prompt**, **Expected behaviour**, **Point out**, **Fallback**.
 |---|---|---|
 | Only `AskOrchestrate` in the agent picker | Agent is still draft | `orchestrate agents deploy --name {{AGENT_NAME}}`, reload the page |
 | Confusing, generic answer; no tool calls | Wrong agent selected (AskOrchestrate) | Select **{{AGENT_DISPLAY}}**, new conversation |
-| CLI or run API calls fail with auth errors | Remote auth expires after 2 hours, or a Python process was killed | Re-run `orchestrate env activate` (key from `env.cfg` via a variable; never print it) |
-| `UnicodeEncodeError ... charmap` from the CLI | cp1252 console encoding on Windows | `$env:PYTHONUTF8 = "1"` |
+| CLI or run API calls fail with auth errors | Remote auth expires after 2 hours, or a Python process was killed | Re-run `python wxodemo.py login` |
+| `UnicodeEncodeError ... charmap` from the CLI | cp1252 console encoding on Windows | Run orchestrate through `wxodemo` (it sets UTF-8), or `$env:PYTHONUTF8 = "1"` |
 | `orchestrate chat ask` prints nothing and hangs | Non-interactive shell | Do not use it. Use the browser chat |
 | Different tool order or wording than this script | LLM variation | Expected. State the conclusions that matched in recorded runs |
 | {{SYMPTOM}} | {{CAUSE}} | {{ACTION}} |

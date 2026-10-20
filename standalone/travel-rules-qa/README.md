@@ -49,7 +49,7 @@ Run from the **repo root** with the virtual environment activated:
 
 ```bash
 # 1. Import and deploy this agent
-python standalone/manage.py deploy --agent travel_rules_qa
+python wxodemo.py deploy travel_rules_qa
 
 # Or manually:
 orchestrate agents import --file standalone/travel-rules-qa/agent.yaml
@@ -64,7 +64,7 @@ Remove only this agent. **Do not remove the KB** if `travel_request` is still de
 (they share it).
 
 ```bash
-python standalone/manage.py undeploy --agent travel_rules_qa
+python wxodemo.py undeploy travel_rules_qa
 
 # Or manually:
 orchestrate agents remove --name travel_rules_qa --kind native

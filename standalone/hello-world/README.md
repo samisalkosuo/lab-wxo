@@ -17,7 +17,7 @@ agent imports, and the agent calls the tool.
 ## Files
 
 - `agent.yaml` — agent definition
-- `greetings.py` — the `greeting` Python tool (imported by `manage.py` before the agent)
+- `greetings.py` — the `greeting` Python tool (imported by `wxodemo` before the agent)
 - `examples.md` — example prompts
 
 ## Dependencies
@@ -31,7 +31,7 @@ None beyond an active WXO environment. The agent uses the model
 Run from the **repo root** with the virtual environment activated:
 
 ```bash
-python standalone/manage.py deploy --agent hello_world
+python wxodemo.py deploy hello_world
 
 # Or manually:
 orchestrate tools import -k python -f standalone/hello-world/greetings.py
@@ -52,7 +52,7 @@ Type `Hello` or `Greeting` — the agent calls the tool and responds with `Hello
 ## Teardown
 
 ```bash
-python standalone/manage.py undeploy --agent hello_world
+python wxodemo.py undeploy hello_world
 
 # Or manually:
 orchestrate agents remove --name hello_world --kind native

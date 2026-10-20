@@ -7,7 +7,7 @@ description: Use when the user wants to create, add, scaffold, or review a new w
 
 A **scenario** is one self-contained demo: a mock world, an agent, its tools, a knowledge base, an optional approval flow, a manifest, a demo script, and a presentation section. Incident Triage is the reference implementation. This skill says what a scenario ships and which Phase A lessons to keep. It does not repeat ADK CLI details: load the `wxo-adk` skill and the ADK docs MCP tools for those.
 
-Load these first, in order: this skill, `wxo-adk`, then `scenario-demo-docs` for the demo markdown and slides (templates and `check_demo_consistency.py` live in that skill's folder).
+Load these first, in order: this skill, `wxo-adk`, then `scenario-demo-docs` for the demo markdown and slides (templates live in that skill's folder; its consistency checks run inside `python wxodemo.py validate <id>`).
 
 ## 1. Goal and non-goals
 
@@ -31,7 +31,7 @@ Names: folders and files that humans browse are `kebab-case`; Python package fol
 
 | Item | Path | Notes |
 |---|---|---|
-| Manifest | `scenarios/<id>/scenario.yaml` | Created by `python scripts/new-scenario.py <id> --name ... --description ...`; `scenarios/incident-triage/scenario.yaml` documents every field. Real resource names, not file names. `deploy-all`, `teardown` and `smoke_test.py` read it; check it with `python scripts/scenario_manifest.py validate --scenario <id>`. |
+| Manifest | `scenarios/<id>/scenario.yaml` | Created by `python wxodemo.py new-scenario <id> --name ... --description ...`; `scenarios/incident-triage/scenario.yaml` documents every field. Real resource names, not file names. `deploy`, `undeploy` and `smoke` read it; check it with `python wxodemo.py validate <id>`. |
 | Agent | `agents/<id>/agent.yaml`, `README.md` | `spec_version: v1`, `kind: native`, `style: react_core`, `llm: groq/openai/gpt-oss-120b` (the repo default). README: tools table, KB, mock data table, limitations. |
 | Tools | `tools/<pkg>/<pkg>.py`, `tools/<pkg>/data/*.py`, `tools/<pkg>/requirements.txt`, `__init__.py` | One top-level entry file with `@tool` functions. Mock world in `data/`. `requirements.txt` pins `ibm-watsonx-orchestrate==2.18.2`. Copy the import fallback from `tools/incident_triage/incident_triage.py` (`try: from .data import ... except ImportError: from data import ...`). |
 | Knowledge base | `knowledge/<id>/<name>.yaml` + `runbooks/*.txt` (or policy docs) | Built-in KB takes xlsx, docx, pdf, pptx, csv, html, txt; **markdown is not supported**, use `.txt`. Give every document a stable ID (like `RB-DEPLOY-01`) that the agent can cite. |
@@ -59,7 +59,7 @@ Use `flows/incident_triage/request_remediation.py` as the reference: input schem
 
 ## 6. Evaluation: two tiers
 
-- **Core, always created:** `evaluation/<id>/ground_truth.json`, a small file with one entry per demo case: id, the user-visible symptom, expected root cause or outcome, expected action (or `no_action`), whether human approval is required, red herrings, and the expected key tools. It is the checklist for the demo script and the expectations for the smoke test. Keep the shape of `evaluation/incident-triage/ground_truth.json`; the top-level key may be named after the case type (`cases` in the scaffold, `incidents` in Incident Triage). **One key is fixed: `smoke_prompts`**, a list of `{"id": ..., "prompt": ...}` that `scripts/smoke_test.py` sends to the agent and the validator requires for a live scenario. Write them diagnosis-only; an approval form cannot be answered through the run API.
+- **Core, always created:** `evaluation/<id>/ground_truth.json`, a small file with one entry per demo case: id, the user-visible symptom, expected root cause or outcome, expected action (or `no_action`), whether human approval is required, red herrings, and the expected key tools. It is the checklist for the demo script and the expectations for the smoke test. Keep the shape of `evaluation/incident-triage/ground_truth.json`; the top-level key may be named after the case type (`cases` in the scaffold, `incidents` in Incident Triage). **One key is fixed: `smoke_prompts`**, a list of `{"id": ..., "prompt": ...}` that `wxodemo smoke` sends to the agent and the validator requires for a live scenario. Write them diagnosis-only; an approval form cannot be answered through the run API.
 - **Optional, off by default:** ADK `test_cases/` and `eval_config.yaml`. Add them only if the user asks for a quality run. Incident Triage's optional tier produced a 0 of 15 final-answer check and hand-installed dependencies. Set `evaluation.tier: core` or `full` in the manifest accordingly.
 
 ## 7. Build order
@@ -69,8 +69,8 @@ Use `flows/incident_triage/request_remediation.py` as the reference: input schem
 3. Knowledge base documents.
 4. Write tool and flow (if any).
 5. Agent YAML and README.
-6. Manifest and `ground_truth.json` (run `scripts/new-scenario.py` first: it creates both as stubs, plus the demo script and slide placeholders). `validate` must print `OK`.
-7. Deploy (`scripts/deploy-all.ps1 -Scenario <id>` / `deploy-all.sh --scenario <id>`; a scenario stays `status: soon` until it is ready, and `soon` scenarios are skipped by a deploy without a scenario name), then run each demo prompt several times (a single pass proves little; `python scripts/smoke_test.py --scenario <id>` does one pass of the `smoke_prompts`) and record what actually happened.
+6. Manifest and `ground_truth.json` (run `python wxodemo.py new-scenario` first: it creates both as stubs, plus the demo script and slide placeholders). `validate` must print `OK`.
+7. Deploy (`python wxodemo.py deploy <id>`; a scenario stays `status: soon` until it is ready, and `soon` scenarios are skipped by `deploy --all`), then run each demo prompt several times (a single pass proves little; `python wxodemo.py smoke <id>` does one pass of the `smoke_prompts`) and record what actually happened.
 8. Demo markdown and presentation slides from the `scenario-demo-docs` templates. Fill "what was and was not verified" only from real runs.
 
 ## 8. Verify, do not assume
@@ -81,8 +81,8 @@ Treat these as open until you have checked them for the new scenario (they were 
 - The agent LLM and the KB embedding model (default `ibm/slate-125m-english-rtrvr-v2`) exist in the target instance.
 - Imported agents are drafts; `orchestrate agents deploy --name <name>` is needed for the chat UI (fails on the Developer Edition; warn and continue).
 - `orchestrate env activate` auth expires after about two hours.
-- `orchestrate chat ask` hangs in non-interactive shells; use the ADK run API (see `scripts/smoke_test.py`, whose live path has not been run against an instance yet).
-- The reworked deploy / teardown / package scripts were checked against a fake `orchestrate`, not a live instance.
+- `orchestrate chat ask` hangs in non-interactive shells; use the ADK run API (see `src/wxodemo/smoke.py`).
+- `wxodemo deploy` is tested against a fake `orchestrate`; scenario `undeploy` has only been run with `--dry-run`, not live.
 - KB indexing takes time after import; wait before the first demo query.
 
 ## 9. Secrets and hygiene

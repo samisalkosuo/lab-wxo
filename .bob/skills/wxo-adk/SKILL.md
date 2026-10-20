@@ -76,8 +76,8 @@ rg -C 5 "@tool" /tools/
 Always ensure an environment is active before running any other commands.
 
 ```powershell
-# Register and activate (reads env.cfg via the project script)
-.\activate-wxo.ps1
+# Register and activate (reads env.cfg via the project CLI)
+python wxodemo.py login
 
 # Or manually:
 orchestrate env add -n <name> -u <url> --type ibm_iam --activate
@@ -320,7 +320,7 @@ Follow this sequence for a new agent from scratch:
 
 1. **Activate environment**
    ```powershell
-   .\activate-wxo.ps1
+   python wxodemo.py login
    ```
 
 2. **Write the skill** — create a Python `.py` file with `@tool`-decorated functions.
@@ -362,8 +362,9 @@ Follow this sequence for a new agent from scratch:
 ## 8. Project Conventions (this repo)
 
 - Credentials: `env.cfg` (never commit; copy from `env.cfg.example`)
-- Environment activation: `.\activate-wxo.ps1`
-- Python virtual env: `.venv` — activate with `.\.venv\Scripts\Activate.ps1`
+- Environment activation: `python wxodemo.py login`
+- Deploy, undeploy, status, smoke, eval, export-chats: `python wxodemo.py --help`
+- Python virtual env: `.venv` (optional, recommended; create and activate it yourself) — activate with `.\.venv\Scripts\Activate.ps1`
 - ADK version: `ibm-watsonx-orchestrate==2.18.2`
 - Instance region: `eu-de`
 - Environment name: `techzone1`

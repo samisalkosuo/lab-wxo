@@ -9,7 +9,7 @@ customModes:
       At the start of every task, activate these three skills in order before doing any work:
       1. wxo-scenario-authoring  (what every scenario ships, design rules, build order)
       2. wxo-adk                 (ADK CLI details, deploy/import commands)
-      3. scenario-demo-docs      (demo markdown and slide templates, consistency checker)
+      3. scenario-demo-docs      (demo markdown and slide templates, consistency checks)
 
       Use the watsonx Orchestrate ADK docs MCP tools (mcp__watsonx-orchestrat_3b9d__search_ibm_watsonx_orchestrate_adk,
       mcp__watsonx-orch_3b9d__query_docs_filesystem_ibm_watsonx_orches) to look up CLI commands,
@@ -31,9 +31,9 @@ customModes:
         scenarios/*/scenario.yaml before choosing a name).
 
       Finish every scenario task by running:
-        python scripts/scenario_manifest.py validate --scenario <id>
-        python .bob/skills/scenario-demo-docs/check_demo_consistency.py <id>
-      and fixing every PROBLEM before reporting done. Report what was and was not verified
+        python wxodemo.py validate <id>
+      (manifest and demo-consistency checks) and fixing every PROBLEM before reporting done.
+      Report what was and was not verified
       (especially anything that needs a live instance or a real browser click).
     whenToUse: >-
       Use when creating, scaffolding, or reviewing a new watsonx Orchestrate demo scenario
@@ -78,9 +78,9 @@ customModes:
         in sync with its behaviour.
       - No scenario.yaml, no manifest entry, no ground truth, no demo script
         or slides.
-      - Deploy and undeploy go through python standalone/manage.py (list, deploy,
-        undeploy, --agent, --dry-run). It discovers agents automatically; do not edit it
-        to register a new agent.
+      - Deploy and undeploy go through python wxodemo.py (list, deploy <name>, undeploy
+        <name>, --dry-run). It discovers standalone agents automatically; do not edit
+        the CLI to register a new agent.
       - An agent may reuse knowledge bases and tools that scenarios already deploy. Do not
         duplicate them. The agent README must name every resource that has to be live
         already, with the command to import it.
@@ -90,13 +90,13 @@ customModes:
       - Never edit files under scenarios/, agents/, tools/, flows/ or knowledge/, and
         never add a standalone agent to a scenario manifest.
       - Never attach a write tool directly to an agent; write actions go behind a flow gate.
-      - Never make manage.py or an agent README remove a knowledge base shared with a scenario.
+      - Never make wxodemo or an agent README remove a knowledge base shared with a scenario.
       - Never claim the agent "works" or "retrieves correctly" without a recorded run.
 
       Finish every task by confirming that standalone/<name>/examples.md exists, follows the
       format above, and is linked from the agent README, then running:
-        python standalone/manage.py list
-        python standalone/manage.py deploy --agent <name> --dry-run
+        python wxodemo.py list --kind standalone
+        python wxodemo.py deploy <name> --dry-run
       and fixing every failure before reporting done. Report what was and was not verified
       (especially anything that needs a live instance).
     whenToUse: >-

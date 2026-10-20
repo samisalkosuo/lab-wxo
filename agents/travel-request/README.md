@@ -53,9 +53,8 @@ Approval rule (fictional, TP-APPR-01): none for a domestic trip with no leave, a
 
 ## Deploy
 
-```powershell
-$env:PYTHONUTF8 = "1"
-.\scripts\deploy-all.ps1 -Scenario travel-request
+```bash
+python wxodemo.py deploy travel-request
 ```
 
 Or this agent alone (tools, knowledge bases and the flow must already be imported):
@@ -71,8 +70,8 @@ orchestrate agents deploy --name travel_request
 
 ## Smoke test
 
-```powershell
-python scripts/smoke_test.py --scenario travel-request
+```bash
+python wxodemo.py smoke travel-request
 ```
 
 The smoke prompts are diagnosis only (they tell the agent not to call the flow). The run API cannot answer the approval form.

@@ -2,12 +2,12 @@
 // Copy to docs/demo/scenarios/{{ID}}.js (replacing the placeholder file), replace every {{PLACEHOLDER}},
 // then make sure presentation.html has <script src="scenarios/{{ID}}.js"></script>.
 //
-// AUTHOR NOTES (delete every "AUTHOR NOTE" before you finish; check_demo_consistency.py fails on leftovers):
+// AUTHOR NOTES (delete every "AUTHOR NOTE" before you finish; `python wxodemo.py validate {{ID}}` fails on leftovers):
 // - Mirrors the six Incident Triage slides: Overview, Why & How the Agent is Used, How & Why the Agent Works,
 //   Real-Life Backend Services Mapping, Business & Operational Benefits, Live Demo Prompts.
 // - {{N}} in each tag is this scenario's position in the sidebar = its position among the <script src>
 //   tags in presentation.html (1-based). Slide tags are static text, so they must be updated by hand if the
-//   order changes. The checker verifies this.
+//   order changes. `wxodemo validate` verifies this.
 // - Set status to "live" only when the scenario is deployed and the demo script exists.
 // - Numbers and claims: do not state a number (minutes saved, % reduction, seconds) unless it was measured in
 //   this repo. Otherwise omit it or write "illustrative". Describe knowledge-base documents by their real file

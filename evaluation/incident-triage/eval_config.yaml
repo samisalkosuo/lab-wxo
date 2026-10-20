@@ -1,13 +1,14 @@
 # Evaluation configuration for the incident_triage agent.
 # Run with:
-#   orchestrate evaluations evaluate --config evaluation/incident-triage/eval_config.yaml
+#   python wxodemo.py eval incident-triage
+# (same as: orchestrate evaluations evaluate --config evaluation/incident-triage/eval_config.yaml)
 #
 # Then analyze with:
 #   orchestrate evaluations analyze -d evaluation/incident-triage/results/
 #
 # Prerequisites:
-#   - Run `orchestrate env activate` (or deploy-all.ps1) first to refresh auth.
-#   - Set PYTHONUTF8=1 to avoid cp1252 encoding errors on Windows.
+#   - Run `python wxodemo.py login` first to refresh auth (`wxodemo eval` does this itself).
+#   - Set PYTHONUTF8=1 to avoid cp1252 encoding errors on Windows (`wxodemo` sets it for you).
 #   - The incident_triage agent must be live (orchestrate agents deploy --name incident_triage).
 #
 # Notes on what can and cannot be evaluated:

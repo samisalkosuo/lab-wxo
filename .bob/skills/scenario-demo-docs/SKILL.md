@@ -12,7 +12,7 @@ Every scenario ships two documents that follow Incident Triage:
 | Demo script (for the presenter) | `docs/demo/<id>-demo.md` | `templates/demo-script.template.md` (10 sections, scenes) |
 | Slides (for the audience) | `docs/demo/scenarios/<id>.js` | `templates/scenario.template.js` (6 slides) |
 
-Templates are in this skill's folder: `.bob/skills/scenario-demo-docs/templates/`. A checker is next to this file: `check_demo_consistency.py`.
+Templates are in this skill's folder: `.bob/skills/scenario-demo-docs/templates/`. The consistency checks run as part of `python wxodemo.py validate <id>`.
 
 Load `wxo-scenario-authoring` first for what the scenario itself must contain. This skill only covers the documents.
 
@@ -41,13 +41,13 @@ Load `wxo-scenario-authoring` first for what the scenario itself must contain. T
    - Escape `${`, backticks and `</script` inside the template literals; avoid them in text.
 4. **Check.** Run:
    ```
-   python .bob/skills/scenario-demo-docs/check_demo_consistency.py <id>
+   python wxodemo.py validate <id>
    ```
-   (the repo `.venv` has PyYAML for the manifest check; without it that one check is skipped and the script says so). It verifies the script tag, slide-tag numbers, leftover `{{...}}` / `AUTHOR NOTE`, prompt equality between md and slides, copy-button ids, and tool chips against the manifest. Fix every PROBLEM. It does not check facts, tone or claims: re-read rule 1-3 yourself.
+   It checks the manifest and prints the demo checks as `demo: ...` lines. The demo checks verify the script tag, slide-tag numbers, leftover `{{...}}` / `AUTHOR NOTE`, prompt equality between md and slides, copy-button ids, and tool chips against the manifest. Fix every PROBLEM. It does not check facts, tone or claims: re-read rule 1-3 yourself.
 5. **Look at it.** Open `docs/demo/presentation.html` in a browser (it works from `file://`), go to the new scenario, click through all six slides and press **Copy Prompt** once. State to the user what you did and did not check; a headless check cannot test clicks.
 6. **Update the plan and README** pointers for the scenario if they exist, and tell the user what is still unverified.
 
-`python scripts/new-scenario.py <id> --name "..." --description "..."` already copies the demo-script template to `docs/demo/<id>-demo.md` (with `{{ID}}`, `{{NAME}}`, `{{AGENT_NAME}}` filled in), so in step 2 you edit that file instead of copying the template. For slides it only creates a short "soon" placeholder `docs/demo/scenarios/<id>.js` and adds the `<script>` tag; step 3 still means copying `templates/scenario.template.js` over that placeholder. Use the step 2 copy command only for a scenario that was created without the scaffold.
+`python wxodemo.py new-scenario <id> --name "..." --description "..."` already copies the demo-script template to `docs/demo/<id>-demo.md` (with `{{ID}}`, `{{NAME}}`, `{{AGENT_NAME}}` filled in), so in step 2 you edit that file instead of copying the template. For slides it only creates a short "soon" placeholder `docs/demo/scenarios/<id>.js` and adds the `<script>` tag; step 3 still means copying `templates/scenario.template.js` over that placeholder. Use the step 2 copy command only for a scenario that was created without the scaffold.
 
 ## Pointers to the reference files
 

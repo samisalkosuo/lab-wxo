@@ -37,14 +37,9 @@ load-test noise (RB-NOISE-01), escalation policy (RB-ESC-01), and post-incident 
 
 ## Deploy
 
-```powershell
-# From repo root (imports everything in dependency order, then promotes agents to live):
-$env:PYTHONUTF8 = "1"
-.\scripts\deploy-all.ps1
-```
-
 ```bash
-bash scripts/deploy-all.sh
+# From repo root (logs in, imports everything in dependency order, then promotes agents to live):
+python wxodemo.py deploy incident-triage
 ```
 
 Or deploy this agent alone (prerequisites -- tools, knowledge base, flow -- must already be imported):
@@ -54,7 +49,7 @@ orchestrate agents import -f agents/incident-triage/agent.yaml
 orchestrate agents deploy --name incident_triage
 ```
 
-**Note:** `orchestrate agents import` creates the agent as a draft. The chat UI only shows live agents. `orchestrate agents deploy --name incident_triage` promotes it to live. The deploy scripts run this step automatically.
+**Note:** `orchestrate agents import` creates the agent as a draft. The chat UI only shows live agents. `orchestrate agents deploy --name incident_triage` promotes it to live. `wxodemo deploy` runs this step automatically.
 
 ## Demo script
 
@@ -80,7 +75,7 @@ run = runs.create_run(CreateRunRequest(
 # Poll run.id for status, then read thread messages.
 ```
 
-See `scripts/smoke_test.py` for a complete example (`python scripts/smoke_test.py --scenario incident-triage`; it finds the agent by name and reads its prompts from `evaluation/incident-triage/ground_truth.json`).
+See `src/wxodemo/smoke.py` for a complete example (`python wxodemo.py smoke incident-triage`; it finds the agent by name and reads its prompts from `evaluation/incident-triage/ground_truth.json`).
 
 ## Browser test (approval flow)
 
