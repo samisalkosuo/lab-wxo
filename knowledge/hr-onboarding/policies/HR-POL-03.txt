@@ -1,0 +1,32 @@
+HR-POL-03: Compliance Approval for Regulated Departments
+
+SYMPTOMS
+- The coordinator adds someone to the Finance team.
+- The coordinator asks why a standard HR Manager approval is not enough.
+- The coordinator asks which approval flow to use.
+
+POLICY
+Some departments handle regulated data and need a second approval. The department decides this,
+not the role. A person with an ordinary role in a regulated department still needs the extra approval.
+
+Departments:
+- Engineering: standard approval. The HR Manager approves.
+- People: standard approval. The HR Manager approves.
+- Finance: compliance-gated approval. The HR Manager approves first, then a Compliance Reviewer
+  approves. Access is granted only after both have approved.
+
+A request for a Finance hire that carries only the HR Manager approval is refused, even if the
+HR Manager approved it.
+
+PROCEDURE
+1. Read the department from the hire record and look up the department's rules.
+2. If compliance sign-off is required, use the compliance-gated approval flow. Tell the coordinator
+   that an HR Manager and a Compliance Reviewer must both approve.
+3. If it is not required, use the standard approval flow.
+4. Report the outcome of the flow exactly as returned. Do not describe access as granted if either
+   approver rejected the request.
+
+OUTCOME
+- Finance requests go through the compliance-gated flow.
+- All other departments use the standard flow.
+- The reply cites HR-POL-03 when a second approval is involved.

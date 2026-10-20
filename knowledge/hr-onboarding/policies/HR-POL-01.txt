@@ -1,0 +1,35 @@
+HR-POL-01: Role-Based Access for New Hires
+
+SYMPTOMS
+- The coordinator asks which systems a new hire gets.
+- The coordinator asks for a system that is not normally part of the role (for example production access for a Software Engineer).
+- The coordinator assumes two roles in the same department get the same access.
+
+POLICY
+Access is granted by role, not by department and not by request. Each role has a fixed list of
+systems. A system that is not on the role's list is not granted through onboarding, even if the
+hire works next to someone who has it.
+
+Systems: email, chat, source code, production access, finance ledger, VPN.
+
+Role matrix (employees):
+- Software Engineer: email, chat, source code (read and write on team repositories), VPN.
+  No production access. Production access belongs to Site Reliability Engineers.
+- Site Reliability Engineer: email, chat, source code, on-call production access, VPN.
+- Finance Analyst: email, chat, finance ledger (read-only), VPN. Needs compliance sign-off (HR-POL-03).
+- HR Coordinator: email, chat, VPN.
+Contractors have their own list (HR-POL-02).
+
+No role receives admin-level access through onboarding (HR-POL-04).
+
+PROCEDURE
+1. Identify the hire's role from the hire record.
+2. Look up the role's system list. Propose only systems on that list.
+3. If the coordinator asks for a system that is not on the list, say so and cite this document.
+   Do not file a request for it.
+4. Check the hire's department for extra approval rules (HR-POL-03).
+5. Make sure the record is complete before filing (HR-POL-05).
+
+OUTCOME
+- The request contains only systems allowed for the role.
+- Each proposal names the role and cites HR-POL-01.

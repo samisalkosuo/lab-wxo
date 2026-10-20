@@ -1,0 +1,15 @@
+spec_version: v1
+kind: knowledge_base
+name: hr_onboarding_policy
+description: |
+  Fictional HR onboarding access policy for the HR Onboarding demo. Use it to decide which systems
+  a new hire may receive and which approval is needed: role-based access and the role matrix
+  (HR-POL-01), contractor access (HR-POL-02), compliance approval for regulated departments such as
+  Finance (HR-POL-03), the ban on bulk and admin access grants (HR-POL-04), and the data a hire
+  record must contain before a request is filed (HR-POL-05). Cite the document ID in every answer.
+documents:
+  - policies/HR-POL-01.txt
+  - policies/HR-POL-02.txt
+  - policies/HR-POL-03.txt
+  - policies/HR-POL-04.txt
+  - policies/HR-POL-05.txt

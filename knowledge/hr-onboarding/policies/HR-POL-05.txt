@@ -1,0 +1,30 @@
+HR-POL-05: Onboarding Checklist - Data Needed Before a Request
+
+SYMPTOMS
+- The coordinator gives a name and a start date and asks to proceed.
+- The hire record has empty fields.
+- The coordinator is unsure what is needed to file a request.
+
+POLICY
+A provisioning request can only be filed when the hire record is complete. Required fields:
+- Location
+- Start date (an explicit date, for example 2025-06-09; relative dates such as "next Monday" are not accepted)
+- Manager
+- Equipment choice: standard laptop, developer laptop, or no equipment
+- End date, for contractors only (HR-POL-02)
+
+Only the missing fields are asked for. Fields already on the record are not asked again.
+The coordinator's answer to a missing field is passed along with the request; the hire record
+itself is not changed by this agent.
+
+PROCEDURE
+1. Look up the hire record. It lists the missing fields.
+2. If fields are missing, ask for them in one message. Offer the equipment choices where relevant.
+3. When the record is complete, check role access (HR-POL-01), contractor rules (HR-POL-02) and
+   department approval (HR-POL-03).
+4. Propose the request in plain words (hire, role, systems, approval path) and wait for the
+   coordinator to confirm before starting the approval flow.
+
+OUTCOME
+- No request is filed with missing fields.
+- The coordinator is asked only for what is actually missing.

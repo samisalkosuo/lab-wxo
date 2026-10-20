@@ -1,0 +1,54 @@
+# scenario.yaml - manifest for the HR Onboarding scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Status stays `soon` until both approval flows are verified in a browser (Approve and Reject each)
+# and the demo script is written from real runs.
+
+id: hr-onboarding
+name: HR Onboarding
+description: Conversational HR onboarding agent with role-access policy KB and two governed provisioning flows
+status: soon
+
+agents:
+  - name: hr_onboarding
+    path: agents/hr-onboarding
+    kind: native
+
+tools:
+  - path: tools/hr_onboarding
+    entry: hr_onboarding.py
+    names:
+      - hr_list_pending_hires
+      - hr_get_new_hire
+      - hr_get_role_access
+      - hr_get_department_config
+      - hr_check_provisioning_status
+      - hr_provision_access
+    # hr_provision_access is deliberately NOT attached to the agent; only the
+    # hr_request_provisioning and hr_request_compliance_provisioning flows call it
+    # after human approval (least privilege).
+    attached:
+      - hr_list_pending_hires
+      - hr_get_new_hire
+      - hr_get_role_access
+      - hr_get_department_config
+      - hr_check_provisioning_status
+
+knowledge_bases:
+  - name: hr_onboarding_policy
+    path: knowledge/hr-onboarding
+
+# Both flows live in one folder, so each entry names its file.
+flows:
+  - name: hr_request_provisioning
+    path: flows/hr_onboarding
+    file: hr_request_provisioning.py
+  - name: hr_request_compliance_provisioning
+    path: flows/hr_onboarding
+    file: hr_request_compliance_provisioning.py
+
+evaluation:
+  path: evaluation/hr-onboarding
+  tier: core
+
+demo:
+  script: docs/demo/hr-onboarding-demo.md

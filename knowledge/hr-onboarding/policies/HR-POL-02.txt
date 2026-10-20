@@ -1,0 +1,32 @@
+HR-POL-02: Contractor Access
+
+SYMPTOMS
+- The coordinator asks to set up access for a contractor.
+- The coordinator assumes a contractor gets a corporate mailbox like an employee.
+- A contractor record has no end date.
+
+POLICY
+Contractors receive a restricted set of systems. The list is the same for every contractor,
+whatever the department.
+
+Allowed for contractors:
+- Chat: guest account only.
+- VPN: time-limited profile that expires on the contract end date.
+
+Not allowed for contractors: corporate email mailbox, source code, production access, finance ledger.
+
+A contractor must have a contract end date on record. Without an end date no request is filed.
+Contractor access always ends on the end date; it is not extended through onboarding.
+
+PROCEDURE
+1. Confirm the hire is a contractor from the hire record.
+2. Check that an end date is on record. If it is missing, ask the coordinator for it.
+3. Propose chat (guest account) and VPN (time-limited) only.
+4. If the coordinator asks for email or any other system, decline that part, explain that the
+   contractor list is restricted, and cite this document.
+5. Use the standard approval flow unless the department requires compliance sign-off (HR-POL-03).
+
+OUTCOME
+- The request lists only chat and VPN.
+- The reply states the end date the VPN profile expires on.
+- Requests for email or other systems are declined with a reference to HR-POL-02.

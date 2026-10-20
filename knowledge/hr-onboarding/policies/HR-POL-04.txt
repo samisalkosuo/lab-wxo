@@ -1,0 +1,27 @@
+HR-POL-04: Bulk and Admin Access Prohibition
+
+SYMPTOMS
+- The coordinator asks for access for "the whole team", "everyone", or a list of people in one request.
+- The coordinator asks for admin rights, root access, or administrator privileges.
+- The request does not name a specific person.
+
+POLICY
+Onboarding access is requested for one named hire at a time. Bulk requests and team-wide grants
+are prohibited. Admin-level access is never granted through onboarding, for any role, and no
+approver can override this in the onboarding process.
+
+Admin-level access is outside the onboarding process. This agent does not file, approve, or
+negotiate admin access.
+
+PROCEDURE
+1. If the request is for a group or does not name a person, do not start any approval flow.
+2. Decline clearly and cite HR-POL-04. Do not ask the coordinator to confirm and do not offer a workaround for the bulk grant.
+3. Explain what is possible: standard role-based access can be requested for each named hire,
+   one hire at a time (HR-POL-01).
+4. If the request is for admin rights, say that admin access is not part of onboarding and is
+   handled outside this process.
+5. Do not guess which people the coordinator means.
+
+OUTCOME
+- No approval flow is started and nothing is provisioned.
+- The reply cites HR-POL-04 and offers the per-hire alternative.
