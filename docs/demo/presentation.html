@@ -100,6 +100,13 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+    }
+
+    .sidebar-header:hover {
+      background-color: var(--bg-surface-elevated);
     }
 
     .brand-icon {
@@ -890,6 +897,162 @@
       opacity: 1;
     }
 
+    /* Home Dashboard View */
+    .home-hero {
+      margin-bottom: 28px;
+    }
+
+    .home-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .kpi-card:hover {
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .kpi-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .kpi-num {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.1;
+      font-family: var(--font-mono);
+    }
+
+    .kpi-label {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .home-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .home-section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .home-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    @media (max-width: 1050px) {
+      .home-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .home-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .home-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      text-align: left;
+    }
+
+    .home-card:hover {
+      background-color: var(--bg-surface-elevated);
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .home-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .home-card-title {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .home-card-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .home-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+
+    .home-card:hover .home-card-footer {
+      color: var(--accent-blue-hover);
+    }
+
     /* Responsive */
     @media (max-width: 900px) {
       .grid-2, .grid-3 {
@@ -909,7 +1072,7 @@
   <div class="app-container">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
+      <div class="sidebar-header" onclick="goHome()" title="Return to Overview / Catalog">
         <div class="brand-icon">wx</div>
         <div>
           <div class="brand-title">watsonx Orchestrate</div>
@@ -1056,9 +1219,9 @@
     const agentsData = window.STANDALONE_AGENTS || [];
 
     // State
-    let currentType = "scenario"; // "scenario" | "agent"
-    let currentScenarioIdx = 0;
-    let currentAgentIdx = 0;
+    let currentType = "home"; // "home" | "scenario" | "agent"
+    let currentScenarioIdx = -1;
+    let currentAgentIdx = -1;
     let currentSlideIdx = 0;
 
     // Elements
@@ -1075,6 +1238,7 @@
     const scenarioTocTitle = document.getElementById("scenario-toc-title");
     const sidebar = document.getElementById("sidebar");
     const toast = document.getElementById("toast");
+    const bottomBar = document.querySelector(".bottom-bar");
 
     // Toggle collapsible accordion section
     function toggleNavSection(id) {
@@ -1082,6 +1246,16 @@
       if (section) {
         section.classList.toggle("collapsed");
       }
+    }
+
+    // Helper to return home
+    function goHome() {
+      currentType = "home";
+      currentScenarioIdx = -1;
+      currentAgentIdx = -1;
+      currentSlideIdx = 0;
+      updateNavItems();
+      renderDeck();
     }
 
     // Helper to get active deck
@@ -1154,8 +1328,11 @@
 
     // Initialize
     function init() {
-      // Check URL hash (e.g. #scenario/0/2 or #agent/1/0 or #0/2)
-      if (window.location.hash) {
+      buildScenarioList();
+      buildAgentList();
+
+      // Check URL hash (e.g. #scenario/0/2 or #agent/1/0 or #home)
+      if (window.location.hash && window.location.hash !== "#home" && window.location.hash !== "#") {
         const parts = window.location.hash.replace("#", "").split("/");
         if (parts.length === 3) {
           const type = parts[0];
@@ -1173,13 +1350,16 @@
         } else if (parts.length === 2) {
           const sIdx = parseInt(parts[0], 10);
           const slIdx = parseInt(parts[1], 10);
-          if (!isNaN(sIdx) && sIdx < scenariosData.length) currentScenarioIdx = sIdx;
-          if (!isNaN(slIdx) && slIdx < scenariosData[currentScenarioIdx].slides.length) currentSlideIdx = slIdx;
+          if (!isNaN(sIdx) && sIdx < scenariosData.length) {
+            currentType = "scenario";
+            currentScenarioIdx = sIdx;
+            if (!isNaN(slIdx) && slIdx < scenariosData[currentScenarioIdx].slides.length) currentSlideIdx = slIdx;
+          }
         }
+      } else {
+        currentType = "home";
       }
 
-      buildScenarioList();
-      buildAgentList();
       updateNavItems();
       renderDeck();
       document.addEventListener("keydown", handleKeydown);
@@ -1213,9 +1393,108 @@
       agentBtns.forEach((btn, idx) => {
         btn.classList.toggle("active", currentType === "agent" && idx === currentAgentIdx);
       });
+
+      const tocSection = document.getElementById("toc-section");
+      if (tocSection) {
+        tocSection.style.display = currentType === "home" ? "none" : "flex";
+      }
     }
 
     function renderDeck() {
+      if (currentType === "home") {
+        topScenarioName.textContent = "watsonx Orchestrate — Solutions & Live Demos";
+        topScenarioPill.textContent = "Catalog Overview";
+        slideCounter.textContent = "Catalog";
+        progressBar.style.width = "0%";
+        if (bottomBar) bottomBar.style.display = "none";
+        window.location.hash = "home";
+
+        slideContent.innerHTML = `
+          <div class="home-hero">
+            <div class="slide-tag">Catalog • Solutions & Demos</div>
+            <h1 class="slide-title">watsonx Orchestrate Agent Catalog</h1>
+            <p class="slide-subtitle">Explore interactive production demo scenarios and specialized standalone agents. Click any tile or use the left navigation to open a solution deck.</p>
+          </div>
+
+          <div class="home-kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap icon-blue">🚀</div>
+              <div>
+                <div class="kpi-num">${scenariosData.length}</div>
+                <div class="kpi-label">Demo Scenarios</div>
+                <div class="kpi-sub">${scenariosData.filter(s => s.status === 'live').length} Live Demos • ${scenariosData.filter(s => s.status !== 'live').length} Upcoming</div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon-wrap icon-purple">🤖</div>
+              <div>
+                <div class="kpi-num">${agentsData.length}</div>
+                <div class="kpi-label">Standalone Agents</div>
+                <div class="kpi-sub">Specialized prompt & tool utilities</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="home-section-header">
+            <div class="home-section-title">
+              <span>🚀</span>
+              <span>Demo Scenarios</span>
+            </div>
+            <span class="nav-count-badge">${scenariosData.length} Total</span>
+          </div>
+
+          <div class="home-cards-grid">
+            ${scenariosData.map((scenario, idx) => `
+              <div class="home-card" onclick="switchScenario(${idx})">
+                <div>
+                  <div class="home-card-header">
+                    <div class="home-card-title">${idx + 1}. ${scenario.name}</div>
+                    <span class="scenario-badge ${scenario.status === 'live' ? 'badge-active' : 'badge-upcoming'}">
+                      ${scenario.status === 'live' ? 'Live' : 'Coming Soon'}
+                    </span>
+                  </div>
+                  <div class="home-card-desc">${scenario.description}</div>
+                </div>
+                <div class="home-card-footer">
+                  <span>${scenario.slides.length} Slides</span>
+                  <span>Explore Scenario →</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="home-section-header">
+            <div class="home-section-title">
+              <span>🤖</span>
+              <span>Standalone Agents</span>
+            </div>
+            <span class="nav-count-badge">${agentsData.length} Total</span>
+          </div>
+
+          <div class="home-cards-grid">
+            ${agentsData.map((agent, idx) => `
+              <div class="home-card" onclick="switchAgent(${idx})">
+                <div>
+                  <div class="home-card-header">
+                    <div class="home-card-title">${agent.name}</div>
+                    <span class="scenario-badge badge-standalone">Agent</span>
+                  </div>
+                  <div class="home-card-desc">${agent.description}</div>
+                </div>
+                <div class="home-card-footer">
+                  <span>${agent.slides.length} Slides</span>
+                  <span>View Prompts & Purpose →</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        slideStage.scrollTop = 0;
+        return;
+      }
+
+      if (bottomBar) bottomBar.style.display = "flex";
       const deck = getActiveDeck();
       if (!deck) return;
 
@@ -1315,15 +1594,21 @@
     function handleKeydown(e) {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
       if (e.key === "ArrowRight" || e.key === "Space") {
-        e.preventDefault();
-        nextSlide();
+        if (currentType !== "home") {
+          e.preventDefault();
+          nextSlide();
+        }
       } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        prevSlide();
+        if (currentType !== "home") {
+          e.preventDefault();
+          prevSlide();
+        }
       } else if (e.key.toLowerCase() === "f") {
         toggleFullscreen();
       } else if (e.key.toLowerCase() === "s") {
         toggleSidebar();
+      } else if (e.key.toLowerCase() === "h") {
+        goHome();
       }
     }
 
