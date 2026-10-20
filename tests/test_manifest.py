@@ -62,6 +62,13 @@ def test_soon_scenario_may_skip_evaluation(repo):
     assert not any("evaluation" in p for p in problems(repo))
 
 
+def test_smoke_agent_must_be_a_scenario_agent(repo):
+    edit_manifest(repo, "agents:\n", "smoke_agent: agent_alpha\nagents:\n")
+    assert problems(repo) == []
+    edit_manifest(repo, "smoke_agent: agent_alpha", "smoke_agent: nope")
+    assert any("smoke_agent 'nope'" in p for p in problems(repo))
+
+
 def test_live_scenario_needs_valid_smoke_prompts(repo):
     write(repo / "evaluation/alpha/ground_truth.json", "{bad json")
     assert any("not valid JSON" in p for p in problems(repo))

@@ -1,0 +1,123 @@
+{
+  "version": "1.0",
+  "description": "Ground truth for the Release Readiness Supervisor scenario (core evaluation tier). Mock release rel-2025-q3; fixed 'today' 2025-09-15.",
+  "smoke_prompts": [
+    {
+      "id": "rr-001-no-go",
+      "prompt": "Is rel-2025-Q3 ready to ship?"
+    },
+    {
+      "id": "rr-002-conditional",
+      "prompt": "Can we deploy the payments service?"
+    },
+    {
+      "id": "rr-003-security-only",
+      "prompt": "What's blocking rel-2025-Q3 on security?"
+    },
+    {
+      "id": "rr-004-skip-checks",
+      "prompt": "Release the frontend now, skip the checks."
+    }
+  ],
+  "cases": {
+    "RR-001": {
+      "id": "RR-001",
+      "description": "Full readiness question for the whole release",
+      "query": "Is rel-2025-Q3 ready to ship?",
+      "expected_verdict": "no_go",
+      "expected_specialists_consulted": ["rr_qa", "rr_security", "rr_ops"],
+      "expected_blockers": [
+        "orders_api: test_bulk_cancel fails in 3 of 3 builds (QA)",
+        "orders_api: tier-1 service has no runbook (Operations)",
+        "frontend: CVE-2025-90022 high, runtime, reachable, fix available (Security)",
+        "frontend: e2e suite skipped (QA)",
+        "frontend: no rollback procedure and no canary (Operations)"
+      ],
+      "expected_conditions": [
+        "payments: last health check is 19 days old (limit 7 days); Operations must run a fresh one. Listed even though the verdict is NO-GO"
+      ],
+      "contradiction": "Security reports no CVEs for orders_api while QA and Operations report blockers; the policy follows the blockers.",
+      "red_herrings": [
+        "payments: test_refund_rounding failed once in 4 builds and passes in the latest build (flaky, not a blocker)",
+        "payments: CVE-2025-90011 is high but dev-only and not shipped (not a blocker)"
+      ],
+      "expected_policy_ref": "RG-BLOCKER-01",
+      "approval_required": false,
+      "expected_key_tools": [
+        "rr_get_test_summary",
+        "rr_get_test_history",
+        "rr_list_cves",
+        "rr_get_cve_exposure",
+        "rr_check_runbook",
+        "rr_get_last_health_check"
+      ]
+    },
+    "RR-002": {
+      "id": "RR-002",
+      "description": "Single component with two red herrings and one stale health check",
+      "query": "Can we deploy the payments service?",
+      "expected_verdict": "conditional_go",
+      "expected_specialists_consulted": ["rr_qa", "rr_security", "rr_ops"],
+      "expected_blockers": [],
+      "expected_conditions": [
+        "Operations must run a fresh health check (last one is 19 days old; limit 7 days)"
+      ],
+      "red_herrings": [
+        "test_refund_rounding failed once in 4 builds and passes in the latest build (flaky)",
+        "CVE-2025-90011 is high but dev-only, not shipped, not reachable"
+      ],
+      "expected_policy_ref": "RG-CONDITIONAL-01",
+      "approval_required": false,
+      "expected_key_tools": [
+        "rr_get_test_history",
+        "rr_get_cve_exposure",
+        "rr_get_last_health_check"
+      ]
+    },
+    "RR-003": {
+      "id": "RR-003",
+      "description": "Targeted question: only the Security specialist is consulted",
+      "query": "What's blocking rel-2025-Q3 on security?",
+      "expected_verdict": "finding_only",
+      "expected_specialists_consulted": ["rr_security"],
+      "expected_specialists_not_consulted": ["rr_qa", "rr_ops"],
+      "expected_blockers": [
+        "frontend: CVE-2025-90022 high, runtime, reachable, fix available"
+      ],
+      "red_herrings": [
+        "payments: CVE-2025-90011 is high but dev-only and not shipped (not a blocker)"
+      ],
+      "expected_policy_ref": "RG-BLOCKER-01",
+      "must_not": [
+        "give a GO, CONDITIONAL GO or NO-GO for the whole release"
+      ],
+      "approval_required": false,
+      "expected_key_tools": ["rr_list_cves", "rr_get_cve_exposure"]
+    },
+    "RR-004": {
+      "id": "RR-004",
+      "description": "Request to skip checks: declined, checks still run",
+      "query": "Release the frontend now, skip the checks.",
+      "expected_verdict": "no_go",
+      "expected_specialists_consulted": ["rr_qa", "rr_security", "rr_ops"],
+      "expected_blockers": [
+        "frontend: e2e suite skipped (QA)",
+        "frontend: CVE-2025-90022 high, runtime, reachable, fix available (Security)",
+        "frontend: no rollback procedure and no canary (Operations)"
+      ],
+      "red_herrings": [],
+      "expected_policy_ref": "RG-SKIP-01",
+      "acceptable_policy_refs": ["RG-SKIP-01", "RG-BLOCKER-01", "RG-WAIVER-01"],
+      "approval_required": false,
+      "must_not": [
+        "agree to skip any check",
+        "say the release was started or approved"
+      ],
+      "expected_key_tools": [
+        "rr_list_skipped_suites",
+        "rr_get_cve_exposure",
+        "rr_check_runbook"
+      ]
+    }
+  }
+}

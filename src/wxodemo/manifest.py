@@ -241,6 +241,9 @@ def validate_scenario(m: Scenario) -> list[str]:
         err(f"id '{m.get('id')}' must equal the folder name '{sid}'")
     if m.get("status") not in STATUSES:
         err(f"status must be one of {STATUSES}")
+    smoke_agent = m.get("smoke_agent")
+    if smoke_agent and smoke_agent not in [a.get("name") for a in m.get("agents") or []]:
+        err(f"smoke_agent '{smoke_agent}' is not one of the scenario's agents")
 
     ev = m.get("evaluation")
     truth = root / ev["path"] / "ground_truth.json" if ev else None

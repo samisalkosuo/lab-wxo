@@ -46,10 +46,17 @@ class CaseResult:
 
 
 def load_smoke_plan(scenario: Scenario) -> tuple[str, list[SmokeCase]]:
-    """(agent name, cases) from the manifest and ground_truth.json."""
+    """(agent name, cases) from the manifest and ground_truth.json.
+
+    The agent is the manifest's optional `smoke_agent` (needed when collaborators must be listed
+    before the supervisor), else the first agent.
+    """
     agents = scenario.get("agents") or []
     if not agents:
         raise ManifestError(f"scenario '{scenario.id}' has no agents in its manifest")
+    smoke_agent = scenario.get("smoke_agent")
+    if smoke_agent and smoke_agent not in [a["name"] for a in agents]:
+        raise ManifestError(f"smoke_agent '{smoke_agent}' is not one of the scenario's agents")
     evaluation = (scenario.get("evaluation") or {}).get("path")
     if not evaluation:
         raise ManifestError(f"scenario '{scenario.id}' has no evaluation.path in its manifest")
@@ -65,7 +72,7 @@ def load_smoke_plan(scenario: Scenario) -> tuple[str, list[SmokeCase]]:
         raise ManifestError(
             f"{evaluation}/ground_truth.json has no 'smoke_prompts' (a list of {{id, prompt}})"
         )
-    return agents[0]["name"], cases
+    return smoke_agent or agents[0]["name"], cases
 
 
 def select_cases(cases: list[SmokeCase], only: list[str]) -> list[SmokeCase]:

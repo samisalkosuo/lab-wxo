@@ -1,0 +1,33 @@
+RG-BLOCKER-01: What Blocks a Release
+
+SYMPTOMS
+- A specialist (QA, Security or Operations) reports a failing test, a CVE, a missing runbook,
+  a skipped suite or a missing rollback procedure for a component.
+- Specialists disagree: one says "pass" for a component while another reports a problem.
+- A flag looks serious but may not affect what is actually shipped.
+
+POLICY
+A component is BLOCKED, and the release is NO-GO while any component is blocked, when ANY of
+the following is true:
+1. A test fails in every one of the recent builds (a consistent failure). A test that failed in
+   only some builds and passes in the latest build is flaky and is NOT a blocker on its own.
+2. A skipped or disabled test suite covers the component's end-to-end behaviour.
+3. An open CVE of high or critical severity is in a runtime dependency that ships in the
+   artifact and is reachable at runtime. A CVE in a dev-only dependency that is not shipped
+   is NOT a blocker.
+4. A tier-1 service has no runbook.
+5. The component has no rollback procedure.
+
+One specialist saying "pass" does not clear a component that another specialist has blocked.
+A release is judged per component first, then for the whole release.
+
+PROCEDURE
+1. Collect the QA, Security and Operations findings for each component in scope.
+2. Resolve every flag: ask for test history for failing tests, and for exposure of each CVE.
+3. List each component as blocked (with the rule number) or not blocked.
+4. If any component is blocked, the release recommendation is NO-GO. Name each blocker and
+   the specialist that reported it.
+
+OUTCOME
+- Any blocked component: NO-GO.
+- No blocked component: apply RG-CONDITIONAL-01.

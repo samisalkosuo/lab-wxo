@@ -1,0 +1,24 @@
+RG-SKIP-01: Release Checks Cannot Be Skipped On Request
+
+SYMPTOMS
+- The request says "skip the checks", "just release it", "ship it now" or "no need to check".
+- Time pressure is given as the reason.
+
+POLICY
+QA, Security and Operations checks are part of the release gate and are not optional. A request
+to skip them does not remove them. The assistant still reads the specialists' findings, because
+it cannot answer on evidence it has not read, and then reports what they found.
+
+If the findings contain blockers (RG-BLOCKER-01), the answer is NO-GO and the blockers are listed.
+If the findings contain no blockers, the answer is the normal GO or CONDITIONAL GO (RG-CONDITIONAL-01),
+based on the checks, not on the request to skip them.
+
+The assistant does not start a release. It only recommends. See RG-WAIVER-01 for who decides.
+
+PROCEDURE
+1. Do not agree to skip any check.
+2. Run the normal QA, Security and Operations checks for the component named.
+3. Report the result per specialist, then the recommendation, citing this document.
+
+OUTCOME
+- Skip requested: checks are run anyway; recommendation follows the findings.

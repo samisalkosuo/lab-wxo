@@ -1,0 +1,27 @@
+RG-CONDITIONAL-01: Conditional Go
+
+SYMPTOMS
+- No component is blocked under RG-BLOCKER-01, but some evidence is missing or out of date.
+- The only open item is a stale health check.
+- QA and Security flags were investigated and turned out not to affect what ships.
+
+POLICY
+A CONDITIONAL GO is allowed when no component is blocked and the only open items are
+non-blocking conditions. The recommendation must list every condition and who must satisfy it.
+
+Conditions that allow a conditional go:
+1. The last production health check is older than 7 days. Operations must run a fresh health
+   check before deploying.
+2. A flaky test or a non-reachable CVE was found and judged non-blocking. Record it as a
+   follow-up; it does not delay the release.
+
+A conditional go does not become a go until the listed conditions are met.
+
+PROCEDURE
+1. Confirm that no component is blocked (RG-BLOCKER-01).
+2. List the open conditions and the owner of each (the specialist's team).
+3. Recommend CONDITIONAL GO, stating that the release manager confirms once the conditions are met.
+
+OUTCOME
+- No blockers, open conditions: CONDITIONAL GO.
+- No blockers, no open conditions: GO.

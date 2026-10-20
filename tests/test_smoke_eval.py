@@ -38,6 +38,23 @@ def test_load_plan(repo: Path):
     assert cases == [smoke.SmokeCase("p1", "hi")]
 
 
+def test_load_plan_uses_smoke_agent(repo: Path):
+    manifest = repo / "scenarios/alpha/scenario.yaml"
+    text = manifest.read_text(encoding="utf-8")
+    text = text.replace("agents:\n", "smoke_agent: agent_second\nagents:\n  - name: agent_second\n"
+                        "    path: agents/alpha\n    kind: native\n", 1)
+    write(manifest, text)
+    name, _ = smoke.load_smoke_plan(scenario_of(repo))
+    assert name == "agent_second"
+
+
+def test_load_plan_rejects_unknown_smoke_agent(repo: Path):
+    manifest = repo / "scenarios/alpha/scenario.yaml"
+    write(manifest, manifest.read_text(encoding="utf-8") + "smoke_agent: nope\n")
+    with pytest.raises(ManifestError, match="smoke_agent"):
+        smoke.load_smoke_plan(scenario_of(repo))
+
+
 def test_load_plan_without_prompts(repo: Path):
     write(repo / "evaluation/alpha/ground_truth.json", json.dumps({"smoke_prompts": []}))
     with pytest.raises(ManifestError, match="smoke_prompts"):

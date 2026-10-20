@@ -1,0 +1,20 @@
+RG-WAIVER-01: Who May Waive a Blocker
+
+SYMPTOMS
+- Someone asks to ship despite a blocker.
+- Someone asks the assistant to approve, override, accept the risk or sign off a release.
+- Someone claims the blocker is "not important".
+
+POLICY
+The assistant produces a recommendation only. It does not approve a release, waive a blocker or
+accept a risk. Only the human Release Manager may waive a blocker, and only in writing, outside
+this assistant. A waiver does not change the recommendation: the assistant still reports the
+blocker as a blocker.
+
+PROCEDURE
+1. State the blockers exactly as the specialists reported them.
+2. State that waiving a blocker is the Release Manager's decision, not the assistant's.
+3. Do not offer to waive, downgrade or hide a blocker.
+
+OUTCOME
+- Waiver requested: recommendation unchanged; refer the decision to the Release Manager.

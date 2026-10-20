@@ -1,0 +1,61 @@
+# scenario.yaml - manifest for the Release Readiness Supervisor scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+#
+# Agent order matters: `agents import` of the supervisor resolves its collaborators by name, so the
+# three specialists are listed first. `smoke_agent` tells `wxodemo smoke` to talk to the supervisor.
+
+id: release-readiness
+name: Release Readiness Supervisor
+description: Multi-agent routing across QA, security & operations
+status: live
+
+smoke_agent: release_readiness
+
+agents:
+  - name: rr_qa
+    path: agents/rr-qa
+    kind: native
+  - name: rr_security
+    path: agents/rr-security
+    kind: native
+  - name: rr_ops
+    path: agents/rr-ops
+    kind: native
+  - name: release_readiness
+    path: agents/release-readiness
+    kind: native
+
+tools:
+  - path: tools/release_readiness
+    entry: release_readiness.py
+    names:
+      - rr_get_test_summary
+      - rr_get_test_history
+      - rr_list_skipped_suites
+      - rr_list_cves
+      - rr_get_cve_exposure
+      - rr_check_runbook
+      - rr_get_last_health_check
+    # All tools are read-only. Each specialist lists only its own tools in its agent.yaml;
+    # the supervisor lists none and works through its collaborators.
+    attached:
+      - rr_get_test_summary
+      - rr_get_test_history
+      - rr_list_skipped_suites
+      - rr_list_cves
+      - rr_get_cve_exposure
+      - rr_check_runbook
+      - rr_get_last_health_check
+
+knowledge_bases:
+  - name: release_readiness_policy
+    path: knowledge/release-readiness
+
+flows: []
+
+evaluation:
+  path: evaluation/release-readiness
+  tier: core
+
+demo:
+  script: docs/demo/release-readiness-demo.md
