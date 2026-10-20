@@ -1154,7 +1154,7 @@
         </div>
 
         <div class="top-bar-right">
-          <div class="kbd-shortcut">← / → to navigate</div>
+          <div class="kbd-shortcut" id="nav-hint">← / → to navigate</div>
           <button class="btn-icon" onclick="toggleFullscreen()" title="Toggle Fullscreen (F)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
@@ -1239,6 +1239,7 @@
     const sidebar = document.getElementById("sidebar");
     const toast = document.getElementById("toast");
     const bottomBar = document.querySelector(".bottom-bar");
+    const navHint = document.getElementById("nav-hint");
 
     // Toggle collapsible accordion section
     function toggleNavSection(id) {
@@ -1404,7 +1405,8 @@
       if (currentType === "home") {
         topScenarioName.textContent = "watsonx Orchestrate — Solutions & Live Demos";
         topScenarioPill.textContent = "Catalog Overview";
-        slideCounter.textContent = "Catalog";
+        if (slideCounter) slideCounter.style.display = "none";
+        if (navHint) navHint.style.display = "none";
         progressBar.style.width = "0%";
         if (bottomBar) bottomBar.style.display = "none";
         window.location.hash = "home";
@@ -1495,6 +1497,8 @@
       }
 
       if (bottomBar) bottomBar.style.display = "flex";
+      if (slideCounter) slideCounter.style.display = "block";
+      if (navHint) navHint.style.display = "inline-flex";
       const deck = getActiveDeck();
       if (!deck) return;
 
