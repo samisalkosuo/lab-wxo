@@ -1,0 +1,95 @@
+{
+  "version": "1.0",
+  "description": "Ground truth for the Customer Returns scenario (core evaluation tier).",
+  "smoke_prompts": [
+    {
+      "id": "cr-001-warranty",
+      "prompt": "I bought a ProBlend 500 blender last month and it broke after a few uses. My order number is ORD-1001."
+    },
+    {
+      "id": "cr-002-denied",
+      "prompt": "I bought some headphones about six weeks ago. Order ORD-1002. I just don't like them anymore, I want a refund."
+    },
+    {
+      "id": "cr-003-gift",
+      "prompt": "I received a kitchen scale as a gift and I'd like to return it. I don't have an order number but the serial number on the box is SN-KTCH-780-C103."
+    },
+    {
+      "id": "cr-004-escalate",
+      "prompt": "I was charged twice for my order ORD-1004. I need a refund for the duplicate charge."
+    }
+  ],
+  "cases": {
+    "CR-001": {
+      "id": "CR-001",
+      "description": "Within-warranty defect — ProBlend 500 blender broke after 3 uses",
+      "order_id": "ORD-1001",
+      "customer_id": "CUST-101",
+      "symptom": "Customer reports blender broke after a few uses; purchased 14 days ago.",
+      "expected_policy_ref": "RP-WARRANTY-01",
+      "expected_eligibility": true,
+      "expected_action": "returns_process_return",
+      "expected_refund_type": "replacement",
+      "approval_required": true,
+      "red_herrings": [
+        "ORD-1005 / SN-BLND-PRO-A101: Alice also has a warranty for a ProBlend PRO (different SKU). Agent must not apply this warranty to ORD-1001."
+      ],
+      "expected_key_tools": [
+        "returns_lookup_order",
+        "returns_check_warranty",
+        "returns_process_return"
+      ]
+    },
+    "CR-002": {
+      "id": "CR-002",
+      "description": "Outside 30-day window, no defect — headphones return denied",
+      "order_id": "ORD-1002",
+      "customer_id": "CUST-102",
+      "symptom": "Customer no longer wants headphones; purchased 46 days ago, outside 30-day window.",
+      "expected_policy_ref": "RP-STANDARD-01",
+      "expected_eligibility": false,
+      "expected_action": "no_action",
+      "expected_refund_type": null,
+      "approval_required": false,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "returns_lookup_order",
+        "returns_process_return"
+      ],
+      "notes": "Flow's ineligible_result path should be triggered, not the approval form. Not verifiable via smoke prompt alone (CLI cannot observe flow branching)."
+    },
+    "CR-003": {
+      "id": "CR-003",
+      "description": "Gift return via serial number — kitchen scale eligible for store credit",
+      "order_id": "ORD-1003",
+      "customer_id": "CUST-103",
+      "symptom": "Customer received product as a gift, has no order ID, provides serial number SN-KTCH-780-C103.",
+      "expected_policy_ref": "RP-GIFT-01",
+      "expected_eligibility": true,
+      "expected_action": "returns_process_return",
+      "expected_refund_type": "store_credit",
+      "approval_required": true,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "returns_lookup_by_serial",
+        "returns_lookup_order",
+        "returns_process_return"
+      ]
+    },
+    "CR-004": {
+      "id": "CR-004",
+      "description": "Billing dispute — duplicate charge, out of scope, must escalate",
+      "order_id": "ORD-1004",
+      "customer_id": "CUST-104",
+      "symptom": "Customer reports duplicate charge; this is a billing issue, not a product return.",
+      "expected_policy_ref": "RP-ESCALATE-01",
+      "expected_eligibility": false,
+      "expected_action": "no_action",
+      "expected_refund_type": null,
+      "approval_required": false,
+      "red_herrings": [],
+      "expected_key_tools": [],
+      "notes": "Agent must decline to process a return and direct customer to the Billing team. No flow should be triggered."
+    }
+  }
+}

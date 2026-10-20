@@ -1,0 +1,31 @@
+RP-GIFT-01: Gift Returns
+
+SYMPTOMS
+- Customer says the product was a gift and they do not have an order confirmation or order ID.
+- Customer provides only the product itself or its serial number.
+- Customer uses phrases such as "I received this as a gift", "I don't have the receipt",
+  "it was given to me".
+
+POLICY
+Gift recipients may return a product without an order ID by providing the product serial number.
+The serial number is printed on the product packaging and on the device label.
+
+ELIGIBILITY
+A gift return is eligible when ALL of the following are true:
+1. The serial number is found in the product registry and links to an original order.
+2. The original purchase date (from the linked order) is within 30 calendar days.
+3. No prior return has been filed for the linked order.
+
+PROCEDURE
+1. Ask the customer for the product serial number.
+2. Use the serial-number lookup tool to find the linked order and purchase date.
+3. Check that the purchase date is within the 30-day gift-return window.
+4. Check the return history for the linked order to confirm no duplicate return.
+5. If eligible, the outcome is store credit (preferred for gift returns) or a replacement.
+   Full cash refund is not available for gift returns because the original payment method
+   is not associated with the recipient.
+6. Route the approved outcome through the returns_process_return flow for human sign-off.
+
+OUTCOME
+- Eligible gift return: store credit or replacement.
+- Denied (outside 30 days): no return; advise customer of policy.

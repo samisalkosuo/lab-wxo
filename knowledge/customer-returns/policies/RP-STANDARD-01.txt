@@ -1,0 +1,34 @@
+RP-STANDARD-01: Standard No-Reason Return Window
+
+SYMPTOMS
+- Customer says they changed their mind, no longer want the product, or it does not suit them.
+- Customer provides no specific defect or fault.
+- Customer uses phrases such as "I just don't like it", "I changed my mind", "it is not for me".
+
+POLICY
+Customers may return any product for any reason (no reason required) within 30 calendar days
+of the original purchase date, provided the product is in resalable condition.
+
+ELIGIBILITY
+A standard no-reason return is eligible when ALL of the following are true:
+1. The order is found in the system and belongs to the requesting customer.
+2. The purchase date is within the last 30 calendar days (inclusive).
+3. The product has not already been returned (check return history).
+4. The purchase channel is 'online' or 'in_store'. Gift purchases use RP-GIFT-01.
+
+NOT ELIGIBLE
+- Orders older than 30 days from the purchase date are outside the standard return window.
+- If the product is defective, use RP-WARRANTY-01 instead (warranty may extend eligibility).
+
+PROCEDURE
+1. Look up the order with the order ID.
+2. Check the order age in days against the 30-day window.
+3. Check the return history to confirm no prior return has been filed.
+4. If eligible, the outcome is a full refund to the original payment method.
+5. Route the approved outcome through the returns_process_return flow for human sign-off.
+6. If the order is outside the 30-day window and there is no warranty claim, the return
+   is denied. Inform the customer clearly and politely, citing this policy document (RP-STANDARD-01).
+
+OUTCOME
+- Eligible (within 30 days): full refund.
+- Denied (outside 30 days, no warranty): no refund; advise customer of policy.

@@ -1,0 +1,15 @@
+spec_version: v1
+kind: knowledge_base
+name: customer_returns_policy
+description: |
+  Return and refund policies for the Customer Returns demo. Contains procedures for
+  warranty returns and replacements (RP-WARRANTY-01), the standard 30-day no-reason
+  return window (RP-STANDARD-01), gift returns by serial number (RP-GIFT-01), and
+  out-of-scope escalation paths such as billing disputes (RP-ESCALATE-01).
+  Use it to determine eligibility, cite the applicable policy document by ID,
+  and identify which cases must be escalated rather than processed as returns.
+documents:
+  - policies/RP-WARRANTY-01.txt
+  - policies/RP-STANDARD-01.txt
+  - policies/RP-GIFT-01.txt
+  - policies/RP-ESCALATE-01.txt

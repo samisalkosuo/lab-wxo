@@ -1,0 +1,47 @@
+# scenario.yaml - manifest for the Customer Returns scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Status stays `soon` until the scenario is deployed and its demo script is written.
+
+id: customer-returns
+name: Customer Returns
+description: Conversational returns agent with policy KB and governed refund flow
+status: live
+
+agents:
+  - name: customer_returns
+    path: agents/customer-returns
+    kind: native
+
+tools:
+  - path: tools/customer_returns
+    entry: customer_returns.py
+    names:
+      - returns_lookup_order
+      - returns_check_warranty
+      - returns_get_return_history
+      - returns_lookup_by_serial
+      - returns_list_orders
+      - returns_issue_refund
+    # returns_issue_refund is deliberately NOT attached to the agent; only
+    # the returns_process_return flow calls it after human approval (least privilege).
+    attached:
+      - returns_lookup_order
+      - returns_check_warranty
+      - returns_get_return_history
+      - returns_lookup_by_serial
+      - returns_list_orders
+
+knowledge_bases:
+  - name: customer_returns_policy
+    path: knowledge/customer-returns
+
+flows:
+  - name: returns_process_return
+    path: flows/customer_returns
+
+evaluation:
+  path: evaluation/customer-returns
+  tier: core
+
+demo:
+  script: docs/demo/customer-returns-demo.md

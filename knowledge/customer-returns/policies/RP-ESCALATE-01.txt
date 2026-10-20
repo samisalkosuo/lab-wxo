@@ -1,0 +1,30 @@
+RP-ESCALATE-01: Out-of-Scope Requests and Escalation
+
+SYMPTOMS
+- Customer reports a billing error, duplicate charge, or payment discrepancy.
+- Customer requests a chargeback or disputes a transaction.
+- Customer asks about delivery delays or missing parcels (not a return).
+- Customer asks about warranty claims that involve a third-party manufacturer directly.
+- The request does not fit the standard return, warranty, or gift-return categories.
+
+POLICY
+The returns agent handles product returns, warranty replacements, and gift returns only.
+Billing disputes, duplicate charges, delivery issues, and manufacturer claims are handled
+by specialised teams and must be escalated.
+
+PROCEDURE
+1. Confirm that the issue does not fit RP-WARRANTY-01, RP-STANDARD-01, or RP-GIFT-01.
+2. Acknowledge the customer's concern clearly and politely.
+3. Inform the customer that this request is outside the scope of the returns process.
+4. Direct the customer to the appropriate channel:
+   - Billing disputes and duplicate charges: contact the Billing team via the account portal
+     or by calling the billing support line.
+   - Delivery issues and missing parcels: contact the Logistics team with the order ID.
+   - Manufacturer warranty (direct): refer to the manufacturer's support contact in the
+     product documentation.
+5. Do NOT attempt to process a refund or return for an out-of-scope request.
+6. Do NOT speculate about outcomes or timelines for the specialist teams.
+
+OUTCOME
+- Agent clearly declines to process the return and directs customer to the correct channel.
+- No flow is triggered for out-of-scope escalations.

@@ -9,15 +9,17 @@
 
 **Why it passes the agent-washing test.** The customer's input is vague and incomplete ("I want to return this"; no order id, no product, no reason). The agent must ask clarifying questions, look up the order, check warranty or policy, and decide whether to escalate. The deterministic part (refund eligibility rule) belongs in a flow Decisions node, not in the agent -- this split is the teaching point.
 
-**Key design decisions (to be confirmed before building).**
+**Key design decisions (confirmed).**
 
 | Decision | Rationale |
 |---|---|
-| Read tools on the agent: `lookup_order`, `check_warranty`, `get_return_policy` (KB lookup) | Stays under the 8-tool target; KB retrieval handles policy questions. |
-| Write/quote tool `issue_refund_quote` behind a flow Decisions node | Never attached to the agent; flow checks eligibility rule before calling it. |
+| Read tools on the agent: `returns_lookup_order`, `returns_check_warranty`, `returns_get_return_history`, `returns_lookup_by_serial` | Prefixed `returns_` for WXO instance uniqueness; stays under 8-tool target. |
+| Write tool `returns_issue_refund` behind a flow with Decisions node + human-approval step | Never attached to the agent; flow checks eligibility rule, then requires human approval before issuing. Governance teaching point. |
 | Deterministic refund-eligibility rule in the Decisions node | Separates the agent's open-ended reasoning from a rule that a flowchart handles correctly. |
-| Return-policy documents as `.txt` KB | Matches the supported formats; policy text has stable symptom -> procedure structure. |
+| Flow name: `returns_process_return` | Prefixed for uniqueness; this is what the agent calls. |
+| Return-policy documents as `.txt` KB, name: `customer_returns_policy` | Matches supported formats; policy text has stable symptom → procedure structure. |
 | All orders, warranties, and return history are static mock data | Stateless containers; deterministic runs. |
+| Sidebar position: 2, slide tag: "Scenario 2 • ..." | Confirmed from presentation.html script order. |
 
 **Mock world (to be designed before building).**
 
@@ -92,10 +94,12 @@ At least one case should have a red herring (for example a warranty record that 
 
 ## Open Items
 
-- Confirm the 30-day no-reason return window and the warranty-replacement rule with the user before building mock data.
-- Decide whether the approval-flow human step is needed (it is the teaching point for the governed-action scene) or whether the Decisions-node-only split is enough.
-- Tool name uniqueness: verify `lookup_order`, `check_warranty`, `get_return_eligibility`, `issue_refund_quote`, `process_return` do not clash with any existing `scenarios/*/scenario.yaml` names before import.
-- Rule 7 from `wxo-scenario-authoring`: add a validation check inside the flow that the order id and customer id match before issuing a quote.
+- Tool name uniqueness: verified — `returns_lookup_order`, `returns_check_warranty`, `returns_get_return_history`, `returns_lookup_by_serial`, `returns_issue_refund`, `returns_process_return` do not appear in incident-triage or travel-request manifests. ✅
+- Sidebar position 2 confirmed from `presentation.html` script order. ✅
+- Approval flow: yes, include human-approval step (teaching point). ✅
+- Tool prefix: `returns_` on all tool and flow names. ✅
+- Rule 7 from `wxo-scenario-authoring`: flow must validate that order_id belongs to the customer before calling `returns_issue_refund`.
+- 30-day no-reason window and warranty-replacement rule are now baked into the mock data design (see Sub-Task 1).
 
 ## Suggested Build Order
 

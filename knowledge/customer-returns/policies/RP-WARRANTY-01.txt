@@ -1,0 +1,33 @@
+RP-WARRANTY-01: Warranty Returns and Replacements
+
+SYMPTOMS
+- Customer reports the product stopped working, broke, or is defective.
+- Customer says the item failed within the warranty period.
+- Customer uses phrases such as "it just broke", "it stopped working", "it is defective".
+
+POLICY
+Products sold by this store carry a standard 1-year manufacturer warranty from the date of purchase.
+
+ELIGIBILITY
+A warranty return or replacement is eligible when ALL of the following are true:
+1. The product has a warranty record on file linked to the specific order and SKU.
+2. The warranty is currently active (not expired as of the return request date).
+3. The reported fault is covered by the warranty (manufacturing defects, mechanical failure).
+   Accidental damage, cosmetic damage, and user-caused wear are NOT covered.
+
+IMPORTANT: Verify that the warranty record matches the exact order and SKU the customer is
+returning. A customer may have multiple products; a warranty for a different SKU does not
+cover a different product, even if both products are from the same brand.
+
+PROCEDURE
+1. Look up the order with the order ID to confirm the product and customer.
+2. Check the warranty record for that specific order.
+3. If the warranty is active and the fault is covered, the eligible outcome is a replacement
+   (preferred) or full refund at the customer's choice.
+4. If the warranty has expired or does not cover the reported fault, proceed to RP-STANDARD-01
+   to check the no-reason return window instead.
+5. Route the approved outcome through the returns_process_return flow for human sign-off.
+
+OUTCOME
+- Approved warranty claim: replacement unit or full refund.
+- Denied (expired or not covered): inform customer of denial reason; refer to RP-STANDARD-01.
