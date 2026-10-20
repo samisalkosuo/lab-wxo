@@ -135,14 +135,72 @@
       gap: 20px;
     }
 
+    .nav-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      cursor: pointer;
+      user-select: none;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .nav-section-header:hover {
+      background-color: var(--bg-surface-elevated);
+    }
+
+    .nav-section-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .nav-section-title {
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       color: var(--text-muted);
-      margin-bottom: 8px;
-      padding-left: 8px;
+      font-weight: 700;
+      margin-bottom: 0;
+    }
+
+    .nav-count-badge {
+      font-size: 10px;
       font-weight: 600;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      padding: 1px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .nav-chevron {
+      width: 14px;
+      height: 14px;
+      color: var(--text-muted);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .nav-section.collapsed .nav-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .nav-section-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .nav-section.collapsed .nav-section-content {
+      display: none;
     }
 
     .scenario-list {
@@ -206,6 +264,12 @@
       background: rgba(135, 141, 150, 0.15);
       color: var(--text-muted);
       border: 1px solid var(--border-subtle);
+    }
+
+    .badge-standalone {
+      background: rgba(138, 63, 252, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(138, 63, 252, 0.3);
     }
 
     .scenario-desc {
@@ -718,6 +782,9 @@
       line-height: 1.5;
       user-select: all;
       word-break: break-word;
+      white-space: pre-wrap;
+      max-height: 320px;
+      overflow-y: auto;
     }
 
     .prompt-tip {
@@ -851,15 +918,41 @@
       </div>
 
       <div class="sidebar-content">
-        <div>
-          <div class="nav-section-title">Demo Scenarios</div>
-          <div class="scenario-list">
+        <!-- Demo Scenarios Accordion -->
+        <div class="nav-section" id="scenarios-section">
+          <div class="nav-section-header" onclick="toggleNavSection('scenarios')">
+            <div class="nav-section-title-wrap">
+              <span class="nav-section-title">Demo Scenarios</span>
+              <span class="nav-count-badge" id="scenarios-count">0</span>
+            </div>
+            <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+          <div class="nav-section-content scenario-list" id="scenarios-list">
             <!-- Populated dynamically from window.SCENARIOS -->
           </div>
         </div>
 
-        <div>
-          <div class="nav-section-title" id="scenario-toc-title">Scenario 1 Slides</div>
+        <!-- Standalone Agents Accordion -->
+        <div class="nav-section" id="agents-section">
+          <div class="nav-section-header" onclick="toggleNavSection('agents')">
+            <div class="nav-section-title-wrap">
+              <span class="nav-section-title">Standalone Agents</span>
+              <span class="nav-count-badge" id="agents-count">0</span>
+            </div>
+            <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+          <div class="nav-section-content scenario-list" id="agents-list">
+            <!-- Populated dynamically from window.STANDALONE_AGENTS -->
+          </div>
+        </div>
+
+        <!-- Slide TOC -->
+        <div class="nav-section" id="toc-section">
+          <div class="nav-section-title" id="scenario-toc-title" style="padding-left: 8px;">Scenario 1 Slides</div>
           <div class="slide-toc" id="slide-toc">
             <!-- Populated dynamically via JS -->
           </div>
@@ -889,7 +982,7 @@
           </button>
           <div class="current-scenario-title">
             <span id="top-scenario-name">Incident Triage Agent</span>
-            <span class="scenario-pill">Production Demo</span>
+            <span class="scenario-pill" id="top-scenario-pill">Production Demo</span>
           </div>
         </div>
 
@@ -956,12 +1049,16 @@
   <script src="scenarios/hr-onboarding.js"></script>
   <script src="scenarios/cloud-finops.js"></script>
   <script src="scenarios/travel-request.js"></script>
+  <script src="standalone-agents.js"></script>
   <script>
-    // Scenarios Data Model
-    const scenariosData = window.SCENARIOS;
+    // Data Models
+    const scenariosData = window.SCENARIOS || [];
+    const agentsData = window.STANDALONE_AGENTS || [];
 
     // State
+    let currentType = "scenario"; // "scenario" | "agent"
     let currentScenarioIdx = 0;
+    let currentAgentIdx = 0;
     let currentSlideIdx = 0;
 
     // Elements
@@ -974,19 +1071,35 @@
     const slideDots = document.getElementById("slide-dots");
     const slideToc = document.getElementById("slide-toc");
     const topScenarioName = document.getElementById("top-scenario-name");
+    const topScenarioPill = document.getElementById("top-scenario-pill");
     const scenarioTocTitle = document.getElementById("scenario-toc-title");
     const sidebar = document.getElementById("sidebar");
     const toast = document.getElementById("toast");
 
-    // Build the sidebar scenario buttons from window.SCENARIOS (see scenarios/*.js).
-    // Each scenario needs: id, name, label, description, status ("live" | "soon"), slides.
+    // Toggle collapsible accordion section
+    function toggleNavSection(id) {
+      const section = document.getElementById(`${id}-section`);
+      if (section) {
+        section.classList.toggle("collapsed");
+      }
+    }
+
+    // Helper to get active deck
+    function getActiveDeck() {
+      return currentType === "scenario" ? scenariosData[currentScenarioIdx] : agentsData[currentAgentIdx];
+    }
+
+    // Build the sidebar scenario buttons from window.SCENARIOS
     function buildScenarioList() {
-      const list = document.querySelector(".scenario-list");
+      const list = document.getElementById("scenarios-list");
+      document.getElementById("scenarios-count").textContent = scenariosData.length;
       list.innerHTML = "";
       scenariosData.forEach((scenario, idx) => {
         const live = scenario.status === "live";
         const btn = document.createElement("button");
         btn.className = "scenario-item";
+        btn.dataset.type = "scenario";
+        btn.dataset.index = idx;
         btn.onclick = () => switchScenario(idx);
 
         const header = document.createElement("div");
@@ -1008,12 +1121,56 @@
       });
     }
 
+    // Build the sidebar standalone agent buttons from window.STANDALONE_AGENTS
+    function buildAgentList() {
+      const list = document.getElementById("agents-list");
+      document.getElementById("agents-count").textContent = agentsData.length;
+      list.innerHTML = "";
+      agentsData.forEach((agent, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "scenario-item";
+        btn.dataset.type = "agent";
+        btn.dataset.index = idx;
+        btn.onclick = () => switchAgent(idx);
+
+        const header = document.createElement("div");
+        header.className = "scenario-item-header";
+        const name = document.createElement("span");
+        name.className = "scenario-name";
+        name.textContent = agent.label;
+        const badge = document.createElement("span");
+        badge.className = "scenario-badge badge-standalone";
+        badge.textContent = "Agent";
+        header.append(name, badge);
+
+        const desc = document.createElement("div");
+        desc.className = "scenario-desc";
+        desc.textContent = agent.description;
+
+        btn.append(header, desc);
+        list.appendChild(btn);
+      });
+    }
+
     // Initialize
     function init() {
-      // Check URL hash if available (e.g. #scenario0/slide2)
+      // Check URL hash (e.g. #scenario/0/2 or #agent/1/0 or #0/2)
       if (window.location.hash) {
         const parts = window.location.hash.replace("#", "").split("/");
-        if (parts.length === 2) {
+        if (parts.length === 3) {
+          const type = parts[0];
+          const itemIdx = parseInt(parts[1], 10);
+          const slIdx = parseInt(parts[2], 10);
+          if (type === "agent" && !isNaN(itemIdx) && itemIdx < agentsData.length) {
+            currentType = "agent";
+            currentAgentIdx = itemIdx;
+            if (!isNaN(slIdx) && slIdx < agentsData[itemIdx].slides.length) currentSlideIdx = slIdx;
+          } else if (type === "scenario" && !isNaN(itemIdx) && itemIdx < scenariosData.length) {
+            currentType = "scenario";
+            currentScenarioIdx = itemIdx;
+            if (!isNaN(slIdx) && slIdx < scenariosData[itemIdx].slides.length) currentSlideIdx = slIdx;
+          }
+        } else if (parts.length === 2) {
           const sIdx = parseInt(parts[0], 10);
           const slIdx = parseInt(parts[1], 10);
           if (!isNaN(sIdx) && sIdx < scenariosData.length) currentScenarioIdx = sIdx;
@@ -1022,34 +1179,58 @@
       }
 
       buildScenarioList();
-      updateScenarioItems();
-      renderScenario();
+      buildAgentList();
+      updateNavItems();
+      renderDeck();
       document.addEventListener("keydown", handleKeydown);
     }
 
     function switchScenario(index) {
-      if (index === currentScenarioIdx) return;
+      if (currentType === "scenario" && index === currentScenarioIdx) return;
+      currentType = "scenario";
       currentScenarioIdx = index;
       currentSlideIdx = 0;
-      updateScenarioItems();
-      renderScenario();
+      updateNavItems();
+      renderDeck();
     }
 
-    function updateScenarioItems() {
-      const items = document.querySelectorAll(".scenario-item");
-      items.forEach((item, idx) => {
-        item.classList.toggle("active", idx === currentScenarioIdx);
+    function switchAgent(index) {
+      if (currentType === "agent" && index === currentAgentIdx) return;
+      currentType = "agent";
+      currentAgentIdx = index;
+      currentSlideIdx = 0;
+      updateNavItems();
+      renderDeck();
+    }
+
+    function updateNavItems() {
+      const scenarioBtns = document.querySelectorAll('#scenarios-list .scenario-item');
+      scenarioBtns.forEach((btn, idx) => {
+        btn.classList.toggle("active", currentType === "scenario" && idx === currentScenarioIdx);
+      });
+
+      const agentBtns = document.querySelectorAll('#agents-list .scenario-item');
+      agentBtns.forEach((btn, idx) => {
+        btn.classList.toggle("active", currentType === "agent" && idx === currentAgentIdx);
       });
     }
 
-    function renderScenario() {
-      const scenario = scenariosData[currentScenarioIdx];
-      topScenarioName.textContent = scenario.name;
-      scenarioTocTitle.textContent = `Scenario ${currentScenarioIdx + 1} Slides`;
+    function renderDeck() {
+      const deck = getActiveDeck();
+      if (!deck) return;
+
+      topScenarioName.textContent = deck.name;
+      if (currentType === "scenario") {
+        topScenarioPill.textContent = deck.status === "live" ? "Production Demo" : "Coming Soon";
+        scenarioTocTitle.textContent = `Scenario ${currentScenarioIdx + 1} Slides`;
+      } else {
+        topScenarioPill.textContent = "Standalone Agent";
+        scenarioTocTitle.textContent = `${deck.label} Slides`;
+      }
 
       // Build Table of Contents
       slideToc.innerHTML = "";
-      scenario.slides.forEach((slide, idx) => {
+      deck.slides.forEach((slide, idx) => {
         const tocItem = document.createElement("div");
         tocItem.className = `toc-item ${idx === currentSlideIdx ? "active" : ""}`;
         tocItem.onclick = () => goToSlide(idx);
@@ -1059,7 +1240,7 @@
 
       // Build Dots
       slideDots.innerHTML = "";
-      scenario.slides.forEach((_, idx) => {
+      deck.slides.forEach((_, idx) => {
         const dot = document.createElement("div");
         dot.className = `dot ${idx === currentSlideIdx ? "active" : ""}`;
         dot.onclick = () => goToSlide(idx);
@@ -1070,17 +1251,18 @@
     }
 
     function renderCurrentSlide() {
-      const scenario = scenariosData[currentScenarioIdx];
-      const slide = scenario.slides[currentSlideIdx];
+      const deck = getActiveDeck();
+      if (!deck || !deck.slides[currentSlideIdx]) return;
+      const slide = deck.slides[currentSlideIdx];
 
       // Update Top Counter & Progress
-      slideCounter.textContent = `${currentSlideIdx + 1} / ${scenario.slides.length}`;
-      const progressPercent = ((currentSlideIdx + 1) / scenario.slides.length) * 100;
+      slideCounter.textContent = `${currentSlideIdx + 1} / ${deck.slides.length}`;
+      const progressPercent = ((currentSlideIdx + 1) / deck.slides.length) * 100;
       progressBar.style.width = `${progressPercent}%`;
 
       // Update Nav Buttons
       prevBtn.disabled = currentSlideIdx === 0;
-      nextBtn.disabled = currentSlideIdx === scenario.slides.length - 1;
+      nextBtn.disabled = currentSlideIdx === deck.slides.length - 1;
 
       // Update TOC and Dots active classes
       const tocItems = slideToc.querySelectorAll(".toc-item");
@@ -1090,7 +1272,8 @@
       dots.forEach((dot, idx) => dot.classList.toggle("active", idx === currentSlideIdx));
 
       // Update Hash
-      window.location.hash = `${currentScenarioIdx}/${currentSlideIdx}`;
+      const currentIdx = currentType === "scenario" ? currentScenarioIdx : currentAgentIdx;
+      window.location.hash = `${currentType}/${currentIdx}/${currentSlideIdx}`;
 
       // Render Slide Content
       slideContent.innerHTML = `
@@ -1107,16 +1290,16 @@
     }
 
     function goToSlide(index) {
-      const scenario = scenariosData[currentScenarioIdx];
-      if (index >= 0 && index < scenario.slides.length) {
+      const deck = getActiveDeck();
+      if (deck && index >= 0 && index < deck.slides.length) {
         currentSlideIdx = index;
         renderCurrentSlide();
       }
     }
 
     function nextSlide() {
-      const scenario = scenariosData[currentScenarioIdx];
-      if (currentSlideIdx < scenario.slides.length - 1) {
+      const deck = getActiveDeck();
+      if (deck && currentSlideIdx < deck.slides.length - 1) {
         currentSlideIdx++;
         renderCurrentSlide();
       }
