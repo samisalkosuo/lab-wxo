@@ -1081,6 +1081,14 @@
       </div>
 
       <div class="sidebar-content">
+        <!-- Slide TOC (Shown only when viewing an active Scenario or Agent) -->
+        <div class="nav-section" id="toc-section" style="display: none; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 4px;">
+          <div class="nav-section-title" id="scenario-toc-title" style="padding-left: 8px;">Scenario 1 Slides</div>
+          <div class="slide-toc" id="slide-toc">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+
         <!-- Demo Scenarios Accordion -->
         <div class="nav-section" id="scenarios-section">
           <div class="nav-section-header" onclick="toggleNavSection('scenarios')">
@@ -1110,14 +1118,6 @@
           </div>
           <div class="nav-section-content scenario-list" id="agents-list">
             <!-- Populated dynamically from window.STANDALONE_AGENTS -->
-          </div>
-        </div>
-
-        <!-- Slide TOC -->
-        <div class="nav-section" id="toc-section">
-          <div class="nav-section-title" id="scenario-toc-title" style="padding-left: 8px;">Scenario 1 Slides</div>
-          <div class="slide-toc" id="slide-toc">
-            <!-- Populated dynamically via JS -->
           </div>
         </div>
       </div>
