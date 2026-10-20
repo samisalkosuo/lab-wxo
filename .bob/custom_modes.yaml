@@ -20,6 +20,22 @@ customModes:
       agent YAML -> manifest and ground_truth.json -> deploy and smoke test ->
       demo markdown and slides.
 
+      CLI reference (python wxodemo.py <command>):
+      - new-scenario <id> --name "..." --description "..."
+          Scaffold manifest stub, agent stub, ground_truth.json, demo script and slide
+          placeholders. Always run this first when creating a new scenario.
+      - validate <id>           Check manifest + demo-script consistency. Must print OK.
+      - deploy <id>             Import all resources into WXO (requires login).
+      - deploy <id> --dry-run   Preview deploy commands without running them.
+      - undeploy <id>           Remove resources from WXO (requires login).
+      - status <id>             Compare repo manifest with what is live in WXO.
+      - smoke <id> --dry-run    Preview smoke prompts without sending them.
+      - smoke <id>              Send smoke prompts to the deployed agent (requires login).
+      - eval <id> --dry-run     Preview the ADK evaluation command without running it.
+      - eval <id>               Run ADK evaluation for the scenario (requires login).
+      - login                   Register and activate the WXO environment from env.cfg.
+                                Must be run before any command that talks to a live instance.
+
       Hard limits:
       - Never read, print, or package env.cfg or local/ (they may contain secrets).
       - Never attach a write tool directly to an agent; write actions go behind a flow gate.
@@ -30,9 +46,13 @@ customModes:
       - Keep tool, KB, and flow names unique across all scenarios (check every
         scenarios/*/scenario.yaml before choosing a name).
 
-      Finish every scenario task by running:
-        python wxodemo.py validate <id>
-      (manifest and demo-consistency checks) and fixing every PROBLEM before reporting done.
+      Finish every scenario task in this order:
+      1. python wxodemo.py validate <id>
+         Fix every PROBLEM before continuing.
+      2. python wxodemo.py smoke <id> --dry-run
+         Confirm all smoke_prompts are present and well-formed.
+      For real smoke / deploy / eval, run `python wxodemo.py login` first
+      and note that these require a live WXO instance.
       Report what was and was not verified
       (especially anything that needs a live instance or a real browser click).
     whenToUse: >-
@@ -85,6 +105,21 @@ customModes:
         duplicate them. The agent README must name every resource that has to be live
         already, with the command to import it.
 
+      CLI reference (python wxodemo.py <command>):
+      - list --kind standalone   Show all discovered standalone agents.
+      - deploy <name>            Import the agent into WXO (requires login).
+      - deploy <name> --dry-run  Preview deploy commands without running them.
+      - undeploy <name>          Remove the agent from WXO (requires login).
+      - undeploy <name> --dry-run Preview undeploy commands without running them.
+      - status <name>            Compare the repo agent with what is live in WXO.
+      - login                    Register and activate the WXO environment from env.cfg.
+                                 Must be run before any live deploy / undeploy / status.
+      - doctor                   Check Python, packages, orchestrate CLI, and env.cfg.
+                                 Run this first if any command fails unexpectedly.
+      - validate                 Note: standalone agents have no manifest; validate prints
+                                 "Standalone agents have no manifest" and exits 0.
+                                 Do not run validate expecting a meaningful result.
+
       Hard limits:
       - Never read, print, or package env.cfg or local/ (they may contain secrets).
       - Never edit files under scenarios/, agents/, tools/, flows/ or knowledge/, and
@@ -93,11 +128,17 @@ customModes:
       - Never make wxodemo or an agent README remove a knowledge base shared with a scenario.
       - Never claim the agent "works" or "retrieves correctly" without a recorded run.
 
-      Finish every task by confirming that standalone/<name>/examples.md exists, follows the
-      format above, and is linked from the agent README, then running:
-        python wxodemo.py list --kind standalone
-        python wxodemo.py deploy <name> --dry-run
-      and fixing every failure before reporting done. Report what was and was not verified
+      Finish every task in this order:
+      1. Confirm standalone/<name>/examples.md exists, follows the format above, and is
+         linked from the agent README.
+      2. python wxodemo.py list --kind standalone
+         Verify the agent is discovered (fix agent.yaml or directory layout if missing).
+      3. python wxodemo.py deploy <name> --dry-run
+         Confirm the deploy commands look correct.
+      For real deploy / undeploy, run `python wxodemo.py login` first, then
+      `python wxodemo.py status <name>` after to confirm the agent is live.
+      Run `python wxodemo.py doctor` if any command fails for environmental reasons.
+      Fix every failure before reporting done. Report what was and was not verified
       (especially anything that needs a live instance).
     whenToUse: >-
       Use when creating, updating, or reviewing a one-off watsonx Orchestrate agent under
