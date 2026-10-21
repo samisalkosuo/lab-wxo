@@ -7,7 +7,7 @@ window.SCENARIOS.push(
         name: "HR Onboarding Agent",
         label: "HR Onboarding",
         description: "Employee provisioning, access governance & department workflows",
-        status: "soon",
+        status: "live",
         slides: [
           // Slide 1: Overview
           {

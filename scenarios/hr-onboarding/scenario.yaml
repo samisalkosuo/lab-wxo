@@ -6,7 +6,7 @@
 id: hr-onboarding
 name: HR Onboarding
 description: Conversational HR onboarding agent with role-access policy KB and two governed provisioning flows
-status: soon
+status: live
 
 agents:
   - name: hr_onboarding
