@@ -1,0 +1,16 @@
+spec_version: v1
+kind: knowledge_base
+name: cloud_finops_policy
+description: |
+  Cloud FinOps policies for spend anomaly investigation, idle resource reclamation,
+  rightsizing, and billing error handling. Contains CF-POL-01 (idle resource
+  thresholds and reclamation procedure), CF-POL-02 (zombie resource handling),
+  CF-POL-03 (rightsizing criteria and approval requirement), and CF-POL-04
+  (billing error escalation — do not act on data errors). Use this KB to
+  find the policy that applies to a situation and to cite the document ID
+  when proposing an action or explaining a restraint decision.
+documents:
+  - policies/CF-POL-01-idle-resource-policy.txt
+  - policies/CF-POL-02-zombie-resource-policy.txt
+  - policies/CF-POL-03-rightsizing-guidelines.txt
+  - policies/CF-POL-04-billing-error-escalation.txt

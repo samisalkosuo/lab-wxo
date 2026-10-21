@@ -1,0 +1,38 @@
+DOCUMENT ID: CF-POL-02
+TITLE: Zombie Resource Handling
+EFFECTIVE DATE: 2025-01-01
+OWNER: Cloud FinOps Team
+
+PURPOSE
+
+A zombie resource is a cloud resource that has been running for an extended period
+with no active workload AND no owner tag. This policy defines how to handle them.
+
+ZOMBIE CLASSIFICATION CRITERIA
+
+A resource is a zombie when ALL of the following are true:
+  1. It meets the idle criteria in CF-POL-01 (30-day CPU < 5%, no scheduled jobs).
+  2. The owner_tag field is empty or missing.
+  3. The resource has not been touched (last_workload_activity) for more than 14 days.
+
+HANDLING PROCEDURE
+
+1. Classify the resource as a zombie using cf_get_resource_utilization.
+2. Confirm the owner_tag is empty.
+3. A zombie resource has no known owner to consult; cost-owner approval is still
+   required (from the Cloud FinOps Cost Owner role) via the cf_approve_reclaim flow.
+4. Do NOT skip the approval flow for zombie resources. The approval form shows
+   the resource details and the cost to the approver.
+5. After approval, cf_reclaim_resource is called by the flow. Report the result
+   verbatim to the user.
+
+ESCALATION
+
+If reclamation of a zombie resource fails due to a dependency (the tool returns
+RECLAIM_BLOCKED), stop and report the block reason verbatim. Do not attempt
+alternative actions without a new user instruction.
+
+REFERENCES
+
+CF-POL-01: Idle Resource Reclamation Policy
+CF-POL-03: Rightsizing Guidelines

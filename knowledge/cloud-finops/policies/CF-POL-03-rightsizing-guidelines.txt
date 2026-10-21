@@ -1,0 +1,54 @@
+DOCUMENT ID: CF-POL-03
+TITLE: Rightsizing Guidelines
+EFFECTIVE DATE: 2025-01-01
+OWNER: Cloud FinOps Team
+
+PURPOSE
+
+Rightsizing is the process of matching a cloud resource's provisioned capacity to
+its actual utilisation. This policy defines when to recommend rightsizing and how
+to obtain approval.
+
+SCOPE
+
+All managed database clusters, VM instance families, and container node pools in
+account acct-001.
+
+RIGHTSIZING CRITERIA
+
+A resource is a candidate for rightsizing when, over a 30-day observation window:
+  - Average CPU utilisation is below 40% of the provisioned tier's nominal capacity,
+    AND
+  - Average memory utilisation is below 50% of the provisioned tier's nominal capacity,
+    AND
+  - The resource is actively used (it does NOT meet the idle criteria in CF-POL-01).
+
+Rightsizing must NOT be confused with reclamation: a rightsized resource continues
+to run at a smaller tier; a reclaimed resource is deleted.
+
+RECOMMENDED ACTIONS
+
+1. Identify the current size and the recommended target size using
+   cf_get_resource_utilization.
+2. Calculate or report the illustrative cost saving. Always label any saving figure
+   as "illustrative" because actual savings depend on production traffic patterns.
+3. Propose the resize through the cf_approve_resize flow. Do NOT call cf_resize_resource
+   directly; the flow captures cost-owner approval before executing.
+4. Report the flow result verbatim to the user.
+
+CHANGE-CONTROL REQUIREMENT
+
+Database cluster rightsizing requires a change-control window (weekend maintenance).
+This is a business constraint, not a tool constraint. Note it in the justification
+field when calling the cf_approve_resize flow so the approver is aware.
+
+COMMON MISTAKE TO AVOID
+
+Do not propose rightsizing for a resource that is idle under CF-POL-01 criteria.
+Idle resources should be reclaimed (CF-POL-01), not downsized. Rightsizing applies
+only to resources with consistent active workloads below the size threshold.
+
+REFERENCES
+
+CF-POL-01: Idle Resource Reclamation Policy
+CF-POL-04: Billing Error Escalation

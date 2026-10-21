@@ -1,0 +1,47 @@
+DOCUMENT ID: CF-POL-01
+TITLE: Idle Resource Reclamation Policy
+EFFECTIVE DATE: 2025-01-01
+OWNER: Cloud FinOps Team
+
+PURPOSE
+
+This policy defines the criteria for classifying a cloud resource as idle and the
+mandatory steps for reclaiming it.
+
+SCOPE
+
+All virtual machines (VMs) and container node pools in account acct-001.
+
+IDLE CLASSIFICATION CRITERIA
+
+A resource is classified as idle when ALL of the following conditions are met over
+a 30-day observation window:
+  1. Average CPU utilisation is below 5% for the full 30-day period.
+  2. Average network throughput is below 1 Mbps for the full 30-day period.
+  3. No active scheduled jobs are registered against the resource in the job calendar.
+
+IMPORTANT: A 7-day observation window is NOT sufficient to confirm idleness.
+Batch workloads that run weekly (e.g. every Saturday) will produce very low
+7-day averages on weekdays. Always use cf_get_resource_utilization and verify
+the scheduled_jobs list before classifying a resource as idle.
+
+RECLAMATION PROCEDURE
+
+1. Run cf_get_resource_utilization to obtain the 30-day CPU, memory, network averages
+   and the scheduled_jobs list.
+2. Confirm all three idle criteria are met.
+3. Check the owner_tag. If missing, flag as a zombie resource (see CF-POL-02).
+4. Propose reclamation through the cf_approve_reclaim flow. Do NOT call cf_reclaim_resource
+   directly; the flow captures cost-owner approval before executing.
+5. Report the outcome verbatim from the flow result.
+
+EXCEPTIONS
+
+Resources with a valid scheduled job in the job calendar must NOT be reclaimed
+regardless of their average utilisation. Raise an exception request with the
+Cloud FinOps Team if the scheduled job is outdated.
+
+REFERENCES
+
+CF-POL-02: Zombie Resource Handling
+CF-POL-03: Rightsizing Guidelines

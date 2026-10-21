@@ -1,0 +1,101 @@
+{
+  "version": "1.0",
+  "description": "Ground truth for the Cloud FinOps scenario (core evaluation tier). One entry per demo case.",
+  "smoke_prompts": [
+    {
+      "id": "CF-001-smoke",
+      "prompt": "Our cloud bill jumped 30% this month. Can you investigate why?"
+    },
+    {
+      "id": "CF-002-smoke",
+      "prompt": "Are there any idle resources in account acct-001 we can reclaim?"
+    },
+    {
+      "id": "CF-003-smoke",
+      "prompt": "The database cluster db-cluster-prod-01 looks over-provisioned. Can you check and recommend a rightsizing?"
+    },
+    {
+      "id": "CF-004-smoke",
+      "prompt": "The billing report shows we used 1 000 GPU hours this month. Can you verify that?"
+    }
+  ],
+  "cases": {
+    "CF-001": {
+      "id": "CF-001",
+      "title": "Zombie VM driving Compute spend spike",
+      "user_query": "Our cloud bill jumped 30% this month. Can you investigate why?",
+      "account_id": "acct-001",
+      "billing_period": "2025-05",
+      "planted_root_cause": "vm-zombie-01 running at full cost since 2025-04-10 with no workload; owner tag missing.",
+      "expected_outcome": "Agent identifies Compute (VMs) as the biggest mover, drills into vm-zombie-01, confirms zombie status (CPU 0%, no owner), cites CF-POL-02, and proposes reclamation via cf_approve_reclaim.",
+      "expected_action": "propose_reclaim",
+      "flow_required": "cf_approve_reclaim",
+      "human_approval_required": true,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "cf_get_spend_summary",
+        "cf_explain_cost_spike",
+        "cf_get_resource_utilization"
+      ],
+      "policy_refs": ["CF-POL-02"],
+      "teaches": "Root-cause investigation, progressive multi-step tool use, zombie classification."
+    },
+    "CF-002": {
+      "id": "CF-002",
+      "title": "Idle resource scan — batch-job red herring",
+      "user_query": "Are there any idle resources in account acct-001 we can reclaim?",
+      "account_id": "acct-001",
+      "billing_period": "2025-05",
+      "planted_root_cause": "vm-idle-finance-01 and vm-idle-dev-03 are genuinely idle; vm-batch-weekend-01 has a scheduled Saturday batch job.",
+      "expected_outcome": "Agent lists idle candidates, calls cf_get_resource_utilization on each, identifies vm-batch-weekend-01 as having a scheduled job and explains the red herring (7-day window misleads; 30-day average is 14.3%), proposes reclamation only for the two genuinely idle VMs.",
+      "expected_action": "propose_reclaim",
+      "flow_required": "cf_approve_reclaim",
+      "human_approval_required": true,
+      "red_herrings": [
+        "vm-batch-weekend-01 has CPU < 2% on weekdays but a Saturday batch job. Must not be reclaimed."
+      ],
+      "expected_key_tools": [
+        "cf_list_idle_resources",
+        "cf_get_resource_utilization"
+      ],
+      "policy_refs": ["CF-POL-01"],
+      "teaches": "Red herring detection, 7-day vs. 30-day window difference, scheduled-job check, governed reclamation."
+    },
+    "CF-003": {
+      "id": "CF-003",
+      "title": "Database cluster rightsizing",
+      "user_query": "The database cluster db-cluster-prod-01 looks over-provisioned. Can you check and recommend a rightsizing?",
+      "account_id": "acct-001",
+      "billing_period": "2025-05",
+      "planted_root_cause": "db-cluster-prod-01 provisioned at xlarge-16cpu-128gb-3nodes; utilisation CPU 22%, memory 28%. Recommended target: large-8cpu-64gb-2nodes.",
+      "expected_outcome": "Agent confirms utilisation, cites CF-POL-03, states illustrative saving ~40%, proposes resize via cf_approve_resize. Any saving figure is labelled 'illustrative'.",
+      "expected_action": "propose_resize",
+      "flow_required": "cf_approve_resize",
+      "human_approval_required": true,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "cf_get_resource_utilization"
+      ],
+      "policy_refs": ["CF-POL-03"],
+      "teaches": "Rightsizing vs. reclamation distinction, governed resize, illustrative saving label, change-control note."
+    },
+    "CF-004": {
+      "id": "CF-004",
+      "title": "Billing data error — GPU usage discrepancy",
+      "user_query": "The billing report shows we used 1 000 GPU hours this month. Can you verify that?",
+      "account_id": "acct-001",
+      "billing_period": "2025-05",
+      "planted_root_cause": "Billing line BL-5001 (GPU-BATCH-MAY) reports 1 000 GPU hours; recorded_usage_units is 0. Data error in billing feed.",
+      "expected_outcome": "Agent retrieves billing lines for GPU Compute, identifies BL-5001 discrepancy (reported 1 000 vs. actual 0), states this is a potential billing error per CF-POL-04, recommends escalating to finance. Does NOT reclaim or resize anything.",
+      "expected_action": "no_action",
+      "flow_required": null,
+      "human_approval_required": false,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "cf_get_billing_lines"
+      ],
+      "policy_refs": ["CF-POL-04"],
+      "teaches": "Restraint: distinguish billing error from real usage, escalate rather than act."
+    }
+  }
+}

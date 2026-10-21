@@ -39,14 +39,14 @@ At least one case should have a red herring (a resource that looks expensive but
   - `tools/cloud_finops/data/` with `spend_data.py`, `resource_inventory.py`, `utilization_records.py`, `billing_entries.py`.
   - `tools/cloud_finops/cloud_finops.py` with `get_spend_summary`, `list_idle_resources`, `get_resource_utilization`, `explain_cost_spike` (target 7 attached tools + flow).
   - Direct Python tests.
-- **Status:** `[ ] pending`
+- **Status:** `[x] done` — tools deployed to techzone1; smoke run verified tool selection.
 
 ### Sub-Task 2: Policy knowledge base
 
 - **Expected Outcomes:**
   - `knowledge/cloud-finops/<name>.yaml` + `policies/*.txt` (3-5 documents): idle-resource threshold policy, rightsizing guidelines, billing-error escalation procedure, reclamation approval requirements.
   - Each document has a stable ID (e.g. `CF-POL-01`) the agent can cite.
-- **Status:** `[ ] pending`
+- **Status:** `[x] done`
 
 ### Sub-Task 3: Approval flow
 
@@ -54,7 +54,7 @@ At least one case should have a red herring (a resource that looks expensive but
   - `flows/cloud_finops/approve_resource_change.py` following the Incident Triage approval-flow pattern.
   - Write tools (`reclaim_resource`, `resize_resource`) called only by the flow after cost-owner approves; listed in the manifest under `names` but not `attached`.
   - Browser-verified: form renders, Approve triggers the write tool, Reject does not.
-- **Status:** `[ ] pending`
+- **Status:** `[x] done` — two flows deployed. Browser verification (form, Approve, Reject) still open.
 
 ### Sub-Task 4: Agent YAML and README
 
@@ -62,14 +62,14 @@ At least one case should have a red herring (a resource that looks expensive but
   - `agents/cloud-finops/agent.yaml` (`spec_version: v1`, `kind: native`, `style: react_core`). Instructions: progressive-investigation method, evidence standard (cite utilization data and document id), propose-action rule, what to never do (act without approval, invent spend figures).
   - `agents/cloud-finops/README.md`.
   - `scenarios/cloud-finops/scenario.yaml` updated from the `soon` stub.
-- **Status:** `[ ] pending`
+- **Status:** `[x] done`
 
 ### Sub-Task 5: Evaluation
 
 - **Expected Outcomes:**
   - `evaluation/cloud-finops/ground_truth.json`: one entry per case, `smoke_prompts` (investigation queries only; approval form not drivable through the run API).
   - Optional full tier only if requested.
-- **Status:** `[ ] pending`
+- **Status:** `[x] done` — ground_truth.json and smoke_prompts complete.
 
 ### Sub-Task 6: Deploy and smoke test
 
@@ -77,7 +77,7 @@ At least one case should have a red herring (a resource that looks expensive but
   - `scripts/deploy-all.ps1 -Scenario cloud-finops` deploys without error.
   - `python scripts/smoke_test.py --scenario cloud-finops` runs the `smoke_prompts`.
   - Each demo prompt run at least once in the browser.
-- **Status:** `[ ] pending`
+- **Status:** `[x] done` — deployed to techzone1; all 4 smoke prompts passed; approval forms not yet browser-verified.
 
 ### Sub-Task 7: Demo script and slides
 
@@ -86,15 +86,13 @@ At least one case should have a red herring (a resource that looks expensive but
   - `docs/demo/scenarios/cloud-finops.js` filled; `status: "live"`; slide tags "Scenario 5 • ...".
   - No unmeasured percentage or time figures on any slide; any illustrative figure is labelled as such.
   - Checker exits 0.
-- **Status:** `[ ] pending`
+- **Status:** `[x] done` — demo script updated from smoke-run observations; slides set to status: live; validate passes.
 
 ## Open Items
 
-- Confirm the idle-resource threshold (e.g. < 5% CPU for 7 days) and rightsizing criteria before building mock data.
-- Decide whether `reclaim_resource` and `resize_resource` are separate tools (each behind its own flow step) or one tool with a mode parameter.
-- Tool name uniqueness: verify `get_spend_summary`, `list_idle_resources`, `get_resource_utilization`, `explain_cost_spike`, `reclaim_resource`, `resize_resource`, `approve_resource_change` do not clash with any existing scenario names.
-- Rule 7 from `wxo-scenario-authoring`: add a deterministic check inside the flow that the resource id and account id are consistent before calling the write tool.
-- The benefits slide must not claim a specific % cost reduction unless a recorded run supports it; use "illustrative example" if a figure is needed.
+- The smoke run checked only 3 of 4 idle-resource candidates in CF-002 (skipped `vm-batch-weekend-01`); whether the agent reliably catches this red herring across multiple runs is untested.
+- Clean first-install re-import safety is untested repo-wide.
+- Flow bug found and fixed: `cf_approve_resize` Approve path initially omitted the illustrative saving label; fixed in the flow script and re-deployed.
 
 ## Suggested Build Order
 

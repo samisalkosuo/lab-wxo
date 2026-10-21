@@ -1,0 +1,47 @@
+DOCUMENT ID: CF-POL-04
+TITLE: Billing Error Escalation Procedure
+EFFECTIVE DATE: 2025-01-01
+OWNER: Cloud FinOps Team
+
+PURPOSE
+
+Billing errors in cloud cost reports must be identified and escalated rather than
+acted upon. This policy defines how to recognise a billing error and what to do.
+
+DEFINITION
+
+A billing error is a line item in the billing feed where the reported usage or cost
+does not match the usage telemetry recorded by the platform's monitoring systems.
+Common causes: billing feed data lag, misconfigured meter ID, batch job not started.
+
+DETECTION
+
+When investigating a cost spike:
+1. Call cf_get_billing_lines to retrieve the detailed billing line items.
+2. Compare reported_units against recorded_usage_units for each line.
+3. If the two values differ significantly (more than 10%), the line is a potential
+   billing error.
+4. Do NOT interpret a billing error as a real usage increase.
+5. Do NOT reclaim or resize any resource based on a billing error.
+
+ESCALATION PROCEDURE
+
+1. Note the line_id and the discrepancy_note from the billing line item.
+2. Report the discrepancy to the user verbatim, stating:
+   - The line_id that has the error.
+   - The reported vs. actual usage figures.
+   - That no resource action should be taken until finance confirms the error.
+3. Advise the user to raise a ticket with the finance team, citing this document (CF-POL-04).
+4. Do NOT call cf_reclaim_resource, cf_resize_resource, or any write tool in response
+   to a billing error.
+
+WHAT TO SAY
+
+"The billing feed reports X units for line BL-XXXX, but telemetry shows Y units
+consumed. This is a potential billing data error. Per CF-POL-04, no resource action
+should be taken. Please escalate to finance for correction."
+
+REFERENCES
+
+CF-POL-01: Idle Resource Reclamation Policy
+CF-POL-03: Rightsizing Guidelines

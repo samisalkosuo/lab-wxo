@@ -1,0 +1,50 @@
+# scenario.yaml - manifest for the Cloud FinOps scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Deployed to techzone1. Both approval flows must still be browser-verified (Approve + Reject each form).
+
+id: cloud-finops
+name: Cloud FinOps
+description: Spend anomaly investigation, rightsizing recommendations, and governed resource reclamation
+status: live
+
+agents:
+  - name: cloud_finops
+    path: agents/cloud-finops
+    kind: native
+
+tools:
+  - path: tools/cloud_finops
+    entry: cloud_finops.py
+    names:
+      - cf_get_spend_summary
+      - cf_list_idle_resources
+      - cf_get_resource_utilization
+      - cf_explain_cost_spike
+      - cf_get_billing_lines
+      - cf_reclaim_resource
+      - cf_resize_resource
+    # cf_reclaim_resource and cf_resize_resource are deliberately NOT attached to the agent.
+    # Only cf_approve_reclaim and cf_approve_resize flows call them after cost-owner approval.
+    attached:
+      - cf_get_spend_summary
+      - cf_list_idle_resources
+      - cf_get_resource_utilization
+      - cf_explain_cost_spike
+      - cf_get_billing_lines
+
+knowledge_bases:
+  - name: cloud_finops_policy
+    path: knowledge/cloud-finops
+
+flows:
+  - name: cf_approve_reclaim
+    path: flows/cf_approve_reclaim
+  - name: cf_approve_resize
+    path: flows/cf_approve_resize
+
+evaluation:
+  path: evaluation/cloud-finops
+  tier: core
+
+demo:
+  script: docs/demo/cloud-finops-demo.md
