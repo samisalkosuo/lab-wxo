@@ -22,6 +22,26 @@ window.SCENARIOS.push(
                 </div>
               </div>
 
+              <div class="fit-card">
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">🏢</span> Industry</div>
+                  <div class="fit-value">Cross-Industry <span style="font-size:12px; color:var(--text-muted);">(Public & Hybrid Cloud Infrastructure)</span></div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">⚙️</span> Function</div>
+                  <div class="fit-value">Cloud FinOps & Infrastructure Cost Governance</div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">👥</span> Target Roles</div>
+                  <div class="fit-pills">
+                    <span class="fit-pill">FinOps Practitioner / Analyst</span>
+                    <span class="fit-pill">Cloud Solutions Architect</span>
+                    <span class="fit-pill">Engineering Budget Owner</span>
+                    <span class="fit-pill">IT Infrastructure Lead</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="grid-3">
                 <div class="card">
                   <div class="card-header">

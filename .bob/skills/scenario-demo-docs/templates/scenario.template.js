@@ -14,8 +14,11 @@
 //   format (the built-in KB uses .txt, not markdown). Do not claim "zero glue code", "always", or "guarantees"
 //   unless the repo shows it.
 // - Classes available (defined in presentation.html): card, card-header, card-icon (icon-blue|purple|teal|green|
-//   amber|red), card-title, card-body, grid-2, grid-3, callout-banner, tool-chip, service-tag, table-container,
-//   prompt-card, prompt-box, scene-pill, copy-btn, prompt-tip. Do not add new CSS for a scenario.
+//   amber|red), card-title, card-body, grid-2, grid-3, callout-banner, fit-card, fit-group, fit-label, fit-value,
+//   fit-pills, fit-pill, tool-chip, service-tag, table-container, prompt-card, prompt-box, scene-pill, copy-btn,
+//   prompt-tip. Do not add new CSS for a scenario.
+// - Slide 1 (Overview) includes a dedicated .fit-card directly under .callout-banner with Industry (specific vertical
+//   or "Cross-Industry"), Function, and Target Roles pills.
 // - Each prompt-box needs a unique id (prompt-1, prompt-2, ...) and its copy button must call copyPrompt('<same id>', this).
 // - Prompt text must be identical to the "Prompt (type exactly)" blocks in docs/demo/{{ID}}-demo.md.
 window.SCENARIOS = window.SCENARIOS || [];
@@ -27,7 +30,7 @@ window.SCENARIOS.push(
         description: "{{ONE_LINE_DESCRIPTION}}",
         status: "live",
         slides: [
-          // Slide 1: Overview (the problem; 3 challenge cards; objectives)
+          // Slide 1: Overview (problem callout, target fit & audience card, 3 challenge cards, objectives)
           {
             title: "{{TITLE_1}}",
             tag: "Scenario {{N}} • Overview",
@@ -38,6 +41,25 @@ window.SCENARIOS.push(
                 <div>
                   <div class="callout-title">{{CALLOUT_TITLE}}</div>
                   <div class="callout-text">{{CALLOUT_TEXT}}</div>
+                </div>
+              </div>
+
+              <div class="fit-card">
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">🏢</span> Industry</div>
+                  <div class="fit-value">{{INDUSTRY_OR_CROSS_INDUSTRY}}</div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">⚙️</span> Function</div>
+                  <div class="fit-value">{{BUSINESS_OR_TECHNICAL_FUNCTION}}</div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">👥</span> Target Roles</div>
+                  <div class="fit-pills">
+                    <span class="fit-pill">{{ROLE_1}}</span>
+                    <span class="fit-pill">{{ROLE_2}}</span>
+                    <span class="fit-pill">{{ROLE_3}}</span>
+                  </div>
                 </div>
               </div>
 

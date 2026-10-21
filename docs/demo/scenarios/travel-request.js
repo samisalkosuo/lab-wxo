@@ -23,6 +23,26 @@ window.SCENARIOS.push(
                 </div>
               </div>
 
+              <div class="fit-card">
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">🏢</span> Industry</div>
+                  <div class="fit-value">Public Sector, Higher Education & Regulated Enterprise</div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">⚙️</span> Function</div>
+                  <div class="fit-value">Finance, Travel Administration & Expense Governance</div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">👥</span> Target Roles</div>
+                  <div class="fit-pills">
+                    <span class="fit-pill">Travel Coordinator / Expense Admin</span>
+                    <span class="fit-pill">Department Manager / Approver</span>
+                    <span class="fit-pill">Finance Manager</span>
+                    <span class="fit-pill">Compliance Officer</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="grid-3">
                 <div class="card">
                   <div class="card-header">

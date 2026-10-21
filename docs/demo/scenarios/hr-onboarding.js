@@ -23,6 +23,26 @@ window.SCENARIOS.push(
                 </div>
               </div>
 
+              <div class="fit-card">
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">🏢</span> Industry</div>
+                  <div class="fit-value">Cross-Industry <span style="font-size:12px; color:var(--text-muted);">(Workforce & People Operations)</span></div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">⚙️</span> Function</div>
+                  <div class="fit-value">Human Resources (HR Ops) & IT Identity Provisioning</div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">👥</span> Target Roles</div>
+                  <div class="fit-pills">
+                    <span class="fit-pill">HR Operations Coordinator</span>
+                    <span class="fit-pill">IT Access & Identity Admin</span>
+                    <span class="fit-pill">Hiring Manager</span>
+                    <span class="fit-pill">HR Compliance Officer</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="grid-3">
                 <div class="card">
                   <div class="card-header">

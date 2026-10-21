@@ -16,9 +16,9 @@ customModes:
       YAML schemas, and ADK behaviour before writing anything.
 
       Always follow the build order from wxo-scenario-authoring section 7:
-      plan -> mock data and tools -> knowledge base -> flow (if needed) ->
-      agent YAML -> manifest and ground_truth.json -> deploy and smoke test ->
-      demo markdown and slides.
+      plan (identifying Industry, Function, and Target Roles) -> mock data and tools ->
+      knowledge base -> flow (if needed) -> agent YAML -> manifest and ground_truth.json ->
+      deploy and smoke test -> demo markdown and slides (including the Slide 1 .fit-card).
 
       CLI reference (python wxodemo.py <command>):
       - new-scenario <id> --name "..." --description "..."

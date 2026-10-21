@@ -35,6 +35,7 @@ Load `wxo-scenario-authoring` first for what the scenario itself must contain. T
    - Each scene: Prompt, Expected behaviour (observed), Point out, Fallback. Add "Be straight" for known easy cases or limits.
 3. **Slides.** Copy `templates/scenario.template.js` over the placeholder `docs/demo/scenarios/<id>.js` and fill it in:
    - Keep the six slides in order: Overview, Why and How the Agent is Used, How and Why the Agent Works, Real-Life Backend Services Mapping, Business and Operational Benefits, Live Demo Prompts. Add or remove cards inside a slide as needed; do not change the slide order.
+   - Slide 1 (Overview) must include the `.fit-card` directly below `.callout-banner` with Industry (explicitly "Cross-Industry" or specific vertical), Function, and Target Roles pills.
    - Set `status: "live"` only when the scenario is deployed and the demo script exists; otherwise keep `"soon"` and the short placeholder slide.
    - `tag` text "Scenario N • ..." uses N = the scenario's position in the `<script src>` order in `presentation.html`. The tags are static text; if you reorder scripts, update every tag.
    - Make sure `presentation.html` has `<script src="scenarios/<id>.js"></script>` (new scenarios need one line there; this is the only edit to the shell).

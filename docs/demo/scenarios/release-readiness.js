@@ -23,6 +23,26 @@ window.SCENARIOS.push(
                 </div>
               </div>
 
+              <div class="fit-card">
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">🏢</span> Industry</div>
+                  <div class="fit-value">Cross-Industry <span style="font-size:12px; color:var(--text-muted);">(Software Delivery & Enterprise IT)</span></div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">⚙️</span> Function</div>
+                  <div class="fit-value">Software Delivery, QA & DevSecOps Governance</div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">👥</span> Target Roles</div>
+                  <div class="fit-pills">
+                    <span class="fit-pill">Release Manager</span>
+                    <span class="fit-pill">QA Lead / Test Architect</span>
+                    <span class="fit-pill">Security Compliance Officer</span>
+                    <span class="fit-pill">DevOps / Engineering Lead</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="grid-3">
                 <div class="card">
                   <div class="card-header">

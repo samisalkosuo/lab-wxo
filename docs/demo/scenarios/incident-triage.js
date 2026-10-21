@@ -23,6 +23,26 @@ window.SCENARIOS.push(
                 </div>
               </div>
 
+              <div class="fit-card">
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">🏢</span> Industry</div>
+                  <div class="fit-value">Cross-Industry <span style="font-size:12px; color:var(--text-muted);">(Cloud & Digital Services)</span></div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">⚙️</span> Function</div>
+                  <div class="fit-value">Site Reliability Engineering (SRE) & IT Operations</div>
+                </div>
+                <div class="fit-group">
+                  <div class="fit-label"><span class="fit-label-icon">👥</span> Target Roles</div>
+                  <div class="fit-pills">
+                    <span class="fit-pill">Site Reliability Engineer (SRE)</span>
+                    <span class="fit-pill">Incident Commander</span>
+                    <span class="fit-pill">DevOps Engineer</span>
+                    <span class="fit-pill">IT Operations Manager</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="grid-3">
                 <div class="card">
                   <div class="card-header">

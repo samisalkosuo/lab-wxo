@@ -64,14 +64,14 @@ Use `flows/incident_triage/request_remediation.py` as the reference: input schem
 
 ## 7. Build order
 
-1. Scenario plan file in `plans/<id>-plan.md` (sub-task format of `plans/incident-triage-plan.md`): purpose, agent-washing check, mock world table (case, symptom, planted cause, what it teaches), tool list, KB documents, flow, open items.
+1. Scenario plan file in `plans/<id>-plan.md` (sub-task format of `plans/incident-triage-plan.md`): purpose, target fit (industry, function, key roles), agent-washing check, mock world table (case, symptom, planted cause, what it teaches), tool list, KB documents, flow, open items.
 2. Mock data and read-only tools; test them directly with Python.
 3. Knowledge base documents.
 4. Write tool and flow (if any).
 5. Agent YAML and README.
 6. Manifest and `ground_truth.json` (run `python wxodemo.py new-scenario` first: it creates both as stubs, plus the demo script and slide placeholders). `validate` must print `OK`.
 7. Deploy (`python wxodemo.py deploy <id>`; a scenario stays `status: soon` until it is ready, and `soon` scenarios are skipped by `deploy --all`), then run each demo prompt several times (a single pass proves little; `python wxodemo.py smoke <id>` does one pass of the `smoke_prompts`) and record what actually happened.
-8. Demo markdown and presentation slides from the `scenario-demo-docs` templates. Fill "what was and was not verified" only from real runs.
+8. Demo markdown and presentation slides from the `scenario-demo-docs` templates (including the Slide 1 Target Fit card for industry, function, and roles). Fill "what was and was not verified" only from real runs.
 
 ## 8. Verify, do not assume
 
