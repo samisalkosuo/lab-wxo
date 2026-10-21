@@ -175,50 +175,9 @@ Names are scenario ids or standalone agent names (see `list`). `--kind scenario|
 
 **Full reference** (every option, `env.cfg` keys, log file, exit codes, troubleshooting, and a table from the old scripts to the new commands): [`docs/wxodemo.md`](docs/wxodemo.md).
 
-## Running the evaluation (optional)
-
-> **Dependency warning:** the evaluation framework `ibm-watsonx-orchestrate-evaluation-framework==1.5.2` and its transitive dependencies (`agentops`, `langchain`, `fuzzywuzzy`, `portkey-ai`, `openinference-*`, `jsonargparse`) are **not** installed automatically. On Python 3.14 the `pandas~=2.2.3` pin cannot be satisfied. On other Python versions you can try (untested here):
->
-> ```bash
-> pip install ibm-watsonx-orchestrate-evaluation-framework==1.5.2
-> ```
->
-> If pip fails on the pandas pin, use `--no-deps` and install pandas separately:
->
-> ```bash
-> pip install --no-deps ibm-watsonx-orchestrate-evaluation-framework==1.5.2
-> pip install pandas
-> ```
->
-> A clean-instance install of the evaluation framework was not tested. The dependency issue was resolved manually on the development machine.
-
-Once the dependencies are installed (Incident Triage):
-
-```bash
-python wxodemo.py eval incident-triage
-```
-
-The command exits with code 1 when its output is piped or redirected (a progress-rendering issue); the result files are still written to `evaluation/incident-triage/results/<timestamp>/`.
-
-To send a scenario's diagnosis-only prompts to the deployed agent, use `python wxodemo.py smoke <id>` (`--dry-run` prints the prompts without calling the instance). It does not grade the answers.
-
 ## Demo
 
-See [`docs/demo/incident-triage-demo.md`](docs/demo/incident-triage-demo.md) for the human-readable demo script: exact prompts, expected agent behaviour, fallback notes, and closing talking points.
-
-## Status and Known Limitations
-
-This is a demo / lab repo. The following items are open as of the current state:
-
-- **No clean-instance install tested.** The only tested deploy was a re-install over an existing environment (`techzone1`). First-import on a fresh WXO instance was not verified.
-- **Evaluation final-answer check: 0 of 15 runs pass.** Tool-selection metrics are good (recall 1.0 in 13 of 15 runs, `tool_match_success` true in 13 of 15), but `is_success` requires the text check to also pass. The text check fails because the agent writes IDs with non-breaking hyphens (U+2011, e.g. `RB-TLS-01`) which break exact keyword matches, and produces long answers compared with the one-sentence expected responses. The overall score is not a useful signal in its current form.
-- **Wrong incident reference in approval requests (3 of 19 vague-opening runs).** On "Hey, checkout is slow...", the agent sometimes investigates the payments service while working INC-1001 and then calls `request_remediation` with `service=payments, incident_id=INC-1001` (mismatched). The instruction change in `agent.yaml` gave no measurable improvement. The human approval gate catches this before any execution; a proper fix is to validate service/incident consistency inside the flow.
-- **Evaluation dependencies installed by hand.** `ibm-watsonx-orchestrate-evaluation-framework==1.5.2` and its transitive dependencies are not installed automatically. On Python 3.14 the `pandas~=2.2.3` pin cannot be satisfied. See [Running the evaluation](#running-the-evaluation-optional) for the workaround.
-- **`wxodemo` has been run on Windows only.** The automated tests (about 250, with `orchestrate` replaced by a fake) do not need a platform-specific tool, but runs on native Linux and macOS were not done.
-- **`orchestrate chat ask` hangs** in non-interactive shells. Use the ADK run API instead (see `src/wxodemo/smoke.py`).
-- **Scenario `undeploy` (tools, flows, knowledge bases) has only been run with `--dry-run`** against the live instance. Standalone agent `undeploy` and `deploy` were run for real.
-- **`wxodemo smoke` was not run live against an instance in this form.** Its logic is covered by tests with a faked ADK client; a live run of the command itself has not been recorded.
-- **Promotion to live is required.** If `orchestrate agents deploy` is refused (for example on the Developer Edition), `wxodemo deploy` stops with exit code 1 and leaves the agent as a draft. This change has not been run against a Developer Edition instance.
+See [`docs/demo/`](docs/demo/) for the human-readable demo scripts: exact prompts, expected agent behaviour, fallback notes, and closing talking points.
 
 ## Adding a New Scenario
 
@@ -286,3 +245,45 @@ python wxodemo.py export-chats
 python wxodemo.py export-chats --agent translator
 python wxodemo.py export-chats --last 30d
 ```
+
+## Running the evaluation (optional)
+
+> **Dependency warning:** the evaluation framework `ibm-watsonx-orchestrate-evaluation-framework==1.5.2` and its transitive dependencies (`agentops`, `langchain`, `fuzzywuzzy`, `portkey-ai`, `openinference-*`, `jsonargparse`) are **not** installed automatically. On Python 3.14 the `pandas~=2.2.3` pin cannot be satisfied. On other Python versions you can try (untested here):
+>
+> ```bash
+> pip install ibm-watsonx-orchestrate-evaluation-framework==1.5.2
+> ```
+>
+> If pip fails on the pandas pin, use `--no-deps` and install pandas separately:
+>
+> ```bash
+> pip install --no-deps ibm-watsonx-orchestrate-evaluation-framework==1.5.2
+> pip install pandas
+> ```
+>
+> A clean-instance install of the evaluation framework was not tested. The dependency issue was resolved manually on the development machine.
+
+Once the dependencies are installed (Incident Triage):
+
+```bash
+python wxodemo.py eval incident-triage
+```
+
+The command exits with code 1 when its output is piped or redirected (a progress-rendering issue); the result files are still written to `evaluation/incident-triage/results/<timestamp>/`.
+
+To send a scenario's diagnosis-only prompts to the deployed agent, use `python wxodemo.py smoke <id>` (`--dry-run` prints the prompts without calling the instance). It does not grade the answers.
+
+
+## Status and Known Limitations
+
+This is a demo / lab repo. The following items are open as of the current state:
+
+- **No clean-instance install tested.** The only tested deploy was a re-install over an existing environment (`techzone1`). First-import on a fresh WXO instance was not verified.
+- **Evaluation final-answer check: 0 of 15 runs pass.** Tool-selection metrics are good (recall 1.0 in 13 of 15 runs, `tool_match_success` true in 13 of 15), but `is_success` requires the text check to also pass. The text check fails because the agent writes IDs with non-breaking hyphens (U+2011, e.g. `RB-TLS-01`) which break exact keyword matches, and produces long answers compared with the one-sentence expected responses. The overall score is not a useful signal in its current form.
+- **Wrong incident reference in approval requests (3 of 19 vague-opening runs).** On "Hey, checkout is slow...", the agent sometimes investigates the payments service while working INC-1001 and then calls `request_remediation` with `service=payments, incident_id=INC-1001` (mismatched). The instruction change in `agent.yaml` gave no measurable improvement. The human approval gate catches this before any execution; a proper fix is to validate service/incident consistency inside the flow.
+- **Evaluation dependencies installed by hand.** `ibm-watsonx-orchestrate-evaluation-framework==1.5.2` and its transitive dependencies are not installed automatically. On Python 3.14 the `pandas~=2.2.3` pin cannot be satisfied. See [Running the evaluation](#running-the-evaluation-optional) for the workaround.
+- **`wxodemo` has been run on Windows only.** The automated tests (about 250, with `orchestrate` replaced by a fake) do not need a platform-specific tool, but runs on native Linux and macOS were not done.
+- **`orchestrate chat ask` hangs** in non-interactive shells. Use the ADK run API instead (see `src/wxodemo/smoke.py`).
+- **Scenario `undeploy` (tools, flows, knowledge bases) has only been run with `--dry-run`** against the live instance. Standalone agent `undeploy` and `deploy` were run for real.
+- **`wxodemo smoke` was not run live against an instance in this form.** Its logic is covered by tests with a faked ADK client; a live run of the command itself has not been recorded.
+- **Promotion to live is required.** If `orchestrate agents deploy` is refused (for example on the Developer Edition), `wxodemo deploy` stops with exit code 1 and leaves the agent as a draft. This change has not been run against a Developer Edition instance.
