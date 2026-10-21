@@ -1,0 +1,80 @@
+YEL-POL-02: Triennial Review Cycle and Transition Adjustment Cap
+================================================================
+
+Document ID:  YEL-POL-02
+Scope:        Finnish Self-Employed Persons' Pensions Act (YEL), 2023 reform
+Applicability: All established YEL policyholders subject to triennial review
+
+
+1. BACKGROUND — THE 2023 YEL REFORM
+
+The 2023 YEL reform (HE 82/2022 vp, effective 1 January 2023) made two major
+changes relevant to income reviews:
+
+  a) Mandatory triennial (3-year) review cycle:
+     Pension providers are now required to review every policyholder's confirmed
+     work income every three years against current sector wage benchmarks.
+     Previously, reviews were largely voluntary and driven by the entrepreneur.
+
+  b) Statutory transition adjustment cap (korotuskatto):
+     To avoid sudden premium shocks for entrepreneurs whose income had long been
+     set below the sector benchmark, a maximum mandatory increase per review cycle
+     was introduced. The cap for 2024/2025 reviews is EUR 4,000 per year per
+     review period (korotuskatto 4 000 EUR/vuosi).
+
+
+2. HOW THE TRANSITION CAP WORKS
+
+When the sector-based recommended income exceeds the current confirmed income:
+
+  Case A — Proposed increase <= EUR 4,000/yr:
+    The full increase may be applied immediately.
+    Example: Current income EUR 20,000; sector target EUR 23,000.
+    Increase = EUR 3,000 <= cap. New confirmed income = EUR 23,000.
+
+  Case B — Proposed increase > EUR 4,000/yr:
+    Only EUR 4,000 increase is MANDATORY at this review.
+    The remainder may be applied at the next triennial review (or voluntarily).
+    Example: Current income EUR 18,000; sector target EUR 46,000.
+    Proposed increase = EUR 28,000 > cap.
+    Mandatory new income = EUR 18,000 + EUR 4,000 = EUR 22,000.
+    Remaining EUR 24,000 gap is addressed in future reviews.
+
+  Case C — Current income >= sector target:
+    No mandatory increase. No mandatory reduction.
+    The entrepreneur may voluntarily request a reduction if their business has
+    changed significantly, subject to YEL-POL-01 minimum threshold rules.
+
+
+3. VOLUNTARY ADJUSTMENTS
+
+Entrepreneurs may always request a voluntary upward adjustment of their confirmed
+income between triennial review dates, for example when the business grows rapidly
+or when a new social security event (illness, parental leave) is anticipated.
+
+Voluntary downward adjustments are possible but must be substantiated (e.g. reduced
+working hours, documented business contraction). The confirmed income must not fall
+below the statutory minimum (EUR 9,010/yr in 2024/2025).
+
+
+4. REVIEW NOTIFICATION AND TIMING
+
+  - The pension provider initiates the review by notifying the entrepreneur at least
+    30 days before the proposed effective date.
+  - The entrepreneur has the right to respond (kuuleminen, see YEL-POL-04).
+  - The confirmed income change takes effect on the first day of the month following
+    the decision date unless the underwriter specifies otherwise.
+
+
+5. UNDERWRITER WORKFLOW FOR TRIENNIAL REVIEW
+
+  Step 1: Retrieve current confirmed income and sector benchmark data.
+  Step 2: Calculate the uncapped recommended income.
+  Step 3: Apply the EUR 4,000 cap if the proposed increase exceeds it.
+  Step 4: Prepare the formal proposal for the entrepreneur's review (kuuleminen).
+  Step 5: If the entrepreneur disputes the proposal, assess their evidence
+          (YEL-POL-04) and adjust if substantiated.
+  Step 6: Issue the formal administrative determination (valituskelpoinen päätös).
+
+Cross-references: YEL-POL-01 (income definition), YEL-POL-03 (social security
+linkage), YEL-POL-04 (right of reply and appeals).

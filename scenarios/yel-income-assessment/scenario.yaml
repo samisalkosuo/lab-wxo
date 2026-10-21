@@ -1,0 +1,45 @@
+# scenario.yaml - manifest for the YEL Income Assessment scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Status stays `soon` until the scenario is deployed and its demo script is written.
+
+id: yel-income-assessment
+name: YEL Income Assessment
+description: Statutory YEL confirmed work income review & approval
+status: live
+
+agents:
+  - name: yel_income_assessment
+    path: agents/yel-income-assessment
+    kind: native
+
+tools:
+  - path: tools/yel_income
+    entry: yel_income.py
+    names:
+      - yel_get_business_profile
+      - yel_get_sector_benchmark
+      - yel_calculate_income_recommendation
+      - yel_estimate_social_benefits
+      - yel_issue_decision_record
+    # yel_issue_decision_record is deliberately NOT attached to the agent;
+    # only the yel_issue_decision flow calls it after underwriter approval (least privilege).
+    attached:
+      - yel_get_business_profile
+      - yel_get_sector_benchmark
+      - yel_calculate_income_recommendation
+      - yel_estimate_social_benefits
+
+knowledge_bases:
+  - name: yel_income_policy
+    path: knowledge/yel-income-assessment
+
+flows:
+  - name: yel_issue_decision
+    path: flows/yel_income
+
+evaluation:
+  path: evaluation/yel-income-assessment
+  tier: core
+
+demo:
+  script: docs/demo/yel-income-assessment-demo.md

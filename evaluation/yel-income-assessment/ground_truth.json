@@ -1,0 +1,103 @@
+{
+  "version": "1.0",
+  "description": "Ground truth mappings for YEL income assessment evaluation.",
+  "smoke_prompts": [
+    {
+      "id": "ENT-801",
+      "prompt": "Conduct a YEL income review for IT consultant ENT-801 (current income EUR 18,000/yr, turnover EUR 95,000/yr). Use your tools to retrieve the profile, sector benchmark, and calculate the recommended income. Do NOT call yel_issue_decision — just report your diagnosis and the proposed new confirmed income with reasoning."
+    },
+    {
+      "id": "ENT-802",
+      "prompt": "Artisan bakery owner ENT-802 is contesting a proposed YEL income of EUR 38,000. Retrieve her profile and sector benchmark, then calculate the income recommendation. Do NOT call yel_issue_decision — just report what the correct recommended income should be and why the turnover-based proposal was too high."
+    },
+    {
+      "id": "ENT-803",
+      "prompt": "New startup founder ENT-803 wants to know their recommended YEL income and whether they qualify for a beginner discount. Retrieve the profile, sector benchmark, and calculate the recommendation. Do NOT call yel_issue_decision — just report the recommended income, whether the beginner discount applies, and what their monthly premium would be."
+    },
+    {
+      "id": "ENT-804",
+      "prompt": "Side-hustle freelancer ENT-804 has annual revenue of EUR 5,200 and wants to know if YEL insurance is mandatory. Use your tools to check and report whether YEL is required and what options are available."
+    }
+  ],
+  "cases": {
+    "ENT-801": {
+      "case_id": "ENT-801",
+      "entrepreneur_name": "Aleksi Mäkinen",
+      "sector": "Software consulting (NACE J.62)",
+      "symptom_summary": "Full-time IT consultant with current YEL income EUR 18,000/yr, far below sector median EUR 46,000/yr. Triennial review triggered.",
+      "planted_situation": "Income is EUR 28,000 below sector median. Statutory EUR 4,000 transition cap restricts the mandatory increase to EUR 22,000/yr.",
+      "expected_yel_mandatory": true,
+      "expected_recommended_income_eur": 22000,
+      "expected_transition_cap_applied": true,
+      "expected_beginner_discount": false,
+      "expected_policy_refs": ["YEL-POL-01", "YEL-POL-02"],
+      "requires_human_approval": true,
+      "red_herrings": ["The high turnover (EUR 95k) might suggest a higher income is achievable; the cap is what constrains the mandatory adjustment, not the turnover."],
+      "diagnostic_path": [
+        "yel_get_business_profile(entrepreneur_id='ENT-801')",
+        "yel_get_sector_benchmark(sector_code='NACE J.62')",
+        "yel_calculate_income_recommendation(entrepreneur_id='ENT-801')",
+        "yel_estimate_social_benefits(entrepreneur_id='ENT-801', compare_income=22000)"
+      ]
+    },
+    "ENT-802": {
+      "case_id": "ENT-802",
+      "entrepreneur_name": "Kaisa Virtanen",
+      "sector": "Artisan food production / bakery (NACE C.10)",
+      "symptom_summary": "Bakery owner with EUR 140k revenue and 3 hired staff. Owner works 20 h/wk managing. Proposed income EUR 38,000 contested.",
+      "planted_situation": "High revenue does not equal high owner work input. Owner works part-time (20 h/wk). Part-time adjusted target: EUR 16,000. Current income (EUR 32,000) exceeds adjusted target. No mandatory increase.",
+      "expected_yel_mandatory": true,
+      "expected_recommended_income_eur": 32000,
+      "expected_transition_cap_applied": false,
+      "expected_beginner_discount": false,
+      "expected_policy_refs": ["YEL-POL-01", "YEL-POL-04"],
+      "requires_human_approval": true,
+      "red_herrings": ["High turnover EUR 140k suggests high YEL income; the correct analysis must adjust for actual weekly hours and distinguish turnover from owner work input."],
+      "diagnostic_path": [
+        "yel_get_business_profile(entrepreneur_id='ENT-802')",
+        "yel_get_sector_benchmark(sector_code='NACE C.10')",
+        "yel_calculate_income_recommendation(entrepreneur_id='ENT-802')",
+        "yel_estimate_social_benefits(entrepreneur_id='ENT-802')"
+      ]
+    },
+    "ENT-803": {
+      "case_id": "ENT-803",
+      "entrepreneur_name": "Juhani Korhonen",
+      "sector": "Software development / startup (NACE J.62)",
+      "symptom_summary": "First-time entrepreneur, 19 months insured, revenue EUR 28k, current income EUR 14,000/yr. Asking about minimum income and beginner discount.",
+      "planted_situation": "Sector median EUR 46k is far above current income EUR 14k. Cap applies: recommended EUR 18k. 22 % beginner discount reduces premium but not the benefit base.",
+      "expected_yel_mandatory": true,
+      "expected_recommended_income_eur": 18000,
+      "expected_transition_cap_applied": true,
+      "expected_beginner_discount": true,
+      "expected_policy_refs": ["YEL-POL-02", "YEL-POL-03"],
+      "requires_human_approval": true,
+      "red_herrings": [],
+      "diagnostic_path": [
+        "yel_get_business_profile(entrepreneur_id='ENT-803')",
+        "yel_get_sector_benchmark(sector_code='NACE J.62')",
+        "yel_calculate_income_recommendation(entrepreneur_id='ENT-803')",
+        "yel_estimate_social_benefits(entrepreneur_id='ENT-803', compare_income=18000)"
+      ]
+    },
+    "ENT-804": {
+      "case_id": "ENT-804",
+      "entrepreneur_name": "Meri Leinonen",
+      "sector": "Freelance content creation / photography (NACE M.74)",
+      "symptom_summary": "Side-hustle freelancer with annual revenue EUR 5,200, well below the EUR 9,010/yr statutory YEL minimum threshold.",
+      "planted_situation": "Revenue is below the statutory threshold. YEL is NOT mandatory. Agent must identify this immediately and NOT propose an income or flow.",
+      "expected_yel_mandatory": false,
+      "expected_recommended_income_eur": null,
+      "expected_transition_cap_applied": false,
+      "expected_beginner_discount": false,
+      "expected_policy_refs": ["YEL-POL-01"],
+      "requires_human_approval": false,
+      "red_herrings": ["The sector median (EUR 26k) is well above revenue; agent must check the mandatory threshold FIRST, not propose an income based on the median."],
+      "diagnostic_path": [
+        "yel_get_business_profile(entrepreneur_id='ENT-804')",
+        "yel_get_sector_benchmark(sector_code='NACE M.74')",
+        "yel_calculate_income_recommendation(entrepreneur_id='ENT-804')"
+      ]
+    }
+  }
+}

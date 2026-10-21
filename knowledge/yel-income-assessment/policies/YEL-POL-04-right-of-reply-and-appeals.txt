@@ -1,0 +1,96 @@
+YEL-POL-04: Right of Reply and Appeals Process
+===============================================
+
+Document ID:  YEL-POL-04
+Scope:        Finnish Self-Employed Persons' Pensions Act (YEL) — administrative procedure
+Applicability: All YEL policyholders subject to a proposed income determination
+
+
+1. RIGHT OF REPLY (KUULEMINEN)
+
+Before the pension provider issues a formal income determination that changes the
+entrepreneur's confirmed work income, the entrepreneur has the statutory right to be
+heard (kuuleminen, Administrative Procedure Act 434/2003 and YEL Act).
+
+Procedure:
+  1. The pension provider sends the entrepreneur a written proposal (kuulemiskirje)
+     stating the proposed new confirmed income and the reasons.
+  2. The entrepreneur has at least 14 days to respond.
+  3. The entrepreneur may accept the proposal, dispute it, or request a meeting.
+  4. Acceptable evidence for disputing a proposal includes:
+       - Most recent tax return (veroilmoitus).
+       - Time records or diary (tuntikirjanpito) documenting actual weekly hours.
+       - Invoices for subcontracting costs or purchased services (alihankintakulut).
+       - Industry or sector wage surveys (e.g. from a professional association).
+       - Medical certificates if reduced working capacity affects work input.
+  5. The underwriter reviews all submitted evidence and adjusts the recommendation
+     if the evidence substantiates a different income level.
+  6. The formal determination (valituskelpoinen päätös) is issued after kuuleminen
+     is complete.
+
+
+2. FORMAL ADMINISTRATIVE DETERMINATION (VALITUSKELPOINEN PAATOS)
+
+The income determination is a legally binding administrative decision that must:
+  - State the new confirmed YEL work income.
+  - Include the effective date (first day of a calendar month).
+  - Provide the reasoning (perustelut), including the sector benchmark cited.
+  - State the appeal right and deadline (30 days from receipt).
+  - Be issued in writing and delivered to the entrepreneur.
+
+
+3. APPEAL PROCESS (MUUTOKSENHAKU)
+
+If the entrepreneur disagrees with the formal determination, they may appeal:
+
+  a) Internal rectification request (oikaisuvaatimus):
+     First step: submit a written rectification request to the pension provider
+     within 30 days of receiving the decision. The provider must respond in writing.
+
+  b) Appeal to TELK (Tyoelakelakiasioiden muutoksenhakulautakunta):
+     If the rectification request is rejected or the entrepreneur disagrees with the
+     outcome, they may appeal to TELK (Pension Appeal Board for Earnings-Related
+     Pension Acts) within 30 days of receiving the rectification decision.
+     TELK rulings are binding and set precedent.
+
+  c) Further appeal to the Insurance Court (Vakuutusoikeus):
+     TELK decisions may be appealed to the Insurance Court on legal grounds only.
+
+  d) Supreme Court (Korkein oikeus):
+     Further appeal to the Supreme Court requires a leave to appeal and is limited
+     to questions of law.
+
+Escalation flag in the system:
+  When an underwriter escalates a case to appeals review, the case is logged as
+  ESCALATE. No income change takes effect while the appeal is pending. The
+  entrepreneur is notified by post within 5 business days of escalation.
+
+
+4. DOCUMENTATION REQUIREMENTS FOR UNDERWRITERS
+
+Underwriters must retain in the case file:
+  - The kuulemiskirje and the entrepreneur's response (or note of no response).
+  - All evidence submitted by the entrepreneur.
+  - The written reasoning for the final income level chosen.
+  - The formal determination letter and delivery confirmation.
+
+Retention period: 10 years from the date of the determination.
+
+
+5. SPECIAL CASES: CONTESTED INCOME DISPUTES
+
+If the entrepreneur presents credible evidence that their actual work input is
+substantially less than the sector median suggests (e.g. documented part-time
+working hours, high subcontracting costs that reduce owner contribution), the
+underwriter must adjust the recommendation accordingly and document the adjustment.
+
+Example — Kaisa Virtanen, artisan bakery (ENT-802):
+  Proposed income:     EUR 38,000/yr (based on turnover comparison)
+  Disputed: owner works only 20 h/wk; 3 staff handle production.
+  Evidence provided:   payroll records for 3 employees; owner's diary showing 20 h/wk.
+  Adjusted target:     Sector median (EUR 32,000) * 20/40 = EUR 16,000.
+  However, current income is EUR 32,000 (above adjusted target); no increase mandatory.
+  Underwriter must explain why the proposal was incorrect and document the correction.
+
+Cross-references: YEL-POL-01 (income definition and evidence rules),
+YEL-POL-02 (review cycle and cap), YEL-POL-03 (social security linkage).

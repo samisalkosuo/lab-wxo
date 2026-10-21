@@ -318,72 +318,134 @@ window.SCENARIOS.push(
           // Slide 6: Live Demo Prompts
           {
             title: "Live Demo Prompts",
-            tag: "Scenario 7 • Demo",
-            subtitle: "Try these prompt sequences in the chat interface to test discovery, calculations, boundary refusals, and governed filings.",
+            tag: "Scenario 7 • WXO Chat Assistant",
+            subtitle: "Copy and paste these prompts directly into the watsonx Orchestrate chat interface during your live demo.",
             render: () => `
-              <div class="demo-prompt-card">
-                <div class="demo-prompt-header">
-                  <span class="badge badge-blue">Scene 1 • Vague Opening</span>
-                  <span style="font-size:12px; color:var(--text-muted);">Clarifying question for member ID</span>
+              <div class="prompts-container">
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 1</span>
+                      <span class="prompt-title">Vague Opening & Clarification</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-1', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-1">Hi, I am thinking about taking partial pension early while continuing my job. Can you help me?</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>The agent should ask for the member ID first rather than guessing figures. Watch for a single, focused clarifying question.</span>
+                  </div>
                 </div>
-                <div class="prompt-box" id="prompt-1">Hi, I am thinking about taking partial pension early while continuing my job. Can you help me?</div>
-                <div style="margin-top:8px;">
-                  <button class="btn btn-outline" style="font-size:12px; padding:4px 8px;" onclick="copyPrompt('prompt-1')">📋 Copy Prompt</button>
-                </div>
-              </div>
 
-              <div class="demo-prompt-card">
-                <div class="demo-prompt-header">
-                  <span class="badge badge-teal">Scene 2 • Main Path (50% OVE & Salary)</span>
-                  <span style="font-size:12px; color:var(--text-muted);">Matti Virtanen (MEM-101), 0.4%/mo penalty & 1.5% TyEL accrual</span>
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 2</span>
+                      <span class="prompt-title">Main Path (50% OVE & Continuing Salary)</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-2', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-2">I turn 62 next month and want to explore taking 50% partial early old-age pension (OVE) while continuing my job. My member ID is MEM-101 and my current monthly salary is 4200 euros.</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Matti Virtanen (MEM-101). Watch the agent apply the 0.4%/mo penalty, life expectancy coefficient, and calculate the continuing 1.5% TyEL work accrual.</span>
+                  </div>
                 </div>
-                <div class="prompt-box" id="prompt-2">I turn 62 next month and want to explore taking 50% partial early old-age pension (OVE) while continuing my job. My member ID is MEM-101 and my current monthly salary is 4200 euros.</div>
-                <div style="margin-top:8px;">
-                  <button class="btn btn-outline" style="font-size:12px; padding:4px 8px;" onclick="copyPrompt('prompt-2')">📋 Copy Prompt</button>
-                </div>
-              </div>
 
-              <div class="demo-prompt-card">
-                <div class="demo-prompt-header">
-                  <span class="badge badge-amber">Scene 3 • Refusal (Under Cohort Minimum Age)</span>
-                  <span style="font-size:12px; color:var(--text-muted);">Liisa Korhonen (MEM-102), age 59 vs 62y min for cohort 1966</span>
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 3</span>
+                      <span class="prompt-title">Cohort Age Limit Refusal</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-3', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-3">Can I take 25% OVE starting next month? My member ID is MEM-102 and I am a 59-year-old teacher.</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Liisa Korhonen (MEM-102). Cohort 1966 requires age 62. The agent cites OVE-POL-01, states the shortfall months, and refuses early filing.</span>
+                  </div>
                 </div>
-                <div class="prompt-box" id="prompt-3">Can I take 25% OVE starting next month? My member ID is MEM-102 and I am a 59-year-old teacher.</div>
-                <div style="margin-top:8px;">
-                  <button class="btn btn-outline" style="font-size:12px; padding:4px 8px;" onclick="copyPrompt('prompt-3')">📋 Copy Prompt</button>
-                </div>
-              </div>
 
-              <div class="demo-prompt-card">
-                <div class="demo-prompt-header">
-                  <span class="badge badge-blue">Scene 4 • Multi-Option Comparison</span>
-                  <span style="font-size:12px; color:var(--text-muted);">Antti Mäkinen (MEM-103), compare 25% vs 50% with 80% work</span>
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 4</span>
+                      <span class="prompt-title">Multi-Scenario Comparison (25% vs 50%)</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-4', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-4">I want to compare taking 25% vs 50% OVE. My member ID is MEM-103 and I plan to reduce my work hours to 80% with a salary of 2800 euros per month.</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Antti Mäkinen (MEM-103). The agent simulates both 25% and 50% options side-by-side with 80% work hours and explains the trade-offs.</span>
+                  </div>
                 </div>
-                <div class="prompt-box" id="prompt-4">I want to compare taking 25% vs 50% OVE. My member ID is MEM-103 and I plan to reduce my work hours to 80% with a salary of 2800 euros per month.</div>
-                <div style="margin-top:8px;">
-                  <button class="btn btn-outline" style="font-size:12px; padding:4px 8px;" onclick="copyPrompt('prompt-4')">📋 Copy Prompt</button>
-                </div>
-              </div>
 
-              <div class="demo-prompt-card">
-                <div class="demo-prompt-header">
-                  <span class="badge badge-purple">Scene 5 • Governed Filing Flow</span>
-                  <span style="font-size:12px; color:var(--text-muted);">MEM-101, triggers ove_submit_application approval form</span>
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 5</span>
+                      <span class="prompt-title">Governed Application Filing Flow</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-5', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-5">Please submit my formal application for 50% OVE starting 2026-05-01 for member MEM-101.</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Triggers the ove_submit_application approval form in the chat UI. Click 'Approve' to issue the application reference ID.</span>
+                  </div>
                 </div>
-                <div class="prompt-box" id="prompt-5">Please submit my formal application for 50% OVE starting 2026-05-01 for member MEM-101.</div>
-                <div style="margin-top:8px;">
-                  <button class="btn btn-outline" style="font-size:12px; padding:4px 8px;" onclick="copyPrompt('prompt-5')">📋 Copy Prompt</button>
-                </div>
-              </div>
 
-              <div class="demo-prompt-card">
-                <div class="demo-prompt-header">
-                  <span class="badge badge-red">Scene 6 • Conflict Restraint</span>
-                  <span style="font-size:12px; color:var(--text-muted);">Eeva Koskinen (MEM-104), active disability pension exclusion</span>
-                </div>
-                <div class="prompt-box" id="prompt-6">I want to apply for 50% OVE. My member ID is MEM-104.</div>
-                <div style="margin-top:8px;">
-                  <button class="btn btn-outline" style="font-size:12px; padding:4px 8px;" onclick="copyPrompt('prompt-6')">📋 Copy Prompt</button>
+                <div class="prompt-card">
+                  <div class="prompt-card-top">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Scene 6</span>
+                      <span class="prompt-title">Benefit Conflict Restraint</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('prompt-6', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Prompt
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="prompt-6">I want to apply for 50% OVE. My member ID is MEM-104.</div>
+                  <div class="prompt-tip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Eeva Koskinen (MEM-104). The agent detects active Kuntoutustuki, cites OVE-POL-02, and halts without filing an application.</span>
+                  </div>
                 </div>
               </div>
             `

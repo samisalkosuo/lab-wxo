@@ -1,0 +1,16 @@
+spec_version: v1
+kind: knowledge_base
+name: yel_income_policy
+description: |
+  YEL (Yrittäjien eläkelaki) statutory work income review policy documents for the
+  YEL Income Assessment demo. Covers confirmed income definition and the wage-replacement
+  principle (YEL-POL-01), the 2023 reform triennial review cycle and EUR 4,000 transition
+  cap (YEL-POL-02), linkage to Kela sickness/parental allowances and the 22 % beginner
+  discount (YEL-POL-03), and the right-of-reply (kuuleminen), appeals to TELK, and
+  formal determination requirements (YEL-POL-04).
+  Cite a document by its ID (e.g. "Per YEL-POL-02...") in every assessment.
+documents:
+  - policies/YEL-POL-01-confirmed-income-definition.txt
+  - policies/YEL-POL-02-transition-cap-and-review.txt
+  - policies/YEL-POL-03-social-security-linkage.txt
+  - policies/YEL-POL-04-right-of-reply-and-appeals.txt

@@ -45,7 +45,7 @@
   - `tools/yel_income/requirements.txt` with `ibm-watsonx-orchestrate==2.18.2`.
   - Local Python test suite validating cases YEL-001 through YEL-004.
 - **Relevant Context**: [`tools/incident_triage/incident_triage.py`](tools/incident_triage/incident_triage.py)
-- **Status**: `[ ] pending`
+- **Status**: `[x] done` — all 4 data files created; Python data layer tested directly.
 
 ### Sub-Task 2: YEL policy knowledge base
 - **Intent**: Author knowledge base YAML and plain text policy documents with stable document identifiers.
@@ -57,7 +57,7 @@
     - `YEL-POL-03-social-security-linkage.txt`: Linkage to Kela sickness allowance, parental benefits, YTK/unemployment funds, beginner 22% discount.
     - `YEL-POL-04-right-of-reply-and-appeals.txt`: Opportunity to be heard (*kuuleminen*), acceptable evidence, appeal to TELK (Eläketurvalautakunta).
 - **Relevant Context**: [`knowledge/customer-returns/customer_returns_policy.yaml`](knowledge/customer-returns/customer_returns_policy.yaml)
-- **Status**: `[ ] pending`
+- **Status**: `[x] done` — all 4 policy .txt files + KB YAML created; imported live successfully.
 
 ### Sub-Task 3: Income determination approval flow
 - **Intent**: Author a human-in-the-loop flow allowing the YEL underwriter to review the assessment, adjust the work input value, and authorize the formal administrative decision.
@@ -65,7 +65,7 @@
   - `flows/yel_income/issue_income_decision.py` with Pydantic inputs and underwriter decision form.
   - Internal write tool `yel_issue_decision_record` called strictly upon underwriter approval.
 - **Relevant Context**: [`flows/incident_triage/request_remediation.py`](flows/incident_triage/request_remediation.py)
-- **Status**: `[ ] pending`
+- **Status**: `[x] done` — flow deployed and verified live in browser. All three buttons (Confirm, Adjust & Issue, Escalate to Appeals) work. Two fixes were needed post-initial deploy: (1) `default_value=` → `DataMap` default; (2) DataMap renders as placeholder only — fallback moved to flow scripts; income fields changed from `float` to `int`.
 
 ### Sub-Task 4: Agent YAML, README and manifest
 - **Intent**: Configure the ReAct agent, instructions, evidence citation rules, and scenario manifest.
@@ -74,23 +74,23 @@
   - `agents/yel-income-assessment/README.md`.
   - `scenarios/yel-income-assessment/scenario.yaml` manifest.
 - **Relevant Context**: [`agents/cloud-finops/agent.yaml`](agents/cloud-finops/agent.yaml)
-- **Status**: `[ ] pending`
+- **Status**: `[x] done` — agent deployed and running live. Evidence-gating instructions verified (agent refuses to issue determination without prior assessment).
 
 ### Sub-Task 5: Ground truth and smoke evaluation
 - **Intent**: Author ground truth checklist covering all 4 entrepreneur cases with diagnosis-only `smoke_prompts`.
 - **Expected Outcomes**:
   - `evaluation/yel-income-assessment/ground_truth.json` with 4 case definitions and `smoke_prompts`.
 - **Relevant Context**: [`evaluation/incident-triage/ground_truth.json`](evaluation/incident-triage/ground_truth.json)
-- **Status**: `[ ] pending`
+- **Status**: `[x] done` — 4 smoke prompts + full case ground truth. `validate` passes.
 
 ### Sub-Task 6: Demo walkthrough script and interactive slides
-- **Intent**: Author demo walkthrough script and presentation slide matching sidebar position 9.
+- **Intent**: Author demo walkthrough script and presentation slide matching sidebar position 8 (actual position after scaffold).
 - **Expected Outcomes**:
   - `docs/demo/yel-income-assessment-demo.md`.
-  - `docs/demo/scenarios/yel-income-assessment.js` with `.fit-card` (Industry: Finnish Statutory Pension / Työeläke & YEL, Function: YEL Underwriting & Entrepreneur Advisory, Roles: YEL Underwriter, Entrepreneur Specialist, Compliance Officer).
+  - `docs/demo/scenarios/yel-income-assessment.js` with `.fit-card` (Industry: Finnish Statutory Pension / Työeläke & YEL, Function: YEL Underwriting & Entrepreneur Advisory, Roles: YEL Underwriter, Entrepreneur Specialist, Insurance Operations Supervisor).
   - Registered script tag in `docs/demo/presentation.html`.
 - **Relevant Context**: [`docs/demo/scenarios/cloud-finops.js`](docs/demo/scenarios/cloud-finops.js), [`docs/demo/presentation.html`](docs/demo/presentation.html)
-- **Status**: `[ ] pending`
+- **Status**: `[x] done` — 6 slides + 5-scene demo script. Scene 1 and Scene 5 verified live. Scenes 2–4 verified by data layer only.
 
 ### Sub-Task 7: Validation and dry-run smoke testing
 - **Intent**: Validate scenario consistency and verify dry-run smoke prompts.
@@ -98,4 +98,4 @@
   - `python wxodemo.py validate yel-income-assessment` passes with `OK`.
   - `python wxodemo.py smoke yel-income-assessment --dry-run` displays valid prompt sequences.
 - **Relevant Context**: [`src/wxodemo/validate.py`](src/wxodemo/validate.py)
-- **Status**: `[ ] pending`
+- **Status**: `[x] done` — `validate` prints `[ok]`; dry-run smoke shows all 4 prompts.

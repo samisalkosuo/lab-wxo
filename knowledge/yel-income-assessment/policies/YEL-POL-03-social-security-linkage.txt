@@ -1,0 +1,84 @@
+YEL-POL-03: Social Security Linkage and Beginner Discount
+==========================================================
+
+Document ID:  YEL-POL-03
+Scope:        Finnish Self-Employed Persons' Pensions Act (YEL) — benefit linkage
+Applicability: All YEL policyholders; beginner discount for first-time entrepreneurs
+
+
+1. WHY THE YEL CONFIRMED INCOME LEVEL MATTERS BEYOND PENSION
+
+The YEL confirmed work income is the basis not only for the YEL premium and future
+pension, but also for most Kela (Social Insurance Institution of Finland) income-
+replacement benefits and for earnings-related unemployment security. Setting the
+income too low directly reduces the entrepreneur's safety net.
+
+Key benefits linked to YEL confirmed income:
+
+  a) Sickness allowance (sairauspäiväraha):
+     Kela calculates the daily sickness allowance as approximately 70 % of the annual
+     YEL income divided by 300 working days. A low YEL income means a low daily
+     allowance during illness.
+
+  b) Parental allowance (vanhempainpäiväraha):
+     The same YEL income base determines the daily parental allowance for maternity
+     and paternity leave. An entrepreneur planning a family benefits substantially
+     from a realistic YEL income.
+
+  c) Earnings-related unemployment security (ansiosidonnainen työttömyysturva):
+     Self-employed persons who are members of an unemployment fund for entrepreneurs
+     (e.g. SYT-kassa, AYT-kassa) receive a daily unemployment allowance based on
+     their YEL income. The earnings-related component is approximately 45 % of the
+     daily YEL wage above a threshold of EUR 119/day (illustrative 2024 figure).
+
+  d) Pension accrual (eläkekertymä):
+     Pension accrues at 1.5 % of YEL income per year for ages under 53, and at
+     1.9 % per year for ages 53–62, in line with TyEL/YEL rules.
+
+2. ILLUSTRATIVE COMPARISON: LOW vs. REALISTIC YEL INCOME
+
+Example — Aleksi Mäkinen, IT consultant (ENT-801):
+  Current YEL income:    EUR 18,000/yr
+    Daily sick allowance: EUR 42/day
+  Recommended income:    EUR 22,000/yr
+    Daily sick allowance: EUR 51.33/day  (+EUR 9.33/day, +22 %)
+
+This means that for a 30-day illness, a realistic YEL income would add approximately
+EUR 280 in benefit payments. For parental leave (160 working days), the difference
+is approximately EUR 1,493. These are illustrative figures; actual Kela calculations
+apply income ceilings and adjustment rules not modelled here.
+
+
+3. BEGINNER DISCOUNT (ALOITTAVAN YRITTAJAN ALENNUS)
+
+First-time entrepreneurs who have not previously been YEL-insured are entitled to a
+22 % discount on their YEL premium for the first 48 months of insurance.
+
+Rules:
+  - Entitlement period: the first 48 consecutive months of YEL insurance.
+  - Discount applies to the premium only; it does NOT reduce the confirmed income
+    or the benefit base.
+  - The discount is applied automatically by the pension provider.
+  - If the entrepreneur has had a prior YEL period (even briefly), the beginner
+    discount does not restart.
+
+Example — Juhani Korhonen, startup founder (ENT-803), 19 months insured:
+  Confirmed income:    EUR 18,000/yr (after cap, per YEL-POL-02)
+  Standard premium rate: approx. 24.1 % = EUR 362.50/month
+  Beginner discount 22 %: EUR 79.75/month reduction
+  Discounted premium:    EUR 282.75/month
+
+Note: The 22 % discount does not affect the social security benefit calculation.
+The full income of EUR 18,000/yr is still used for sickness and parental allowances.
+
+
+4. UNDERWRITER GUIDANCE
+
+  - Always present the social security benefit impact alongside the premium change.
+  - Entrepreneurs often focus on the higher premium; showing the benefit improvement
+    helps contextualise the increase.
+  - For beginner entrepreneurs, confirm the discount entitlement period and end date.
+  - Cite this document (YEL-POL-03) when explaining benefit linkage in the decision.
+
+Cross-references: YEL-POL-01 (income definition), YEL-POL-02 (review and cap),
+YEL-POL-04 (right of reply and appeals).

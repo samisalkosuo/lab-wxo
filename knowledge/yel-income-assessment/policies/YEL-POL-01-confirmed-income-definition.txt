@@ -1,0 +1,65 @@
+YEL-POL-01: Confirmed Work Income — Definition and Principles
+=============================================================
+
+Document ID:  YEL-POL-01
+Scope:        Finnish Self-Employed Persons' Pensions Act (YEL, 1272/2006)
+Applicability: All self-employed persons (yrittäjät) subject to YEL insurance
+
+
+1. WHAT IS YEL CONFIRMED WORK INCOME (VAHVISTETTU TYÖTULO)?
+
+YEL confirmed work income is not the entrepreneur's turnover, profit, or actual
+drawings. It is the statutory estimate of the annual wage that would be paid for
+the same work if performed by an employee in the open labour market. This "wage
+replacement" principle (palkankorvaamisperiaate) is the legal basis for setting
+the income level.
+
+Key points:
+  - Turnover (liikevaihto) is evidence of business activity but is NOT the income
+    figure used for YEL premium calculation.
+  - Dividends, capital income, and partner drawings are excluded.
+  - The relevant question is: "What would a comparable employee earn for the same
+    work input?"
+  - The sector median wage from Statistics Finland and ETK (Finnish Centre for
+    Pensions) sector wage indices is the primary benchmark.
+
+2. WHEN IS YEL INSURANCE MANDATORY?
+
+YEL is mandatory when all three conditions are met:
+  a) The person is self-employed (yrittäjä) in Finland.
+  b) The annual self-employment income (work contribution value) equals or exceeds
+     the statutory minimum threshold (9,010 EUR/yr in 2024/2025).
+  c) The person is between 18 and 68 years of age.
+
+If annual revenue is below 9,010 EUR/yr, YEL is NOT mandatory. Voluntary insurance
+is available but is not required.
+
+3. INCOME ASSESSMENT METHOD
+
+Step 1: Identify the entrepreneur's primary NACE sector.
+Step 2: Retrieve the Statistics Finland / ETK sector median wage for that sector.
+Step 3: Adjust for actual weekly working hours (proportional to full-time 40 h/wk).
+Step 4: Consider personal factors (specialisation, experience, market position).
+Step 5: The final confirmed income must fall between the statutory minimum
+        (9,010 EUR/yr) and the statutory maximum (204,625 EUR/yr) for 2024/2025.
+
+4. EVIDENCE THE ENTREPRENEUR MAY SUBMIT
+
+Entrepreneurs have the right to present evidence (kuuleminen, see YEL-POL-04):
+  - Tax returns (veroilmoitus) showing revenue and expenses.
+  - Time records (tuntikirjanpito) documenting weekly working hours.
+  - Invoices for subcontracting or purchased services (alihankintakulut).
+  - Industry association wage surveys.
+
+The underwriter must consider all submitted evidence before issuing a determination.
+
+5. UNDERWRITER OBLIGATION
+
+The underwriter (YEL-ratkaisija) must:
+  - Document the income assessment reasoning in the case file.
+  - Cite the sector benchmark data source (e.g. "ETK / Statistics Finland 2024, J.62").
+  - Issue a legally appealable administrative decision (valituskelpoinen päätös).
+  - Notify the entrepreneur in writing within 5 business days.
+
+Cross-references: YEL-POL-02 (triennial review and cap), YEL-POL-03 (social security
+linkage and beginner discount), YEL-POL-04 (right of reply and appeals).
