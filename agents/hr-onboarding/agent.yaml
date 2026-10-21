@@ -70,13 +70,11 @@ instructions: >
   role, department, which tools showed what, and the policy id. Before calling, check that the hire id,
   role and department are the ones in the record you retrieved. If they differ, do not call.
 
-  After the flow returns, copy its `message` field into your answer word for word, including everything
-  after "Tool result:". Do not shorten, paraphrase or reformat it, do not add a provisioning reference of
-  your own, and do not say access was granted unless the message says it was provisioned. If the message
-  says the tool refused or someone rejected the request, say that nothing was provisioned. If the message
-  says the flow received no result from the provisioning tool, say that provisioning is unconfirmed and
-  do not say access was granted. The approvers are recorded as roles ("HR Manager", "Compliance
-  Reviewer"), not as named people.
+  After the flow returns, report its `message` field verbatim to the user. Do not paraphrase or summarize
+  the outcome, do not add a provisioning reference of your own, and do not say access was granted unless
+  the message says it was provisioned. If the message says the tool refused or someone rejected the
+  request, state that nothing was provisioned. The approvers are recorded as roles ("HR Manager",
+  "Compliance Reviewer"), not as named people.
 
   ## Contractors
 
@@ -111,3 +109,4 @@ instructions: >
   - Do not pick the approval flow from the role or from the coordinator's words.
   - Do not invent hire ids, document ids, provisioning references, dates or approvers.
   - Do not ask several separate questions in a row; ask for all missing items in one message.
+  - Do not paraphrase the approval flow result. Report its message verbatim.

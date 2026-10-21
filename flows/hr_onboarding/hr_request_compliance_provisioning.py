@@ -280,29 +280,13 @@ self.output.hire_id          = flow.input.hire_id
 self.output.systems          = flow.private.systems_text
 self.output.approval_path    = "compliance"
 self.output.policy_ref       = flow.input.policy_ref
-tool_out = None
-try:
-    tool_out = flow['hr_provision_access'].output
-except Exception:
-    pass
-if not tool_out:
-    try:
-        tool_out = flow.nodes['hr_provision_access'].output
-    except Exception:
-        pass
-self.output.execution_result = str(tool_out) if tool_out else "NO OUTPUT RETURNED BY THE TOOL NODE"
+self.output.execution_result = str(flow.nodes['hr_provision_access'].output)
 self.output.provisioned      = ("success" in self.output.execution_result) and ("error_code" not in self.output.execution_result)
 if self.output.provisioned:
     self.output.message = (
         "APPROVED BY HR MANAGER AND COMPLIANCE REVIEWER, AND PROVISIONED. "
         f"Hire: {flow.input.hire_id}. Systems: {flow.private.systems_text}. "
         f"Tool result: {self.output.execution_result}"
-    )
-elif not tool_out:
-    self.output.message = (
-        "APPROVED BY BOTH APPROVERS, BUT THE FLOW RECEIVED NO RESULT FROM THE PROVISIONING TOOL. "
-        "PROVISIONING IS UNCONFIRMED; DO NOT REPORT ACCESS AS GRANTED. "
-        f"Hire: {flow.input.hire_id}. Systems: {flow.private.systems_text}."
     )
 else:
     self.output.message = (

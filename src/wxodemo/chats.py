@@ -256,6 +256,10 @@ def parse_transcript(messages: list[dict]) -> tuple[list[dict], str]:
 # Fallback guesses for threads that carry no agent id. Keyword -> agent name.
 _TOOL_HINTS = (
     (("incident", "remediation", "service", "cluster", "deployment"), "incident_triage"),
+    (("hr_", "onboarding", "hire", "provision"), "hr_onboarding"),
+    (("returns_", "refund", "warranty"), "customer_returns"),
+    (("travel_", "per_diem", "reimbursement"), "travel_request"),
+    (("release", "cve", "runbooks_index"), "release_readiness"),
     (("greeting",), "hello_world"),
     (("translate",), "translator"),
 )
@@ -265,6 +269,10 @@ _TEXT_HINTS = (
         "travel_rules_qa",
     ),
     (("INC-", "Runbook ID", "RB-DEPLOY", "remediation action"), "incident_triage"),
+    (("HR-POL-", "H-100", "onboard", "provisioning"), "hr_onboarding"),
+    (("RP-", "ORD-", "refund", "return"), "customer_returns"),
+    (("TP-", "travel request"), "travel_request"),
+    (("RR-", "release readiness"), "release_readiness"),
     (("Hello World!",), "hello_world"),
 )
 
@@ -296,7 +304,18 @@ def detect_agent(thread: dict, messages: list[dict], catalog: dict[str, str]) ->
                     if "runbook" in str(cit.get("title", "")).lower():
                         return "incident_triage"
                 return "travel_rules_qa"
-            if kind == "forms" or "Travel Request" in str(item):
+            if kind == "forms":
+                schema_title = str((item.get("json_schema") or {}).get("title") or "")
+                item_str = str(item)
+                if "Provisioning" in schema_title or "HR Manager" in item_str:
+                    return "hr_onboarding"
+                if "Remediation" in schema_title:
+                    return "incident_triage"
+                if "Return" in schema_title:
+                    return "customer_returns"
+                if "Travel" in schema_title or "Travel Request" in item_str:
+                    return "travel_request"
+            if "Travel Request" in str(item):
                 return "travel_request"
             text = item.get("text", "")
             for words, agent in _TEXT_HINTS:

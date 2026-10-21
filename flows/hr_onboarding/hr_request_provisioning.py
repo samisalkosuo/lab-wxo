@@ -226,47 +226,13 @@ self.output.hire_id          = flow.input.hire_id
 self.output.systems          = flow.private.systems_text
 self.output.approval_path    = "standard"
 self.output.policy_ref       = flow.input.policy_ref
-tool_out = None
-try:
-    tool_out = flow['hr_provision_access'].output
-except Exception:
-    pass
-if not tool_out:
-    try:
-        tool_out = flow.nodes['hr_provision_access'].output
-    except Exception:
-        pass
-self.output.execution_result = str(tool_out) if tool_out else "NO OUTPUT RETURNED BY THE TOOL NODE"
+self.output.execution_result = str(flow.nodes['hr_provision_access'].output)
 self.output.provisioned      = ("success" in self.output.execution_result) and ("error_code" not in self.output.execution_result)
 if self.output.provisioned:
     self.output.message = (
         "APPROVED BY HR MANAGER AND PROVISIONED. "
         f"Hire: {flow.input.hire_id}. Systems: {flow.private.systems_text}. "
         f"Tool result: {self.output.execution_result}"
-    )
-elif not tool_out:
-    diag = []
-    try:
-        diag.append("node_class=" + flow.nodes['hr_provision_access'].__class__.__name__)
-    except Exception as e:
-        diag.append("node_err=" + str(e)[:120])
-    try:
-        diag.append("node=" + str(flow.nodes['hr_provision_access'])[:300])
-    except Exception as e:
-        diag.append("node_str_err=" + str(e)[:120])
-    try:
-        diag.append("output_repr=" + repr(flow.nodes['hr_provision_access'].output)[:300])
-    except Exception as e:
-        diag.append("output_err=" + str(e)[:120])
-    try:
-        diag.append("alt_output=" + repr(flow['hr_provision_access'].output)[:300])
-    except Exception as e:
-        diag.append("alt_err=" + str(e)[:120])
-    self.output.message = (
-        "APPROVED BY HR MANAGER, BUT THE FLOW RECEIVED NO RESULT FROM THE PROVISIONING TOOL. "
-        "PROVISIONING IS UNCONFIRMED; DO NOT REPORT ACCESS AS GRANTED. "
-        f"Hire: {flow.input.hire_id}. Systems: {flow.private.systems_text}. "
-        "DIAGNOSTIC (temporary): " + " | ".join(diag)
     )
 else:
     self.output.message = (
