@@ -1,0 +1,14 @@
+spec_version: v1
+kind: knowledge_base
+name: pension_ove_policy
+description: |
+  Statutory policies and guidelines for Partial Early Old-Age Pension (Osittainen varhennettu
+  vanhuuseläke - OVE) under Finnish earnings-related pension legislation (TyEL/JuEL/YEL).
+  Contains cohort minimum age thresholds (OVE-POL-01), 25% and 50% draw rules and benefit conflicts (OVE-POL-02),
+  actuarial early reduction calculations and continuing employment 1.5% accrual (OVE-POL-03),
+  and life expectancy coefficient adjustments and taxation guidelines (OVE-POL-04).
+documents:
+  - policies/OVE-POL-01-cohort-age-limits.txt
+  - policies/OVE-POL-02-draw-percentages-and-rules.txt
+  - policies/OVE-POL-03-actuarial-reduction-and-accrual.txt
+  - policies/OVE-POL-04-taxation-and-life-expectancy.txt

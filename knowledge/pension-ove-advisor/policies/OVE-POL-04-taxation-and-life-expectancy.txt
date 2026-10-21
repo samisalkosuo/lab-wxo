@@ -1,0 +1,22 @@
+DOCUMENT ID: OVE-POL-04
+TITLE: Life Expectancy Coefficient Adjustment and Taxation Principles
+APPLIES TO: Finnish Earnings-Related Pension Schemes (TyEL, JuEL, YEL, MYEL)
+
+1. SYMPTOMS & INQUIRY CONTEXT
+- A member asks why their accrued pension amount is slightly adjusted downwards in the final forecast.
+- A member inquires how pension income is taxed compared to earned wage income when received simultaneously.
+- A member asks what tax card is needed when receiving both salary and OVE.
+
+2. LIFE EXPECTANCY COEFFICIENT (ELINAIKAKERROIN)
+- Statutory purpose: Adjusts the monthly pension amount to reflect changes in average life expectancy for each birth cohort, ensuring financial sustainability of the earnings-related pension system.
+- Application: Fixed at age 62 for each birth cohort by the Ministry of Social Affairs and Health (STM).
+- Calculation: Multiplies the drawn OVE baseline and untouched pension capital.
+
+3. TAXATION OF COMBINED SALARY AND PENSION
+- Progression impact: In Finland, both salary and pension income are subject to progressive state taxation and municipal taxation.
+- Separate tax withholding rates: The Tax Administration (Verohallinto) issues separate withholding percentages for salary income and pension income.
+- Advisory note: Remind the member to update their tax card with the Tax Administration upon receiving an OVE decision to avoid under-withholding (jäännösvero).
+
+4. ADVISORY PROCEDURE & ACTION
+- Show the life expectancy coefficient applied to the calculation.
+- Cite OVE-POL-04 when discussing statutory coefficient adjustments and tax card guidance.

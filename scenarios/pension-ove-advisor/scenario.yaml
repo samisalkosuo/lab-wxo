@@ -1,0 +1,42 @@
+# scenario.yaml - manifest for the Partial Early Old-Age Pension Advisor scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Status stays `soon` until the scenario is deployed and its demo script is written.
+
+id: pension-ove-advisor
+name: Partial Early Old-Age Pension Advisor
+description: Advises members on taking 25% or 50% partial early old-age pension (OVE) in Finland, calculating actuarial reductions, simulating ongoing work accrual, and filing official applications.
+status: live
+
+agents:
+  - name: pension_ove_advisor
+    path: agents/pension-ove-advisor
+    kind: native
+
+tools:
+  - path: tools/pension_ove
+    entry: pension_ove.py
+    names:
+      - ove_get_member_profile
+      - ove_get_accrued_pension
+      - ove_calculate_reduction
+      - ove_simulate_combined_income
+    attached:
+      - ove_get_member_profile
+      - ove_get_accrued_pension
+      - ove_calculate_reduction
+      - ove_simulate_combined_income
+
+knowledge_bases:
+  - name: pension_ove_policy
+    path: knowledge/pension-ove-advisor
+
+flows:
+  - name: ove_submit_application
+    path: flows/pension_ove
+
+evaluation:
+  path: evaluation/pension-ove-advisor
+  tier: core
+
+demo:
+  script: docs/demo/pension-ove-advisor-demo.md

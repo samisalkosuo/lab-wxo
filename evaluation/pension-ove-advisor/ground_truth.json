@@ -1,0 +1,90 @@
+{
+  "version": "1.0",
+  "description": "Ground truth for the Partial Early Old-Age Pension Advisor (OVE) scenario (core evaluation tier).",
+  "smoke_prompts": [
+    {
+      "id": "ove-001-happy-path",
+      "prompt": "I turn 62 next month and want to explore taking 50% partial early old-age pension (OVE) while continuing my job. My member ID is MEM-101 and my current monthly salary is 4200 euros."
+    },
+    {
+      "id": "ove-002-underage",
+      "prompt": "Can I take 25% OVE starting next month? My member ID is MEM-102 and I am a 59-year-old teacher."
+    },
+    {
+      "id": "ove-003-compare",
+      "prompt": "I want to compare taking 25% vs 50% OVE. My member ID is MEM-103 and I plan to reduce my work hours to 80% with a salary of 2800 euros per month."
+    },
+    {
+      "id": "ove-004-disability-conflict",
+      "prompt": "I want to apply for 50% OVE. My member ID is MEM-104."
+    }
+  ],
+  "cases": {
+    "OVE-001": {
+      "id": "OVE-001",
+      "description": "Eligible 50% OVE with full-time salary continuation (Matti Virtanen, MEM-101)",
+      "member_id": "MEM-101",
+      "symptom": "Member turning 62 wants to take 50% OVE while continuing work at €4,200/mo salary.",
+      "expected_policy_ref": "OVE-POL-03",
+      "expected_eligibility": true,
+      "expected_action": "ove_simulate_combined_income",
+      "approval_required": true,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "ove_get_member_profile",
+        "ove_get_accrued_pension",
+        "ove_calculate_reduction",
+        "ove_simulate_combined_income"
+      ]
+    },
+    "OVE-002": {
+      "id": "OVE-002",
+      "description": "Under statutory cohort minimum age — OVE denied (Liisa Korhonen, MEM-102)",
+      "member_id": "MEM-102",
+      "symptom": "59-year-old teacher asks to start 25% OVE; minimum age for cohort 1966 is 62 years.",
+      "expected_policy_ref": "OVE-POL-01",
+      "expected_eligibility": false,
+      "expected_action": "no_action",
+      "approval_required": false,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "ove_get_member_profile",
+        "ove_calculate_reduction"
+      ]
+    },
+    "OVE-003": {
+      "id": "OVE-003",
+      "description": "Multi-scenario comparison (25% vs 50% draw) with 80% work hours (Antti Mäkinen, MEM-103)",
+      "member_id": "MEM-103",
+      "symptom": "Member asks to compare 25% vs 50% OVE options alongside reduced salary of €2,800/mo.",
+      "expected_policy_ref": "OVE-POL-03",
+      "expected_eligibility": true,
+      "expected_action": "ove_simulate_combined_income",
+      "approval_required": true,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "ove_get_member_profile",
+        "ove_get_accrued_pension",
+        "ove_calculate_reduction",
+        "ove_simulate_combined_income"
+      ]
+    },
+    "OVE-004": {
+      "id": "OVE-004",
+      "description": "Statutory benefit exclusion — active disability pension conflict (Eeva Koskinen, MEM-104)",
+      "member_id": "MEM-104",
+      "symptom": "Member currently receiving full disability pension (Kuntoutustuki) requests OVE.",
+      "expected_policy_ref": "OVE-POL-02",
+      "expected_eligibility": false,
+      "expected_action": "no_action",
+      "approval_required": false,
+      "red_herrings": [
+        "Member meets age requirement (age 63) but is barred by active disability pension."
+      ],
+      "expected_key_tools": [
+        "ove_get_member_profile",
+        "ove_calculate_reduction"
+      ]
+    }
+  }
+}

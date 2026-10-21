@@ -1,0 +1,26 @@
+DOCUMENT ID: OVE-POL-01
+TITLE: Statutory OVE Minimum Age Thresholds by Birth Cohort
+APPLIES TO: Finnish Earnings-Related Pension Schemes (TyEL, JuEL, YEL, MYEL)
+
+1. SYMPTOMS & INQUIRY CONTEXT
+- A member inquires about the earliest date or age they can begin withdrawing a Partial Early Old-Age Pension (Osittainen varhennettu vanhuuseläke - OVE).
+- A member born in 1964 or later asks why they cannot start OVE at age 61.
+- A member under their statutory cohort age threshold attempts to file an OVE application.
+
+2. STATUTORY ELIGIBILITY AGE BRACKETS BY BIRTH YEAR
+Under Finnish pension legislation (TyEL 15 §), the earliest age for OVE is linked to the member's birth year:
+- Born in 1958-1963: Earliest OVE eligibility age is 61 years 0 months.
+- Born in 1964: Earliest OVE eligibility age is 62 years 0 months. Full retirement age is 64 years 0 months.
+- Born in 1965: Earliest OVE eligibility age is 62 years 0 months. Full retirement age is 64 years 6 months.
+- Born in 1966: Earliest OVE eligibility age is 62 years 0 months. Full retirement age is 64 years 9 months.
+- Born in 1967: Earliest OVE eligibility age is 62 years 0 months. Full retirement age is 65 years 0 months.
+- Born in 1968 and later: Earliest OVE age is set at 3 years prior to the cohort's statutory full retirement age.
+
+3. ADVISORY PROCEDURE & ACTION
+- Verify the member's date of birth and birth year using the member profile tool.
+- Compare the member's current age against the statutory minimum OVE age for their cohort.
+- If the member is UNDER the minimum age:
+  * Inform the member clearly of their statutory minimum age and shortfall months.
+  * Cite OVE-POL-01 as the governing policy rule.
+  * Explain the earliest calendar date when an application can be accepted.
+  * Do NOT proceed with an application flow.

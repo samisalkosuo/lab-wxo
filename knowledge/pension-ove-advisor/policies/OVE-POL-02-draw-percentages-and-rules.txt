@@ -1,0 +1,29 @@
+DOCUMENT ID: OVE-POL-02
+TITLE: OVE Draw Percentages, Irreversibility, and Benefit Exclusions
+APPLIES TO: Finnish Earnings-Related Pension Schemes (TyEL, JuEL, YEL, MYEL)
+
+1. SYMPTOMS & INQUIRY CONTEXT
+- A member asks what percentage of their accrued pension they can withdraw.
+- A member wants to withdraw 10%, 30%, 75%, or 100% partial pension.
+- A member currently receiving another statutory pension benefit asks if they can combine it with OVE.
+- A member asks if an OVE decision can be cancelled or modified retrospectively.
+
+2. STATUTORY DRAW RULES
+- Allowable withdrawal percentages: Exactly 25% or 50% of the pension accrued by the end of the previous calendar year.
+- Step-up option: A member who begins with a 25% draw may later increase their draw to 50%. However, a member drawing 50% CANNOT reduce their draw back to 25%.
+- Irreversibility: Once granted and paid, an OVE election cannot be cancelled or retroactively revoked.
+
+3. STATUTORY EXCLUSIONS & BENEFIT CONFLICTS
+Under TyEL 16 §, OVE CANNOT be granted if the applicant is concurrently receiving:
+- Full or partial disability pension (Työkyvyttömyyseläke)
+- Cash rehabilitation benefit / temporary disability pension (Kuntoutustuki)
+- Years-of-service pension (Työuraeläke)
+- Old-age pension (Vanhuuseläke)
+
+4. ADVISORY PROCEDURE & ACTION
+- Validate the requested draw percentage (must be 25% or 50%).
+- Check member profile for any active conflicting pension benefits.
+- If a conflicting benefit exists (e.g. active Kuntoutustuki):
+  * State the statutory conflict clearly.
+  * Cite OVE-POL-02.
+  * Refuse the OVE application.

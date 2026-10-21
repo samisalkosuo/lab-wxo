@@ -1,0 +1,25 @@
+DOCUMENT ID: OVE-POL-03
+TITLE: Permanent Actuarial Reduction and Continuing Work Accrual Rules
+APPLIES TO: Finnish Earnings-Related Pension Schemes (TyEL, JuEL, YEL, MYEL)
+
+1. SYMPTOMS & INQUIRY CONTEXT
+- A member wants to know how much their pension will be reduced permanently if they retire early.
+- A member asks if they are allowed to continue working while receiving OVE, or if there is an income limit.
+- A member inquires how much new pension will accrue if they keep working and earning a salary alongside OVE.
+
+2. EARLY WITHDRAWAL ACTUARIAL REDUCTION (VARHENNUSVÄHENNYS)
+- Reduction rate: 0.4% per month for each month OVE starts prior to the cohort's lowest full statutory retirement age.
+- Permanence: The reduction is permanent and remains in effect for the drawn portion for the rest of the member's life, even after reaching full old-age retirement age.
+- Deferred increase (Lykkäyskorotus): If OVE is started after reaching the cohort's lowest retirement age, the drawn portion is increased by 0.4% per month for each month deferred.
+
+3. CONTINUING WORK & INCOME LIMITS
+- No income limits: There are NO restrictions on working hours, salary, or business activities while receiving OVE. An employee may work full-time, part-time, or not at all.
+- No requirement to quit: The employment contract does not need to be terminated.
+- Ongoing pension accrual: Work performed while receiving OVE continues to accrue new pension at the standard statutory rate of 1.5% per year on gross annual earnings until the upper insurance age limit (age 68-70 depending on cohort).
+- Final pension calculation: When the member reaches full retirement age and applies for full old-age pension, their total monthly pension equals:
+  (Drawn OVE amount) + (Untouched baseline adjusted by life expectancy coefficient) + (New pension accrued from ongoing work).
+
+4. ADVISORY PROCEDURE & ACTION
+- Calculate the exact months early and permanent reduction percentage.
+- Simulate the combined monthly income (gross OVE + gross salary).
+- Cite OVE-POL-03 when explaining the 0.4%/mo penalty and 1.5% new accrual rate.
