@@ -7,6 +7,9 @@ window.SCENARIOS.push(
         name: "Release Readiness Supervisor Agent",
         label: "Release Readiness",
         description: "Multi-agent routing across QA, security & operations",
+        industry: "Cross-Industry (Software Delivery & Enterprise IT)",
+        function: "Software Delivery, QA & DevSecOps Governance",
+        roles: ["Release Manager", "QA Lead / Test Architect", "Security Compliance Officer", "DevOps / Engineering Lead"],
         status: "live",
         slides: [
           // Slide 1: Overview

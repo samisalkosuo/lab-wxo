@@ -7,6 +7,9 @@ window.SCENARIOS.push(
         name: "Customer Returns Agent",
         label: "Customer Returns",
         description: "Messy input, return policy KB & governed refund flow",
+        industry: "Retail, E-Commerce & Consumer Goods",
+        function: "Customer Service & Post-Purchase Operations",
+        roles: ["Customer Support Agent", "Support Lead / Supervisor", "E-Commerce Operations Specialist", "Store / CX Manager"],
         status: "live",
         slides: [
           // Slide 1: Overview

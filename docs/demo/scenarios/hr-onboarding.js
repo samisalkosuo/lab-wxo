@@ -7,6 +7,9 @@ window.SCENARIOS.push(
         name: "HR Onboarding Agent",
         label: "HR Onboarding",
         description: "Employee provisioning, access governance & department workflows",
+        industry: "Cross-Industry (Workforce & People Operations)",
+        function: "Human Resources (HR Ops) & IT Identity Provisioning",
+        roles: ["HR Operations Coordinator", "IT Access & Identity Admin", "Hiring Manager", "HR Compliance Officer"],
         status: "live",
         slides: [
           // Slide 1: Overview

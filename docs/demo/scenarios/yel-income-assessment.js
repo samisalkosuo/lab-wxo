@@ -7,6 +7,9 @@ window.SCENARIOS.push(
         name: "YEL Income Assessment Agent",
         label: "YEL Income Assessment",
         description: "Statutory YEL confirmed work income review & approval",
+        industry: "Finnish Statutory Pension Insurance (YEL)",
+        function: "YEL Underwriting & Entrepreneur Advisory",
+        roles: ["YEL Underwriter (YEL-ratkaisija)", "Entrepreneur Account Specialist", "Insurance Operations Supervisor"],
         status: "live",
         slides: [
           // Slide 1: Overview

@@ -7,6 +7,9 @@ window.SCENARIOS.push(
         name: "Travel Request Agent",
         label: "Travel Request",
         description: "Policy-aware travel authorisation from free text, grounded in a Finnish regulation",
+        industry: "Public Sector, Higher Education & Regulated Enterprise",
+        function: "Finance, Travel Administration & Expense Governance",
+        roles: ["Travel Coordinator / Expense Admin", "Department Manager / Approver", "Finance Manager", "Compliance Officer"],
         status: "live",
         slides: [
           // Slide 1: Overview

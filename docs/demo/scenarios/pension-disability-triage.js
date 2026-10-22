@@ -7,6 +7,9 @@ window.SCENARIOS.push(
         name: "Disability Pension & Vocational Rehabilitation Triage Agent",
         label: "Disability Pension & Rehab Triage",
         description: "Statutory disability claims triage with rehabilitation-first enforcement and medical board referral flow",
+        industry: "Finnish Statutory Pension Insurance / Social Security",
+        function: "Disability Claims Management & Occupational Rehabilitation",
+        roles: ["Disability Claims Handler", "Rehabilitation Specialist", "Medical Case Coordinator", "Claims Team Lead"],
         status: "live",
         slides: [
           // Slide 1: Overview

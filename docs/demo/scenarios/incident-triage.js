@@ -7,6 +7,9 @@ window.SCENARIOS.push(
         name: "Incident Triage Agent",
         label: "Incident Triage",
         description: "Multi-source correlation & governed remediation",
+        industry: "Cross-Industry (Cloud & Digital Services)",
+        function: "Site Reliability Engineering (SRE) & IT Operations",
+        roles: ["Site Reliability Engineer (SRE)", "Incident Commander", "DevOps Engineer", "IT Operations Manager"],
         status: "live",
         slides: [
           // Slide 1: Overview

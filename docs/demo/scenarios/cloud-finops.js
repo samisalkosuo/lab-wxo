@@ -6,6 +6,9 @@ window.SCENARIOS.push(
         name: "Cloud FinOps Agent",
         label: "Cloud FinOps",
         description: "Spend anomaly investigation, rightsizing recommendations, and governed resource reclamation",
+        industry: "Cross-Industry (Public & Hybrid Cloud Infrastructure)",
+        function: "Cloud FinOps & Infrastructure Cost Governance",
+        roles: ["FinOps Practitioner / Analyst", "Cloud Solutions Architect", "Engineering Budget Owner", "IT Infrastructure Lead"],
         status: "live",
         slides: [
           // Slide 1: Overview

@@ -6,6 +6,9 @@ window.SCENARIOS.push(
         name: "Partial Early Old-Age Pension Advisor Agent",
         label: "Partial Early Old-Age Pension Advisor",
         description: "Advises members on taking 25% or 50% partial early old-age pension (OVE) in Finland, calculating actuarial reductions, simulating ongoing work accrual, and filing official applications.",
+        industry: "Finnish Statutory Pension Insurance",
+        function: "Pension Customer Advisory, Actuarial Calculations & Claims Processing",
+        roles: ["Pension Advisory Specialist", "Customer Service Representative", "Actuarial Case Handler", "Pension Operations Lead"],
         status: "live",
         slides: [
           // Slide 1: Overview
