@@ -49,7 +49,9 @@ and enforces the conventions below.
    [`translator/examples.md`](translator/examples.md)). Include at least 3 examples,
    covering the normal path and any refusal or clarification path. The agent `README.md`
    links to this file and does not repeat the examples.
-4. Deploy with `wxodemo` (see below).
+4. Add the agent and its interactive examples to `docs/demo/standalone-agents.js`
+   so it appears in `docs/demo/presentation.html`.
+5. Deploy with `wxodemo` (see below).
 
 No manifest, no scenario.yaml and no CLI change required.
 
