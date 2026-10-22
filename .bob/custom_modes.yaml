@@ -135,6 +135,8 @@ customModes:
          Verify the agent is discovered (fix agent.yaml or directory layout if missing).
       3. python wxodemo.py deploy <name> --dry-run
          Confirm the deploy commands look correct.
+      4. Update docs/demo/standalone-agents.js to include the agent overview and
+         interactive example slides in docs/demo/presentation.html.
       For real deploy / undeploy, run `python wxodemo.py login` first, then
       `python wxodemo.py status <name>` after to confirm the agent is live.
       Run `python wxodemo.py doctor` if any command fails for environmental reasons.
