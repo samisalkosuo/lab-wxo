@@ -1,0 +1,22 @@
+spec_version: v1
+kind: knowledge_base
+name: pension_disability_policy
+description: |
+  Disability pension and vocational rehabilitation policy documents for the
+  Pension Disability Triage demo. Contains four statutory policy summaries
+  (DIS-POL-01 to DIS-POL-04) covering:
+    DIS-POL-01: Full vs. partial disability definitions, B-statement requirements,
+                work capacity threshold (40%), prognosis periods, and CMO referral rules.
+    DIS-POL-02: Statutory "Rehabilitation before Pension" mandate, workplace trials
+                (tyokokeilu), vocational retraining, and when rehab can be waived.
+    DIS-POL-03: Temporary cash rehabilitation benefit (kuntoutustuki) eligibility,
+                treatment plan requirements, and interaction with vocational rehabilitation.
+    DIS-POL-04: 36/60-month qualifying insurance condition (tulevan ajan ansioedellytys),
+                tuleva aika eligibility, occupational accident waiver, bilateral treaty
+                aggregation, and Kela referral when no exception applies.
+  Agent must cite the document ID (e.g. DIS-POL-01) when referencing a policy.
+documents:
+  - policies/DIS-POL-01-incapacity-criteria.txt
+  - policies/DIS-POL-02-rehabilitation-priority.txt
+  - policies/DIS-POL-03-temporary-kuntoutustuki.txt
+  - policies/DIS-POL-04-qualifying-months-and-exceptions.txt

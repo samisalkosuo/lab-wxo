@@ -13,6 +13,7 @@ lab-wxo/
 │   ├── customer-returns/
 │   ├── hr-onboarding/
 │   ├── incident-triage/
+│   ├── pension-disability-triage/
 │   ├── pension-ove-advisor/
 │   ├── release-readiness/            # Supervisor agent
 │   ├── rr-ops/                       # Release readiness specialist: Operations
@@ -25,6 +26,7 @@ lab-wxo/
 │   ├── customer_returns/             # Order lookup, warranty check, return history, refund tools
 │   ├── hr_onboarding/                # Pending hires, role access, department config, provisioning tools
 │   ├── incident_triage/              # Incident lookup, service health, logs, metrics, remediation tools
+│   ├── pension_disability/           # Claim dossier, qualifying months, medical summary, rehab & referral tools
 │   ├── pension_ove/                  # Member profile, pension accrual, reduction & simulation tools
 │   ├── release_readiness/            # Test summaries, CVE exposure, runbook check, health check tools
 │   ├── travel_request/               # Employee, budget, rates, reimbursement & request ID tools
@@ -34,6 +36,7 @@ lab-wxo/
 │   ├── customer-returns/             # Return windows, warranty exceptions, refund conditions (.txt)
 │   ├── hr-onboarding/                # Role access matrix, compliance training requirements (.txt)
 │   ├── incident-triage/              # Runbooks for deployments, databases, auth, certificates (.txt)
+│   ├── pension-disability-triage/    # TyEL disability incapacity criteria, rehab priority, kuntoutustuki, qualifying months (.txt)
 │   ├── pension-ove-advisor/          # Finnish OVE pension legislation rules, age limits, reduction rules (.txt)
 │   ├── release-readiness/            # Release gating criteria, CVE severity policies (.txt)
 │   ├── travel-request/               # Finnish state travel regulation (PDF) and agency policy (.txt)
@@ -44,6 +47,7 @@ lab-wxo/
 │   ├── customer_returns/             # Customer Returns: human approval before issuing refund
 │   ├── hr_onboarding/                # HR Onboarding: standard and compliance provisioning flows
 │   ├── incident_triage/              # Incident Triage: human approval before automated remediation
+│   ├── pension_disability/           # Disability Triage: claims handler approval before medical board referral
 │   ├── pension_ove/                  # Pension Advisor: formal OVE application submission flow
 │   ├── travel_request/               # Travel Request: human approval before booking/reimbursement
 │   └── yel_income/                   # YEL Assessment: human underwriter approval for confirmed income
@@ -52,6 +56,7 @@ lab-wxo/
 │   ├── customer-returns/
 │   ├── hr-onboarding/
 │   ├── incident-triage/
+│   ├── pension-disability-triage/
 │   ├── pension-ove-advisor/
 │   ├── release-readiness/
 │   ├── travel-request/
@@ -61,6 +66,7 @@ lab-wxo/
 │   ├── customer-returns/scenario.yaml
 │   ├── hr-onboarding/scenario.yaml
 │   ├── incident-triage/scenario.yaml
+│   ├── pension-disability-triage/scenario.yaml
 │   ├── pension-ove-advisor/scenario.yaml
 │   ├── release-readiness/scenario.yaml
 │   ├── travel-request/scenario.yaml
@@ -73,6 +79,7 @@ lab-wxo/
 │       ├── customer-returns-demo.md
 │       ├── hr-onboarding-demo.md
 │       ├── incident-triage-demo.md
+│       ├── pension-disability-triage-demo.md
 │       ├── pension-ove-advisor-demo.md
 │       ├── release-readiness-demo.md
 │       ├── travel-request-demo.md
@@ -106,6 +113,7 @@ Deployed with `python wxodemo.py deploy` from the scenario manifests in `scenari
 | [customer-returns](agents/customer-returns/) | `customer_returns` | `customer-returns` | Conversational returns agent evaluating warranty and return policies; issues governed refunds via approval flow |
 | [hr-onboarding](agents/hr-onboarding/) | `hr_onboarding` | `hr-onboarding` | Conversational HR onboarding assistant that analyzes role-based access policies and initiates governed IT provisioning flows |
 | [incident-triage](agents/incident-triage/) | `incident_triage` | `incident-triage` | Diagnoses production incidents with runbook knowledge; routes automated remediation through human approval |
+| [pension-disability-triage](agents/pension-disability-triage/) | `pension_disability_triage` | `pension-disability-triage` | Triages Finnish statutory disability pension claims (TyEL/YEL), enforces rehabilitation-first priority, handles occupational accident waivers, and governs medical board referrals through a human approval flow |
 | [pension-ove-advisor](agents/pension-ove-advisor/) | `pension_ove_advisor` | `pension-ove-advisor` | Advises Finnish pension members on partial early old-age pension (OVE), calculates actuarial reductions, simulates combined income, and files applications |
 | [release-readiness](agents/release-readiness/) | `release_readiness` | `release-readiness` | Multi-agent supervisor coordinating specialist agents (`rr_qa`, `rr_security`, `rr_ops`) to evaluate release readiness against gating criteria |
 | [travel-request](agents/travel-request/) | `travel_request` | `travel-request` | Evaluates business travel authorization against Finnish state regulations and agency policy, estimates per-diem reimbursements, and submits approval requests |

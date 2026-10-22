@@ -1,0 +1,103 @@
+{
+  "version": "1.0",
+  "description": "Ground truth mappings for disability pension triage evaluation. Four cases covering full disability pension, rehabilitation-first priority, occupational accident waiver, and contribution gap refusal.",
+  "smoke_prompts": [
+    {
+      "id": "DIS-001",
+      "prompt": "Evaluate the disability pension claim for member CLM-701. Use your tools to check the qualifying months, review the medical evidence, and assess rehabilitation eligibility. Do NOT call pdis_refer_claim — just report your triage disposition and which referral type you would recommend."
+    },
+    {
+      "id": "DIS-002",
+      "prompt": "Member CLM-702 has applied for a disability pension following back surgery. Use your tools to evaluate the claim. Do NOT call pdis_refer_claim — just report whether a pension can be granted at this stage or whether another pathway applies, and cite the relevant policy."
+    },
+    {
+      "id": "DIS-003",
+      "prompt": "Young worker CLM-703 is claiming incapacity following a factory accident and has only 14 months of work history. Use your tools to evaluate eligibility. Do NOT call pdis_refer_claim — just explain whether and why the standard qualifying condition applies and what disposition you recommend."
+    },
+    {
+      "id": "DIS-004",
+      "prompt": "Member CLM-704 is requesting a disability pension after several years of uninsured residency abroad. Use your tools to check the qualifying condition. Do NOT call pdis_refer_claim — just report the eligibility outcome and what the claimant should be advised."
+    }
+  ],
+  "cases": {
+    "DIS-001": {
+      "case_id": "DIS-001",
+      "claimant_id": "CLM-701",
+      "symptom_summary": "Chronic severe neurological condition (MS); 12 years insured; rehab measures exhausted; work capacity 30%.",
+      "expected_disposition": "pension_eligible",
+      "expected_referral_type": "medical_board",
+      "expected_policy_refs": ["DIS-POL-01", "DIS-POL-02"],
+      "qualifying_condition_met": true,
+      "waiver_applies": false,
+      "requires_human_approval": true,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "pdis_get_claim_dossier",
+        "pdis_verify_qualifying_months",
+        "pdis_get_medical_summary",
+        "pdis_assess_rehab_eligibility"
+      ],
+      "notes": "Straightforward full disability pension case. Rehab exhausted, permanent prognosis, work capacity below 40% threshold. CMO referral mandatory (DIS-POL-01)."
+    },
+    "DIS-002": {
+      "case_id": "DIS-002",
+      "claimant_id": "CLM-702",
+      "symptom_summary": "Post-surgical back condition; 7 years insured; significant recovery potential; no workplace trial attempted; work capacity 55%.",
+      "expected_disposition": "rehab_priority",
+      "expected_referral_type": "vocational_rehab",
+      "expected_policy_refs": ["DIS-POL-02"],
+      "qualifying_condition_met": true,
+      "waiver_applies": false,
+      "requires_human_approval": true,
+      "red_herrings": [],
+      "expected_key_tools": [
+        "pdis_get_claim_dossier",
+        "pdis_verify_qualifying_months",
+        "pdis_get_medical_summary",
+        "pdis_assess_rehab_eligibility"
+      ],
+      "notes": "Rehabilitation before pension applies. Work capacity above 40%, significant recovery potential, no workplace trial attempted. Agent must NOT recommend pension — must recommend vocational rehab first (DIS-POL-02)."
+    },
+    "DIS-003": {
+      "case_id": "DIS-003",
+      "claimant_id": "CLM-703",
+      "symptom_summary": "Factory accident (tyotapaturma); only 14 months insured; verified occupational accident; work capacity 25%.",
+      "expected_disposition": "pension_eligible",
+      "expected_referral_type": "medical_board",
+      "expected_policy_refs": ["DIS-POL-04", "DIS-POL-01"],
+      "qualifying_condition_met": false,
+      "waiver_applies": true,
+      "waiver_reason": "tyotapaturma",
+      "requires_human_approval": true,
+      "red_herrings": [
+        "Only 14 months insured — appears to fail the 36/60 condition, but the occupational accident waiver (DIS-POL-04) applies."
+      ],
+      "expected_key_tools": [
+        "pdis_get_claim_dossier",
+        "pdis_verify_qualifying_months",
+        "pdis_get_medical_summary",
+        "pdis_assess_rehab_eligibility"
+      ],
+      "notes": "Exception-handling case. Standard 36-month condition fails, but DIS-POL-04 occupational accident waiver applies. Agent must verify accident documentation before confirming the waiver."
+    },
+    "DIS-004": {
+      "case_id": "DIS-004",
+      "claimant_id": "CLM-704",
+      "symptom_summary": "Chronic fatigue/fibromyalgia; only 8 insured months in last 60 due to uninsured residency abroad; no bilateral treaty.",
+      "expected_disposition": "deny_tyelonly",
+      "expected_referral_type": "deny_tyelonly",
+      "expected_policy_refs": ["DIS-POL-04"],
+      "qualifying_condition_met": false,
+      "waiver_applies": false,
+      "requires_human_approval": false,
+      "red_herrings": [
+        "Work capacity is 35% (below the 40% medical threshold), which might appear to satisfy medical criteria — but the qualifying months condition is not met and no waiver applies, so TyEL pension cannot be granted regardless of the medical evidence."
+      ],
+      "expected_key_tools": [
+        "pdis_get_claim_dossier",
+        "pdis_verify_qualifying_months"
+      ],
+      "notes": "Red herring / refusal case. Medical criteria would otherwise be met (< 40% capacity), but 36/60 qualifying condition fails with no waiver. Agent must stop after qualifying months check and recommend Kela referral. Medical assessment is not required."
+    }
+  }
+}

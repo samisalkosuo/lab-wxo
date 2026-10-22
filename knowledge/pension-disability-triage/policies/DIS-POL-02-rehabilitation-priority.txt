@@ -1,0 +1,83 @@
+DIS-POL-02 — Rehabilitation Before Pension (Kuntoutus Ensin)
+Source: Finnish Earnings-Related Pension Acts (TyEL § 25; KVTEL § 23) — statutory summary for internal case handler use.
+
+1. THE STATUTORY PRINCIPLE
+--------------------------
+Finnish law requires that all viable vocational rehabilitation pathways must be
+exhausted before a disability pension can be granted to a person of working age.
+This is the "Rehabilitation before Pension" principle (kuntoutus ennen eläkettä).
+
+A pension institution is obligated to assess rehabilitation potential proactively
+in every disability pension case involving a claimant under the normal retirement age.
+
+2. TRIGGERS FOR REHABILITATION ASSESSMENT
+------------------------------------------
+A rehabilitation assessment is MANDATORY when ALL of the following apply:
+
+  a. The claimant is under normal retirement age (63 for most TyEL cohorts).
+  b. Work capacity is reduced but not completely absent (typically 40–70%).
+  c. The primary diagnosis or condition does not completely preclude all forms of work.
+  d. The claimant has not previously completed a structured vocational rehabilitation
+     programme that addressed the current condition.
+
+When all four conditions are met, the claims handler must recommend rehabilitation
+as the primary disposition and MUST NOT proceed to pension evaluation.
+
+3. VOCATIONAL REHABILITATION OPTIONS
+--------------------------------------
+The following rehabilitation measures are available under TyEL:
+
+  a. Workplace trial (Tyokokeilu / arbetsproving):
+     A structured, time-limited trial at the claimant's current or a new employer
+     in modified or alternative duties. Duration: typically 1–3 months.
+     The claimant receives a rehabilitation allowance during the trial.
+
+  b. Vocational retraining (Ammatillinen koulutus):
+     Subsidised retraining for a new vocation or role that the claimant can perform
+     given their remaining functional capacity. Duration: up to 3 years.
+     Pension institution finances the training and provides a living allowance.
+
+  c. Work ability support (Tyokyvyn tuki / tyokykyneuvonta):
+     Early-stage counselling and coordination with the employer and occupational
+     health service to prevent incapacity from escalating. Not a pension measure.
+
+  d. Supported employment and assistive equipment:
+     Subsidised workplace ergonomic adaptations, assistive technology, or supported
+     employment arrangements.
+
+4. EMPLOYER DUTY TO ACCOMMODATE
+---------------------------------
+Before a rehabilitation or pension decision is finalised, the employer must provide
+a written report confirming:
+  - What workplace accommodation measures were explored and implemented.
+  - Whether modified or alternative roles are available within the organisation.
+  - The outcome of any prior workplace trials.
+
+If the employer's duty-to-accommodate report is absent or incomplete, the claims
+handler must request it before making a disposition.
+
+5. WHEN REHABILITATION CAN BE WAIVED
+--------------------------------------
+Rehabilitation assessment may be skipped only if ONE of the following applies:
+
+  a. The claimant's condition is permanent and irreversible, and all prior
+     rehabilitation measures (including workplace trials and retraining) have
+     already been formally attempted and documented as exhausted.
+  b. The claimant's work capacity is so severely reduced (well below 40%) that
+     no form of work is realistically possible, and this is confirmed by the CMO.
+  c. The claimant is approaching normal retirement age (typically within 2 years)
+     and the rehabilitation horizon would be shorter than the benefit period.
+  d. A verified occupational accident (see DIS-POL-04) has caused severe permanent
+     injury that makes any vocational activity impossible.
+
+6. COMMON MISTAKES TO AVOID
+-----------------------------
+  - Do NOT grant a pension to a working-age claimant with significant recovery
+    potential simply because the B-statement mentions reduced work capacity.
+  - Do NOT skip the workplace trial step because the claimant has not yet attempted one.
+  - Do NOT treat the absence of an employer accommodation report as evidence that
+    accommodation was attempted and failed; request the report explicitly.
+
+7. DOCUMENT CITATION
+---------------------
+When citing this document, reference: DIS-POL-02.

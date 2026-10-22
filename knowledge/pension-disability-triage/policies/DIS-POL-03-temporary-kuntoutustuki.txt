@@ -1,0 +1,69 @@
+DIS-POL-03 — Temporary Cash Rehabilitation Benefit (Kuntoutustuki)
+Source: Finnish Earnings-Related Pension Acts (TyEL § 35) — statutory summary for internal case handler use.
+
+1. OVERVIEW
+-----------
+Kuntoutustuki (temporary disability pension / rehabilitation cash benefit) is a
+time-limited benefit granted when:
+  a. The claimant meets the incapacity threshold (work capacity <= 40%), but
+  b. The incapacity is expected to be temporary (prognosis period: 1 to 12 months), AND
+  c. A concrete treatment or rehabilitation plan exists that addresses the condition.
+
+Kuntoutustuki is NOT a permanent pension. It is a bridge benefit during structured
+treatment or rehabilitation, with the expectation that the claimant will return to
+work or undergo reassessment at the end of the benefit period.
+
+2. ELIGIBILITY CONDITIONS
+--------------------------
+All of the following must be met simultaneously:
+
+  a. Work capacity <= 40% (same medical threshold as full disability pension, DIS-POL-01).
+  b. The treating physician's B-statement specifies a realistic recovery prognosis
+     within a defined timeframe (typically 6–18 months).
+  c. A concrete treatment plan (hoitosuunnitelma) or rehabilitation plan
+     (kuntoutussuunnitelma) has been prepared and attached to the claim.
+  d. The qualifying months condition (36/60) must be met (see DIS-POL-04).
+  e. Rehabilitation before pension principle assessed: if vocational rehabilitation
+     is viable, it must be initiated concurrently or instead (see DIS-POL-02).
+
+3. BENEFIT DURATION
+--------------------
+  - Minimum period: 1 calendar month.
+  - Maximum period: As specified in the treatment/rehabilitation plan, up to 3 years
+    in exceptional cases with multiple treatment phases.
+  - The benefit is reviewed at the end of each granted period. If the claimant has
+    not recovered, a new assessment determines whether:
+      i.  The benefit is extended (new plan required).
+      ii. The claimant is referred to vocational rehabilitation (DIS-POL-02).
+      iii.The case is converted to a full disability pension (DIS-POL-01).
+
+4. TREATMENT PLAN REQUIREMENTS
+--------------------------------
+The treatment plan must be prepared by the treating specialist (not a GP) and must:
+  - State the diagnosis and ICD-10 code.
+  - Specify the planned treatments, procedures, or rehabilitation interventions.
+  - Estimate the expected duration of the benefit period.
+  - Include a realistic recovery goal (e.g. return to modified work, partial recovery).
+  - Be signed and dated by the specialist.
+
+A treatment plan older than 3 months requires updating.
+
+5. INTERACTION WITH VOCATIONAL REHABILITATION
+----------------------------------------------
+Kuntoutustuki and vocational rehabilitation (DIS-POL-02) can run concurrently:
+  - A claimant may receive kuntoutustuki while undergoing a workplace trial
+    (tyokokeilu) or a retraining programme.
+  - If the rehabilitation succeeds, kuntoutustuki ends.
+  - If it fails, the case is reassessed for a permanent disability pension.
+
+6. WHAT KUNTOUTUSTUKI IS NOT
+------------------------------
+  - It is NOT a permanent pension and does not convert automatically to one.
+  - It does NOT accrue pension rights in the same way as active employment.
+  - It does NOT replace the need for a qualifying months check.
+  - It does NOT apply to cases where incapacity is expected to be permanent from
+    the outset (those go directly to the full disability pension pathway, DIS-POL-01).
+
+7. DOCUMENT CITATION
+---------------------
+When citing this document, reference: DIS-POL-03.

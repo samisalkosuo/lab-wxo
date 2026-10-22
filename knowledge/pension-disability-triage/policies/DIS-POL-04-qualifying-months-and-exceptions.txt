@@ -1,0 +1,104 @@
+DIS-POL-04 — Qualifying Months Condition and Statutory Exceptions
+Source: Finnish Earnings-Related Pension Acts (TyEL § 12; § 66) — statutory summary for internal case handler use.
+
+1. THE 36/60-MONTH QUALIFYING CONDITION (TULEVAN AJAN ANSIOEDELLYTYS)
+-----------------------------------------------------------------------
+To be eligible for a TyEL disability pension with tuleva aika (future-period
+accrual), the claimant must have been insured under the Finnish earnings-related
+pension system for at least 36 of the 60 calendar months immediately preceding
+the onset of incapacity.
+
+  - Insured months >= 36 in the last 60: qualifying condition is MET.
+  - Insured months < 36 in the last 60: qualifying condition is NOT MET.
+    => The claimant cannot receive a TyEL disability pension with tuleva aika.
+    => The claimant should be directed to the Kela national disability pension
+       (kansallinen tyokyvyttomyyselake / SOLITA).
+
+The 60-month window is calculated backwards from the date of onset of incapacity
+(typically the last day of employment or the accident date).
+
+2. INSURED MONTHS — WHAT COUNTS
+---------------------------------
+The following periods count toward the 36/60 qualifying window:
+  - Active employment with Finnish TyEL/YEL/JuEL coverage.
+  - Periods of sick pay (sairausajan palkka) with earnings-related pension deductions.
+  - Approved rehabilitation periods under TyEL.
+  - Periods covered by a bilateral social security treaty (see section 5 below).
+
+The following do NOT count:
+  - Periods of unemployment not covered by TyEL.
+  - Uninsured residency abroad (without a bilateral treaty).
+  - Self-employment periods without YEL/MYEL registration.
+  - Periods of child-raising (kotihoidon tuki) not tied to an insured employment relationship.
+
+3. TULEVA AIKA (FUTURE-PERIOD ACCRUAL)
+----------------------------------------
+Tuleva aika means the pension institution calculates pension accrual as if the
+claimant had continued working at their average earnings until normal retirement age.
+This provision significantly increases the pension amount for younger claimants.
+
+Eligibility for tuleva aika requires BOTH:
+  a. The 36/60 qualifying months condition is met (or waived under section 4), AND
+  b. The claimant's annual earnings in the last full calendar year before incapacity
+     exceeded the statutory earnings floor (2025: EUR 8,755).
+
+If either condition fails, tuleva aika does not apply and the pension is calculated
+only on actual accrued years.
+
+4. STATUTORY EXCEPTIONS — WHEN THE WAITING PERIOD IS WAIVED
+-------------------------------------------------------------
+The 36/60-month qualifying condition may be waived in the following circumstances:
+
+  4a. OCCUPATIONAL ACCIDENT (TYOTAPATURMA)
+  -----------------------------------------
+  If the incapacity arose directly and exclusively from a verified occupational
+  accident (tyotapaturma) or an occupational disease (ammattitauti) occurring
+  during insured Finnish employment, the waiting period is waived entirely.
+
+  Requirements for the waiver to apply:
+    i.   The employer has filed an official accident report with the workers'
+         compensation insurance carrier (tapaturmavakuutus).
+    ii.  The accident is classified as a tyotapaturma (work-related accident) by
+         the workers' compensation insurer or confirmed by an occupational safety
+         authority investigation.
+    iii. The B-statement links the incapacity directly to the accident injury.
+    iv.  The claimant was in active insured employment on the date of the accident.
+
+  Even with only days of insured Finnish employment, a claimant with a verified
+  occupational accident can qualify for TyEL disability pension with tuleva aika.
+
+  IMPORTANT: The claims handler must verify accident documentation before
+  confirming the waiver. Do NOT assume the waiver applies based on the claimant's
+  self-report alone. The employer accident report and insurance classification
+  are mandatory evidence.
+
+  4b. YOUNG PERSONS (UNDER 23)
+  ------------------------------
+  Claimants who became incapacitated before age 23 are eligible for a special
+  young persons' provision (nuoren henkilon tyokyvyttomyyselake), which may
+  provide a pension even without qualifying months, subject to a separate
+  income and incapacity assessment.
+
+  4c. BILATERAL SOCIAL SECURITY TREATIES
+  ----------------------------------------
+  Finland has bilateral social security treaties with several countries. Insured
+  periods in a treaty country may be aggregated with Finnish insured months to
+  meet the 36/60 qualifying condition.
+
+  The claims handler must verify whether a treaty applies and obtain the official
+  insurance certificate (E101 / A1 form) from the treaty country's authority.
+
+5. WHEN NO EXCEPTION APPLIES — REFERRAL TO KELA
+-------------------------------------------------
+If the claimant does not meet the 36/60 qualifying condition AND no statutory
+exception applies:
+  - A TyEL disability pension CANNOT be granted.
+  - The case must be closed with a refusal decision under TyEL.
+  - The claimant must be informed of their right to apply for the Kela national
+    disability pension (tyokyvyttomyysetuus / kansallinen tyokyvyttomyyselake),
+    which does not require an insured employment history.
+  - Provide the claimant with the Kela contact information and application guidance.
+
+6. DOCUMENT CITATION
+---------------------
+When citing this document, reference: DIS-POL-04.

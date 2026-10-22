@@ -1,7 +1,7 @@
 # Disability Pension & Vocational Rehabilitation Triage - Plan
 
-> Scenario 8 in the presentation sidebar.
-> Scenario id: `pension-disability-triage` | Package: `pension_disability` | Sidebar position: 8 | Status: `soon`
+> Scenario 9 in the presentation sidebar.
+> Scenario id: `pension-disability-triage` | Package: `pension_disability` | Sidebar position: 9 | Status: `live`
 
 ## Top-Level Overview
 
@@ -45,7 +45,7 @@
   - `tools/pension_disability/requirements.txt` with `ibm-watsonx-orchestrate==2.18.2`.
   - Local Python test suite validating cases DIS-001 through DIS-004.
 - **Relevant Context**: [`tools/incident_triage/incident_triage.py`](tools/incident_triage/incident_triage.py)
-- **Status**: `[ ] pending`
+- **Status**: `[x] complete`
 
 ### Sub-Task 2: Disability & rehabilitation policy knowledge base
 - **Intent**: Author knowledge base YAML and plain text policy documents with stable document identifiers.
@@ -57,7 +57,7 @@
     - `DIS-POL-03-temporary-kuntoutustuki.txt`: Temporary cash rehabilitation allowance rules and treatment plan requirements.
     - `DIS-POL-04-qualifying-months-and-exceptions.txt`: 36/60-month rule, *tuleva aika* provisions, occupational accident waivers.
 - **Relevant Context**: [`knowledge/customer-returns/customer_returns_policy.yaml`](knowledge/customer-returns/customer_returns_policy.yaml)
-- **Status**: `[ ] pending`
+- **Status**: `[x] complete`
 
 ### Sub-Task 3: Medical board referral flow
 - **Intent**: Author a human-in-the-loop flow allowing the claims handler to review the triaged summary and authorize formal referral to the Medical Board / Chief Medical Officer or Vocational Rehab Unit.
@@ -65,7 +65,7 @@
   - `flows/pension_disability/refer_medical_board.py` with Pydantic inputs and interactive review form.
   - Internal write tool `pdis_dispatch_referral` called strictly upon form approval.
 - **Relevant Context**: [`flows/incident_triage/request_remediation.py`](flows/incident_triage/request_remediation.py)
-- **Status**: `[ ] pending`
+- **Status**: `[x] complete`
 
 ### Sub-Task 4: Agent YAML, README and manifest
 - **Intent**: Configure the ReAct agent, instructions, evidence citation constraints, and scenario manifest.
@@ -74,14 +74,14 @@
   - `agents/pension-disability-triage/README.md`.
   - `scenarios/pension-disability-triage/scenario.yaml` manifest.
 - **Relevant Context**: [`agents/cloud-finops/agent.yaml`](agents/cloud-finops/agent.yaml)
-- **Status**: `[ ] pending`
+- **Status**: `[x] complete`
 
 ### Sub-Task 5: Ground truth and smoke evaluation
 - **Intent**: Author ground truth checklist covering all 4 claim cases with diagnosis-only `smoke_prompts`.
 - **Expected Outcomes**:
   - `evaluation/pension-disability-triage/ground_truth.json` with 4 case definitions and `smoke_prompts`.
 - **Relevant Context**: [`evaluation/incident-triage/ground_truth.json`](evaluation/incident-triage/ground_truth.json)
-- **Status**: `[ ] pending`
+- **Status**: `[x] complete`
 
 ### Sub-Task 6: Demo walkthrough script and interactive slides
 - **Intent**: Author demo walkthrough script and presentation slide matching sidebar position 8.
@@ -90,7 +90,7 @@
   - `docs/demo/scenarios/pension-disability-triage.js` with `.fit-card` (Industry: Finnish Statutory Pension / Työeläke, Function: Disability Claims & Occupational Health, Roles: Disability Claims Handler, Rehabilitation Specialist, Medical Reviewer).
   - Registered script tag in `docs/demo/presentation.html`.
 - **Relevant Context**: [`docs/demo/scenarios/release-readiness.js`](docs/demo/scenarios/release-readiness.js), [`docs/demo/presentation.html`](docs/demo/presentation.html)
-- **Status**: `[ ] pending`
+- **Status**: `[x] complete`
 
 ### Sub-Task 7: Validation and dry-run smoke testing
 - **Intent**: Validate scenario consistency and verify dry-run smoke prompts.
@@ -98,4 +98,4 @@
   - `python wxodemo.py validate pension-disability-triage` passes with `OK`.
   - `python wxodemo.py smoke pension-disability-triage --dry-run` displays valid prompt sequences.
 - **Relevant Context**: [`src/wxodemo/validate.py`](src/wxodemo/validate.py)
-- **Status**: `[ ] pending`
+- **Status**: `[x] complete`

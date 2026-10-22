@@ -1,0 +1,80 @@
+DIS-POL-01 — Incapacity Criteria for Disability Pension (Työkyvyttömyyseläke)
+Source: Finnish Earnings-Related Pension Acts (TyEL, YEL, JuEL) — statutory summary for internal case handler use.
+
+1. OVERVIEW
+-----------
+A disability pension (työkyvyttömyyseläke) may be granted to an insured person
+whose ability to earn a living has been reduced by illness, defect, or injury to
+such an extent that, taking into account age, education, and prior work experience,
+they are unable to perform suitable work and earn a reasonable income.
+
+The assessment is always holistic: medical evidence alone is not sufficient.
+The adjudicator must consider the claimant's residual functional capacity, age,
+education, vocational skills, and the realistic availability of suitable work.
+
+2. WORK CAPACITY THRESHOLD
+---------------------------
+The statutory incapacity threshold is defined as work capacity reduced to 40% or
+less of full capacity (i.e. the claimant can perform at most 40% of the work
+output expected for their occupational class).
+
+  - Work capacity <= 40%  : Medical incapacity condition is met.
+  - Work capacity 41–59%  : Partial disability pension (osakuntoutustuki) may apply;
+                            full pension requires additional justification.
+  - Work capacity >= 60%  : Pension cannot be granted on medical grounds alone;
+                            vocational rehabilitation must be explored first.
+
+3. MEDICAL EVIDENCE — B-STATEMENT (B-LAAKARINLAUSUNTO)
+-------------------------------------------------------
+The primary medical evidence document is the B-statement (B-lääkärinlausunto), an
+extended specialist medical report prepared by a treating physician. Requirements:
+
+  a. Issued by a qualified specialist physician relevant to the primary diagnosis.
+  b. Must contain: diagnosis (with ICD-10 code), symptom description, functional
+     limitations, treatment history, rehabilitation measures taken, and prognosis.
+  c. Must be dated within 6 months of the claim submission.
+  d. Must provide an explicit assessment of work capacity as a percentage or
+     qualitative description that can be mapped to a percentage.
+
+A B-statement older than 6 months requires updating before a pension decision
+can be made.
+
+4. PROGNOSIS REQUIREMENT
+------------------------
+The incapacity must be expected to last at least one year. Short-term or
+clearly reversible conditions (e.g. post-surgical recovery with strong prognosis)
+do not qualify for a permanent pension; a temporary rehabilitation cash benefit
+(kuntoutustuki) may apply instead (see DIS-POL-03).
+
+  - Permanent (indefinite): qualifies for full disability pension.
+  - Prognosis > 12 months: qualifies for full disability pension.
+  - Prognosis 1–12 months: qualifies for kuntoutustuki (temporary), not permanent pension.
+  - Prognosis < 1 month:   neither pension nor kuntoutustuki is applicable.
+
+5. CHIEF MEDICAL OFFICER (ASIANTUNTIJALAAKAARI) REFERRAL
+---------------------------------------------------------
+All cases where the claims handler recommends granting a disability pension must
+be referred to the pension institution's Chief Medical Officer (asiantuntijalääkäri,
+CMO) for independent medical review before the formal pension decision is issued.
+
+The referral package must include:
+  - The original B-statement.
+  - A summary of the claimant's occupational and insured earnings history.
+  - The qualifying months verification result.
+  - A summary of all prior rehabilitation measures (if any).
+  - The claims handler's preliminary disposition recommendation.
+
+CMO review is mandatory and cannot be bypassed regardless of how clear the case appears.
+
+6. PARTIAL DISABILITY PENSION
+------------------------------
+A partial disability pension (osatyökyvyttömyyseläke) may be considered when:
+  - Work capacity is reduced to 40–60% range.
+  - The claimant is still partially able to work.
+  - A workplace accommodation or part-time arrangement is feasible.
+
+Partial pension cases require the same CMO referral and qualifying months check.
+
+7. DOCUMENT CITATION
+---------------------
+When citing this document, reference: DIS-POL-01.

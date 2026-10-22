@@ -1,0 +1,45 @@
+# scenario.yaml - manifest for the Disability Pension & Vocational Rehabilitation Triage scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Status stays `soon` until the scenario is deployed and its demo script is written.
+
+id: pension-disability-triage
+name: Disability Pension & Vocational Rehabilitation Triage
+description: Statutory disability claims triage with rehabilitation-first enforcement and medical board referral flow
+status: live
+
+agents:
+  - name: pension_disability_triage
+    path: agents/pension-disability-triage
+    kind: native
+
+tools:
+  - path: tools/pension_disability
+    entry: pension_disability.py
+    names:
+      - pdis_get_claim_dossier
+      - pdis_verify_qualifying_months
+      - pdis_assess_rehab_eligibility
+      - pdis_get_medical_summary
+      - pdis_dispatch_referral
+    # pdis_dispatch_referral is deliberately NOT attached to the agent;
+    # only the pdis_refer_claim flow calls it after human approval (least privilege).
+    attached:
+      - pdis_get_claim_dossier
+      - pdis_verify_qualifying_months
+      - pdis_assess_rehab_eligibility
+      - pdis_get_medical_summary
+
+knowledge_bases:
+  - name: pension_disability_policy
+    path: knowledge/pension-disability-triage
+
+flows:
+  - name: pdis_refer_claim
+    path: flows/pension_disability
+
+evaluation:
+  path: evaluation/pension-disability-triage
+  tier: core
+
+demo:
+  script: docs/demo/pension-disability-triage-demo.md
