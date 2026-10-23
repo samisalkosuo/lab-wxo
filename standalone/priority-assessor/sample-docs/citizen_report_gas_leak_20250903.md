@@ -1,0 +1,37 @@
+# Citizen Report
+
+**Report ID:** CIV-2025-0903-441  
+**Date/Time:** 03.09.2025 08:22 local time  
+**Channel:** City Emergency App — Helsinki, Finland  
+**Reporter:** Anonymous citizen (Kallio district)  
+
+## Report Summary
+
+A resident reports a strong smell of gas near the junction of Fleminginkatu and
+Hämeentie (Kallio district, Helsinki). The smell was first noticed approximately
+08:05 and has intensified. The reporter observed a utility maintenance access
+cover that appears to have shifted from its original position. Two residents have
+reportedly left the adjacent apartment building as a precautionary measure.
+
+## Location Details
+
+- **Address:** Fleminginkatu / Hämeentie junction, 00530 Helsinki
+- **Nearest landmark:** Hakaniemi Market Hall (approx. 300 m north)
+
+## Observations
+
+The reporter states the gas odour is noticeable from approximately 10 metres away.
+No visible flames, smoke, or explosion. The reporter has already called 112 but
+wanted to additionally log a city report for infrastructure tracking.
+
+## Immediate Risk Assessment (by reporter)
+
+Reporter considers this an immediate safety risk and has requested urgent response.
+
+## Actions Taken by Reporter
+
+- Called 112 (emergency services) at 08:18.
+- Evacuated own household.
+
+**Submitted via:** Helsinki City Emergency App  
+**Report Date:** 03.09.2025  
