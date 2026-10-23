@@ -10,7 +10,9 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -228,6 +230,8 @@ def run_deploy(targets: list[Target], cfg: Config | None, root: Path, dry_run: b
         groups.append((f"{t.name} ({t.kind})", actions, t))
 
     if not dry_run:
+        start_t = time.monotonic()
+        start_dt = datetime.now()
         login(cfg)
         ok(f"Logged in to '{cfg.env_name}'")
 
@@ -245,7 +249,13 @@ def run_deploy(targets: list[Target], cfg: Config | None, root: Path, dry_run: b
     if dry_run:
         plain("Dry run only: nothing was changed.")
     else:
+        end_dt = datetime.now()
+        secs = round(time.monotonic() - start_t)
+        elapsed = f"{secs // 3600:02d}:{(secs % 3600) // 60:02d}:{secs % 60:02d}"
         ok(f"Deployed {len(ordered)} target(s)")
+        plain(f"  Started:  {start_dt.strftime('%H:%M:%S')}")
+        plain(f"  Finished: {end_dt.strftime('%H:%M:%S')}")
+        plain(f"  Elapsed:  {elapsed}")
     return 0
 
 

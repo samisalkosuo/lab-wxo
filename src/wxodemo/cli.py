@@ -75,8 +75,11 @@ def _select(args: argparse.Namespace, *, live_only: bool = False):
     targets, problems = all_targets(root)
     for problem in problems:
         warn(problem)
+    # Allow "all" as a magic positional name, equivalent to --all
+    names = [n for n in args.targets if n != "all"]
+    select_all = args.all or len(names) < len(args.targets)
     chosen = resolve_targets(
-        targets, args.targets, select_all=args.all, kind=args.kind, live_only=live_only
+        targets, names, select_all=select_all, kind=args.kind, live_only=live_only
     )
     return root, chosen
 
