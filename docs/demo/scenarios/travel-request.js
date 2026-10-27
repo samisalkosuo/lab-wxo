@@ -507,7 +507,7 @@ window.SCENARIOS.push(
                       Copy Prompt
                     </button>
                   </div>
-                  <div class="prompt-box" id="prompt-9">I am Jukka Korhonen (E-1002). I want to go to Brussels for training on 11-13 May 2026, about 50 hours in total. The organiser provides lunch and dinner every day. The hotel costs 280 EUR in total and breakfast is included in the room price. If I may go, please submit the request so that I get a request id.</div>
+                  <div class="prompt-box" id="prompt-9">I am Jukka Korhonen (E-1002). I want to go to Brussels for training on 11-13 May 2026, about 50 hours in total. The organiser provides lunch and dinner every day. The hotel costs 280 EUR in total and breakfast is included in the room price. Please submit the request for approval now, whatever the approval level, so that I get a request id.</div>
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>The agent calls the approval flow. Run Approve and Reject in separate conversations. Rehearse this first: the form has not been seen working in a browser.</span>

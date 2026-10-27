@@ -1010,7 +1010,7 @@ window.DEMO_SCRIPTS = {
       "t": "prompt",
       "card": 9,
       "note": "",
-      "text": "I am Jukka Korhonen (E-1002). I want to go to Brussels for training on 11-13 May 2026, about 50 hours in total. The organiser provides lunch and dinner every day. The hotel costs 280 EUR in total and breakfast is included in the room price. If I may go, please submit the request so that I get a request id."
+      "text": "I am Jukka Korhonen (E-1002). I want to go to Brussels for training on 11-13 May 2026, about 50 hours in total. The organiser provides lunch and dinner every day. The hotel costs 280 EUR in total and breakfast is included in the room price. Please submit the request for approval now, whatever the approval level, so that I get a request id."
      },
      {
       "t": "expected",

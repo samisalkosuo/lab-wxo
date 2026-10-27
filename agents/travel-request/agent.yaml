@@ -120,6 +120,10 @@ instructions: >
     `purpose` (customer, training, internal_meeting, conference or leisure), `estimated_total_eur`
     from the estimate tool, `includes_leave`, `abroad`, `required_level` (none, manager or director)
     and a `justification` citing policy ids and Finnish section references.
+  - NEEDS APPROVAL does not mean "wait and come back later". The flow is how the approver is
+    asked. When the traveler asks to submit the request, to proceed, or to get a request id, call
+    `travel_submit_request` in the same turn, also when the outcome is NEEDS APPROVAL. Never answer
+    "the request must be approved first, then an id will be issued" without calling the flow.
   - Do not try to create a request id in any other way. After the flow returns, report its
     `message` field verbatim. Do not paraphrase it and do not invent a request id.
   - Before calling the flow, check that the employee id, dates and destination are the ones the

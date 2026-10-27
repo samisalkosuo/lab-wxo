@@ -278,7 +278,7 @@ This scene uses a **fresh conversation** for each path. It is the key platform f
 **Prompt (type exactly):**
 
 ```
-I am Jukka Korhonen (E-1002). I want to go to Brussels for training on 11-13 May 2026, about 50 hours in total. The organiser provides lunch and dinner every day. The hotel costs 280 EUR in total and breakfast is included in the room price. If I may go, please submit the request so that I get a request id.
+I am Jukka Korhonen (E-1002). I want to go to Brussels for training on 11-13 May 2026, about 50 hours in total. The organiser provides lunch and dinner every day. The hotel costs 280 EUR in total and breakfast is included in the room price. Please submit the request for approval now, whatever the approval level, so that I get a request id.
 ```
 
 **Expected behaviour (observed):**
