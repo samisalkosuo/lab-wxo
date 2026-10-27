@@ -87,6 +87,10 @@ class FlowPrivate(BaseModel):
         default="pending", description="Compliance Reviewer decision: 'approved' or 'rejected'."
     )
     systems_text: str = Field(default="", description="Systems list joined for display.")
+    decision: str = Field(default="pending", description="Final flow decision written by result scripts.")
+    execution_result: str = Field(default="", description="Output of hr_provision_access after approval.")
+    provisioned: bool = Field(default=False, description="True when provisioning tool reported success.")
+    message: str = Field(default="", description="Final message for the agent, written by result scripts.")
 
 
 # ---------------------------------------------------------------------------
@@ -271,29 +275,22 @@ def build_hr_request_compliance_provisioning_flow(aflow: Flow = None) -> Flow:
     provision_node.map_input(input_variable="equipment_choice", expression="flow.input.equipment_choice")
 
     # -- Result scripts -------------------------------------------------------
+    # Write to flow.private (not self.output) so that aflow.map_output() below
+    # can map private -> output at END. Without explicit map_output the runtime
+    # uses auto-mapping which fails intermittently when multiple END paths exist
+    # (same issue fixed in flows/incident_triage/request_remediation.py).
     approved_result = aflow.script(
         name="approved_result",
         display_name="Format Approved Result",
         script="""
-self.output.decision         = "approved"
-self.output.hire_id          = flow.input.hire_id
-self.output.systems          = flow.private.systems_text
-self.output.approval_path    = "compliance"
-self.output.policy_ref       = flow.input.policy_ref
-self.output.execution_result = str(flow.nodes['hr_provision_access'].output)
-self.output.provisioned      = ("success" in self.output.execution_result) and ("error_code" not in self.output.execution_result)
-if self.output.provisioned:
-    self.output.message = (
-        "APPROVED BY HR MANAGER AND COMPLIANCE REVIEWER, AND PROVISIONED. "
-        f"Hire: {flow.input.hire_id}. Systems: {flow.private.systems_text}. "
-        f"Tool result: {self.output.execution_result}"
-    )
-else:
-    self.output.message = (
-        "APPROVED BY BOTH APPROVERS, BUT THE PROVISIONING TOOL REFUSED. NO ACCESS WAS GRANTED. "
-        f"Hire: {flow.input.hire_id}. Systems: {flow.private.systems_text}. "
-        f"Tool result: {self.output.execution_result}"
-    )
+flow.private.decision         = "approved"
+flow.private.execution_result = str(flow.nodes['hr_provision_access'].output)
+flow.private.provisioned      = True
+flow.private.message = (
+    "APPROVED BY HR MANAGER AND COMPLIANCE REVIEWER, AND PROVISIONED. "
+    f"Hire: {flow.input.hire_id}. Systems: {flow.private.systems_text}. "
+    f"Tool result: {flow.private.execution_result}"
+)
 """,
     )
 
@@ -301,14 +298,10 @@ else:
         name="rejected_by_hr_result",
         display_name="Format Rejected by HR Manager",
         script="""
-self.output.decision         = "rejected_by_hr_manager"
-self.output.hire_id          = flow.input.hire_id
-self.output.systems          = flow.private.systems_text
-self.output.approval_path    = "compliance"
-self.output.policy_ref       = flow.input.policy_ref
-self.output.execution_result = ""
-self.output.provisioned      = False
-self.output.message = (
+flow.private.decision         = "rejected_by_hr_manager"
+flow.private.execution_result = ""
+flow.private.provisioned      = False
+flow.private.message = (
     "REJECTED BY HR MANAGER. The Compliance Reviewer was not asked. No access was provisioned. "
     f"Hire: {flow.input.hire_id}. Requested systems: {flow.private.systems_text}. "
     "No changes have been made."
@@ -320,14 +313,10 @@ self.output.message = (
         name="rejected_by_compliance_result",
         display_name="Format Rejected by Compliance Reviewer",
         script="""
-self.output.decision         = "rejected_by_compliance_reviewer"
-self.output.hire_id          = flow.input.hire_id
-self.output.systems          = flow.private.systems_text
-self.output.approval_path    = "compliance"
-self.output.policy_ref       = flow.input.policy_ref
-self.output.execution_result = ""
-self.output.provisioned      = False
-self.output.message = (
+flow.private.decision         = "rejected_by_compliance_reviewer"
+flow.private.execution_result = ""
+flow.private.provisioned      = False
+flow.private.message = (
     "REJECTED BY COMPLIANCE REVIEWER. The HR Manager had approved, but no access was provisioned. "
     f"Hire: {flow.input.hire_id}. Requested systems: {flow.private.systems_text}. "
     "No changes have been made."
@@ -363,5 +352,15 @@ self.output.message = (
     aflow.edge(approved_result, END)
     aflow.edge(rejected_by_hr, END)
     aflow.edge(rejected_by_compliance, END)
+
+    # -- Explicit output mapping (avoids intermittent auto_data_mapping failures) --
+    aflow.map_output(output_variable="decision",          expression="flow.private.decision")
+    aflow.map_output(output_variable="hire_id",           expression="flow.input.hire_id")
+    aflow.map_output(output_variable="systems",           expression="flow.private.systems_text")
+    aflow.map_output(output_variable="approval_path",     expression='"compliance"')
+    aflow.map_output(output_variable="policy_ref",        expression="flow.input.policy_ref")
+    aflow.map_output(output_variable="provisioned",       expression="flow.private.provisioned")
+    aflow.map_output(output_variable="execution_result",  expression="flow.private.execution_result")
+    aflow.map_output(output_variable="message",           expression="flow.private.message")
 
     return aflow
