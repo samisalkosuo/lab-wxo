@@ -92,7 +92,7 @@ A personal-notes document by a fictional senior HR specialist about correcting a
 | Placement test | New article for the hold-first sequence; the cutoff statement conflicts with the stale seeded article, so the agent should also flag an update to that article. |
 | What the expert should see | Draft with PII removed or generalised, a short "what I found" summary, and one question: is this correct? |
 
-Format note: the file is Markdown because plan mode can only write text files. Sub-Task 6 added an identical `.txt` copy. No upload route is used: the expert pastes the text into the chat (user decision), so no `.docx` was made.
+Format note: the file is Markdown because plan mode can only write text files. Sub-Task 6 adds an identical `.txt` copy. No upload route is used: the expert pastes the text into the chat (user decision), so no `.docx` is needed.
 
 ## Tools
 
@@ -125,175 +125,119 @@ Process one at a time; the user checks each before the next.
 - **Expected Outcomes**: `python wxodemo.py new-scenario hr-tacit-knowledge --name "HR Tacit Knowledge" --description "..."` has run; mock data files for artifacts, articles, experts, employees exist and cover cases TK-001 to TK-006.
 - **Todo List**:
   1. Re-check name uniqueness for `hr_tk_*` across `scenarios/*/scenario.yaml` and `tools/`.
-  2. Run the scaffold command. It creates `scenarios/hr-tacit-knowledge/scenario.yaml`, `agents/hr-tacit-knowledge/agent.yaml`, `evaluation/hr-tacit-knowledge/ground_truth.json`, the demo markdown and a placeholder slide file, and registers the script tag.
-  3. Add a second agent entry for the guide (scaffold creates one agent; the plan needs two, as `release-readiness` does).
-  4. Write mock data under `tools/hr_tk/data/`.
+  2. Run the scaffold command with `--agent-name hr_tk_curator`. It creates `scenarios/hr-tacit-knowledge/scenario.yaml`, `agents/hr-tacit-knowledge/agent.yaml`, `evaluation/hr-tacit-knowledge/ground_truth.json`, the demo markdown and a placeholder slide file, and registers the script tag.
+  3. Add a second agent stub `hr_tk_guide` at `agents/hr-tacit-knowledge-guide/agent.yaml` and add it to the manifest `agents` list (same pattern as `release-readiness`). Instructions are written in Sub-Task 5.
+  4. Write mock data under `tools/hr_tk/data/`: `artifacts.py` (A-101..A-106), `articles.py` (HR-TK-ART-01..06 metadata), `experts.py` (X-101..X-104), `employees.py` (learners L-201, L-202).
 - **Relevant Context**: `scenarios/hr-onboarding/scenario.yaml`, `scenarios/release-readiness/scenario.yaml` (multi-agent), `src/wxodemo/scaffold.py`, `tools/hr_onboarding/data/`.
-- **Status**: [x] done
-- **Built / checked**:
-  - Name check: only this plan file contained `hr_tk` / `hr-tacit` before scaffolding.
-  - Scaffold ran (`--agent-name hr_tk_curator`; sidebar position 10): `scenarios/hr-tacit-knowledge/scenario.yaml`, `agents/hr-tacit-knowledge/agent.yaml`, `evaluation/hr-tacit-knowledge/ground_truth.json`, `docs/demo/hr-tacit-knowledge-demo.md`, `docs/demo/scenarios/hr-tacit-knowledge.js`, script tag in `presentation.html`.
-  - Second agent stub `hr_tk_guide` at `agents/hr-tacit-knowledge-guide/agent.yaml` and added to the manifest `agents` list (instructions are still TODO; Sub-Task 5).
-  - Mock data in `tools/hr_tk/data/`: `artifacts.py` (A-101..A-106), `articles.py` (HR-TK-ART-01..06 metadata), `experts.py` (X-101..X-104), `employees.py` (learners L-201, L-202). Imported and counted directly with Python (6/6/4/2); no unit tests written yet.
-- **Mock data to case map** (for later sub-tasks):
-  - TK-001: A-101 (ticket with workaround, no KB article; expert X-103), A-102 (routine, covered by ART-03), A-103 (near-duplicate of ART-03), A-104 (noise).
+- **Mock data to case map** (wire the data to the right cases):
+  - TK-001: A-101 (ticket with workaround, no KB article; expert X-103), A-102 (routine chat, covered by ART-03), A-103 (near-duplicate of ART-03), A-104 (noise).
   - TK-002: A-105 contradicts ART-04 (form HR-22 / 10 days is stale; real: e-form PR-1 / 5 days; expert X-104). ART-05 (Sweden) is the similar-but-different-country red herring.
   - TK-003: sample upload document vs ART-01 (cutoff 18th is stale; real: 22nd). Expert X-101 is the document author.
   - TK-004: learner L-201 (Finland desk) asks about employment certificates; ART-03 is current, ART-02 is the superseded red herring.
   - TK-005: a question the KB does not cover (visa/work permit letter); expert X-102 is listed for it.
   - TK-006: reject path of the review flow, using any draft.
-- **Finding to handle in Sub-Task 7**: `wxodemo smoke` sends every prompt to a single agent (`smoke_agent`, else the first agent; `src/wxodemo/smoke.py`). It cannot drive both agents. Plan: `smoke_agent: hr_tk_guide` for the diagnosis-only prompts (TK-004, TK-005 routing question), and say in the demo script that the curator cases are not covered by smoke. No change to the CLI.
+- **Note for Sub-Task 7**: `wxodemo smoke` sends every prompt to a single agent (`smoke_agent`, else the first agent). Set `smoke_agent: hr_tk_guide` in the manifest for the diagnosis-only prompts (TK-004, TK-005 routing question). The curator cases are not covered by smoke; say so in the demo script.
+- **Status**: [ ] pending
 
 ### Sub-Task 2: Read tools and deterministic PII scan
 - **Intent**: Build the read-only tools and the PII/placement logic that must hold in code.
 - **Expected Outcomes**: Five curator tools plus employee profile; `hr_tk_scan_pii` detects every PII item planted in the sample document and in the mock artifacts; direct Python tests pass.
 - **Todo List**:
-  1. Implement tools in `tools/hr_tk/hr_tk.py` with the `@tool` functions and import fallback.
-  2. Implement `hr_tk_scan_pii` (emails, phones, national IDs, employee IDs, amounts, name list, sensitive terms) returning findings with a suggested redaction.
-  3. Implement `hr_tk_find_related_articles` returning candidates with status and a similarity hint, without live search state.
-  4. Test each tool directly, including the sample document text.
+  1. Implement `tools/hr_tk/pii.py`: deterministic scanner (e-mail, national ID, phone and "extension NNNN", employee ID `E-nnnnn`, money amounts, sensitive health terms, known fictional names). Pure function, no state. Returns `{"clean": bool, "findings": [...]}` with suggested redactions.
+  2. Implement the six read tools in `tools/hr_tk/hr_tk.py` with `@tool` and the import fallback from `tools/hr_onboarding/hr_onboarding.py`. Curator: `hr_tk_list_new_artifacts`, `hr_tk_get_artifact`, `hr_tk_scan_pii`, `hr_tk_find_related_articles`, `hr_tk_find_expert`. Guide: `hr_tk_get_employee_profile`, `hr_tk_find_expert` (shared). Cap all outputs (3 candidates, 3 experts, 10 artifacts, 25 findings, 8000 chars). Return structured errors with hints, explicit ISO dates only.
+  3. Implement `hr_tk_find_related_articles` with whole-word keyword matching and a minimum score (at least two topic hits) to avoid over-matching. Remove generic topics ("form", "manager", "email") from article topic lists.
+  4. Write `tests/test_hr_tk_tools.py`. Call tools through `.fn` (the `@tool` wrapper returns a `PythonTool`; calling the wrapper directly raises `TypeError`). Verify: sample document scan finds all planted PII; redacted copy re-scans clean; all mock artifacts scan clean; related-article matches are correct per case (A-101 and A-104 → nothing; A-103 → ART-03 only; A-105 → ART-04 only; sample document → ART-01 only; A-102 → ART-03 current + ART-02 superseded).
 - **Relevant Context**: `tools/hr_onboarding/hr_onboarding.py`, `tests/`.
-- **Status**: [x] done
-- **Built / checked**:
-  - `tools/hr_tk/pii.py`: deterministic scanner (e-mail, national ID, phone and "extension NNNN", employee ID `E-nnnnn`, money amounts, sensitive health terms, known fictional people). Pure function, no state. Sub-Task 4's publish tool should import `pii.scan` and refuse when `clean` is false.
-  - `tools/hr_tk/hr_tk.py`: six read tools. Curator: `hr_tk_list_new_artifacts`, `hr_tk_get_artifact`, `hr_tk_scan_pii`, `hr_tk_find_related_articles`, `hr_tk_find_expert`. Guide: `hr_tk_get_employee_profile`, `hr_tk_find_expert` (shared). Bounded output (3 candidates, 3 experts, 10 artifacts, 25 findings, 8000 chars), structured errors with hints, explicit ISO dates only.
-  - `tests/test_hr_tk_tools.py`: 18 tests, all pass. Tools are called through `.fn` because `@tool` returns a `PythonTool` wrapper (calling the wrapper directly raised `TypeError`).
-  - Sample document scan: 13 findings (3 names, 2 employee IDs, 1 e-mail, 2 phones incl. the extension, 2 sensitive terms, 2 amounts, 1 national ID); the redacted copy re-scans clean. All six mock artifacts scan clean.
-  - Related-article matching per case (verified by the tests): A-101 and A-104 match nothing; A-103 matches only ART-03; A-105 matches only ART-04 (Finland); the sample document matches only ART-01; A-102 returns ART-03 current plus ART-02 flagged superseded.
-- **Changes made while testing (matching quality)**: first run matched too loosely (A-101 returned the probation articles, the sample document returned a superseded article). Fixes: whole-word matching, minimum score of 4 (at least two topic hits), and removing generic topics ("form", "manager", "email") from `data/articles.py`.
-- **Known limits (state in the demo)**:
-  - PII scan is rules plus a fixed name list. It does not do general name recognition. Sensitive-term redaction leaves awkward text ("went on [SENSITIVE_DETAIL] after [SENSITIVE_DETAIL]"); the agent must rewrite the lesson in general terms, which a prompt cannot guarantee. The publish tool's re-check is the safety net.
-  - Matching is keyword based, so it is tuned to this mock set. A text that is a close paraphrase with different vocabulary would not match.
-  - Not verified on a live instance: how the LLM uses these tools (Sub-Task 8).
-- **Repo state to know about**: `python wxodemo.py validate` currently reports 3 demo problems for `hr-tacit-knowledge` (template placeholder, AUTHOR NOTE, prompt count 2 vs 0). They are all in the scaffolded demo script/slides and are resolved in Sub-Task 9. Until then `tests/test_cli.py::test_real_repo_validates_and_dry_runs_cleanly` fails because it validates every scenario. All other tests pass (274). Ruff: the new test file is clean; the new tool files have the same kinds of line-length/import-style warnings as `tools/hr_onboarding` (not fixed, to match repo convention).
+- **Known limits to state in the demo**:
+  - PII scan is rules plus a fixed name list, not general NER. Sensitive-term redaction leaves awkward text; the agent must rewrite the lesson in general terms. The publish tool's re-check is the safety net.
+  - Keyword matching is tuned to this mock set; a close paraphrase with different vocabulary would not match.
+- **Status**: [ ] pending
 
 ### Sub-Task 3: Knowledge base articles
 - **Intent**: Seed the KB the guide answers from and the curator compares against.
-- **Expected Outcomes**: `knowledge/hr-tacit-knowledge/hr_tk_knowledge.yaml` and about 5 to 6 `.txt` articles, including the stale cutoff article and one superseded red herring.
-- **Todo List**: Write articles with stable IDs; align with mock data; document planted conflicts for ground truth.
+- **Expected Outcomes**: `knowledge/hr-tacit-knowledge/hr_tk_knowledge.yaml` and six `.txt` articles, including the stale cutoff article and one superseded red herring; tests confirm header metadata, key facts, and PII-free content.
+- **Todo List**:
+  1. Write `knowledge/hr-tacit-knowledge/hr_tk_knowledge.yaml` (name `hr_tk_knowledge`). Include a KB description that explicitly says benefits enrolment and visas are not covered — this is what lets the guide route TK-005 instead of answering.
+  2. Write six `.txt` files in `knowledge/hr-tacit-knowledge/articles/`, IDs `HR-TK-ART-01` to `-06`. Use the `hr-onboarding` format: header block (status, owner role, last verified, applies to), then SYMPTOMS, PROCEDURE, OUTCOME. Superseded articles use NOTE instead of OUTCOME.
+  3. Plant these conflicts deliberately (record them in `ground_truth.json` in Sub-Task 7): ART-01 states the leave-correction cutoff as the 18th (real: 22nd); ART-04 states form HR-22 and 10 working days for Finland (real: e-form PR-1 and 5 working days); ART-02 is superseded by ART-03; ART-05 (Sweden) is the different-country look-alike for TK-002.
+  4. Add three tests to `tests/test_hr_tk_tools.py`: KB yaml lists exactly the six articles in `data/articles.py`; each file's header matches metadata; key facts agree with structured data; articles contain no PII by the scanner.
 - **Relevant Context**: `knowledge/hr-onboarding/`.
-- **Status**: [x] done
-- **Built / checked**:
-  - `knowledge/hr-tacit-knowledge/hr_tk_knowledge.yaml` (name `hr_tk_knowledge`) plus six `.txt` files in `articles/`, `HR-TK-ART-01` to `-06`. Each has a header block (status, owner role, last verified, applies to), then SYMPTOMS, PROCEDURE, OUTCOME (or NOTE for the superseded one), following the `hr-onboarding` policy format.
-  - The KB description says benefits enrolment and visas are not covered; this is what lets the guide route TK-005 instead of answering.
-  - Planted on purpose (record in `ground_truth.json`): ART-01 states the leave-correction cutoff as the 18th (real value is the 22nd, from the sample document); ART-04 states form HR-22 and 10 working days for Finland (real: e-form PR-1 and 5 working days, from artifact A-105); ART-02 is superseded by ART-03; ART-05 (Sweden) is the different-country look-alike.
-  - Three new tests in `tests/test_hr_tk_tools.py` (21 pass in total): KB yaml lists exactly the six articles in `data/articles.py`; each file's header matches the metadata (status, owner, verified date, scope, superseded pointer); key facts in the text agree with the structured data; the articles contain no PII by the scanner.
-  - Nothing here was imported to a live KB yet; indexing and retrieval quality are checked in Sub-Task 8. The built-in KB takes `.txt` only, which is why these are not markdown.
-- **Not done / for later**: the manifest `knowledge_bases` entry is added in Sub-Task 7; the agents' `knowledge_base` fields in Sub-Task 5. Approved drafts will be written to `knowledge/hr-tacit-knowledge/articles/` by hand or script on re-import (the publish tool cannot change the live KB; see the real-vs-mock table).
+- **Note**: the manifest `knowledge_bases` entry is added in Sub-Task 7; the agents' `knowledge_base` fields are set in Sub-Task 5. Approved drafts are written to `knowledge/hr-tacit-knowledge/articles/` and picked up on the next re-import; the publish tool cannot change the live KB.
+- **Status**: [ ] pending
 
 ### Sub-Task 4: Write tools and flows
 - **Intent**: Add the governed write path.
-- **Expected Outcomes**: `hr_tk_publish_article` and `hr_tk_notify_expert` (not attached to agents) with in-code rules from the Governance table; flows `hr_tk_review_draft` and `hr_tk_answer_gap`.
-- **Todo List**: Implement tools; build flows from the `hr_onboarding` flow pattern; add the editable multi-line field and expert assignment; test Confirm and Reject in the browser chat UI (the evaluator cannot drive forms).
-- **Relevant Context**: `flows/hr_onboarding/hr_request_provisioning.py`, ADK docs pages `tools/flows/user_activities_node` and `tools/flows/multi_user`.
-- **Status**: [x] done in code; browser test deferred to Sub-Task 8
-- **Built / checked**:
-  - `tools/hr_tk/hr_tk.py`: two write tools, both marked RESTRICTED and attached to no agent.
-    - `hr_tk_publish_article(action, title, body, source_ids, author_role, verified_date, status, approver, article_id, applies_to)`. Rules in code: `INVALID_ACTION`; update of an unknown or empty ID returns `ARTICLE_NOT_FOUND`; update of a superseded article returns `ARTICLE_SUPERSEDED` (hint names the successor); `MISSING_METADATA` for empty title, body, sources, author role or approver, a non-ISO date, or status other than `current`; `PII_REMAINING` if `pii.scan` on title plus body is not clean (the error does not echo the values). On success it returns the article ID (next free `HR-TK-ART-nn` for `new`), the target file path, the final text, and `live_in_kb: false` with a next step.
-    - `hr_tk_notify_expert(expert_id, subject, message)`: mock; returns `simulated: true, delivered: false`. `EXPERT_NOT_FOUND` and `EMPTY_MESSAGE` errors.
-  - `flows/hr_tk/hr_tk_review_draft.py` (flow `hr_tk_review_draft`): read-only display fields (action, article, title, why here, sources, PII removed), an editable multi-line `text_input_field` pre-filled from the draft via a `DataMap` default, `Confirm` submit button and a separate `Reject` button, a conditions branch, tool node `hr_tk_publish_article`, result scripts. The flow fixes `status` to `current` and `approver` to the label "Expert reviewer". Result message says the article is NOT searchable until the KB is re-imported.
-  - `flows/hr_tk/hr_tk_answer_gap.py` (flow `hr_tk_answer_gap`): tool node `hr_tk_notify_expert`, then a form showing the question with a required multi-line answer field and a regex-checked date field, buttons `Submit answer` and `Decline`, then `hr_tk_publish_article` as a `new` article. Decline records "declined" and never reaches the publish node.
-  - `tests/test_hr_tk_tools.py`: 48 tests pass (27 new). They cover each publish rule, the sample document (raw is refused, the redacted text is accepted), the notify mock, and source-level checks of the flows: names, every required tool argument is mapped and none is invented, status and approver are fixed in the flow, and the non-confirm branch is `default=True`. Whole suite: 304 pass, 1 fails (`test_real_repo_validates_and_dry_runs_cleanly`, the accepted red state until Sub-Task 9).
-  - The `record_answered` script text was run in plain Python with stand-in objects; it builds the expected body.
-- **Not verified (important)**:
-  - The flow modules cannot be imported offline: loading them needs a valid WXO token, so `Flow` building was **not** executed, only `py_compile` (passes). Real-flow import happens at deploy (Sub-Task 8). The `hr_onboarding` flows have the same limit.
-  - Reading the edited value back from the form (`flow.nodes['review_form'].output.final_body`) follows `flows/yel_income/issue_income_decision.py`, which reads a number field the same way. The editable text field with a `DataMap` default is documented but unverified in this repo (Open Item 3).
-  - Review is assigned to the flow initiator (default). `assign_to` for a named expert is not configured (Open Item 2). In the `hr_tk_answer_gap` demo one person plays both learner and expert.
-  - Confirm, Reject, edit-then-Confirm and Decline have not been clicked in a browser.
-- **Design note**: `hr_tk_answer_gap` has no separate "is this correct?" step: the expert writes the answer, so Submit is the confirmation, and the publish tool still checks personal data and metadata. If the demo needs a second look, call the review flow afterwards (not built).
-- **Known limit**: the tool picks the next article ID by counting the seeded set, so two publishes in a row both get `HR-TK-ART-07`. Fine for a static demo where the KB is re-imported between publishes; say so if it comes up.
+- **Expected Outcomes**: `hr_tk_publish_article` and `hr_tk_notify_expert` (not attached to any agent) with all in-code governance rules; flows `hr_tk_review_draft` and `hr_tk_answer_gap`; tests cover every publish rule and each flow's source structure.
+- **Todo List**:
+  1. Add two write tools to `tools/hr_tk/hr_tk.py`, both marked RESTRICTED and attached to no agent:
+     - `hr_tk_publish_article(action, title, body, source_ids, author_role, verified_date, status, approver, article_id, applies_to)`. Rules: `INVALID_ACTION`; update of an unknown or empty ID → `ARTICLE_NOT_FOUND`; update of a superseded article → `ARTICLE_SUPERSEDED` (hint names the successor); empty title, body, sources, author role, or approver, a non-ISO date, or status other than `current` → `MISSING_METADATA`; `pii.scan` on title+body not clean → `PII_REMAINING` (do not echo values). On success: return the article ID (next free `HR-TK-ART-nn` for `new`), the target file path, the final text, and `live_in_kb: false` with a next step.
+     - `hr_tk_notify_expert(expert_id, subject, message)`: mock; returns `simulated: true, delivered: false`. Errors: `EXPERT_NOT_FOUND`, `EMPTY_MESSAGE`.
+  2. Write `flows/hr_tk/hr_tk_review_draft.py` (flow `hr_tk_review_draft`): read-only display fields (action, article, title, why here, sources, PII removed), an editable multi-line `text_input_field` pre-filled from the draft body via a `DataMap` default, `Confirm` submit button and a separate `Reject` button, a conditions branch, tool node `hr_tk_publish_article`, result scripts. Fix `status` to `current` and `approver` to `"Expert reviewer"` in the flow. Result message must say the article is NOT searchable until the KB is re-imported. **Important**: before coding the result script, read `plans/hr-onboarding-plan.md` Sub-Task 6 for the known `None`-read problem with `str(flow.nodes[<tool node>].output)` — investigate an alternative before repeating that pattern.
+  3. Write `flows/hr_tk/hr_tk_answer_gap.py` (flow `hr_tk_answer_gap`): tool node `hr_tk_notify_expert`, then a form with the question (read-only), a required multi-line answer field, a regex-checked date field, `Submit answer` and `Decline` buttons; `Submit answer` path calls `hr_tk_publish_article` as a `new` article; `Decline` path records "declined" and never reaches the publish node.
+  4. Add tests to `tests/test_hr_tk_tools.py`: each publish rule; sample document raw → refused; redacted text → accepted; notify mock; flow source checks (names match manifest, every required tool argument is mapped, no invented arguments, status and approver are fixed in the flow, non-confirm branch is `default=True`).
+- **Relevant Context**: `flows/hr_onboarding/hr_request_provisioning.py`, `flows/yel_income/issue_income_decision.py` (reads a form field output the same way), `plans/hr-onboarding-plan.md` Sub-Task 6 (documents the `None`-read problem).
+- **Known limits**:
+  - Flow modules cannot be imported offline; only `py_compile` is feasible. Real import happens at deploy (Sub-Task 8). Same constraint applies to `hr_onboarding` flows.
+  - The `DataMap` default for an editable text field is documented but unverified in this repo. Confirm it renders and pre-fills in the browser during Sub-Task 8.
+  - Review is assigned to the flow initiator (default). `assign_to` for a named expert is not configured (Open Item 2).
+  - The tool picks the next article ID by counting the seeded set, so two publishes in a row both get `HR-TK-ART-07`. Acceptable for a static demo; say so if it comes up.
+- **Status**: [ ] pending
 
 ### Sub-Task 5: Agents and README
 - **Intent**: Define both agents and their instructions.
-- **Expected Outcomes**: `agents/hr-tacit-knowledge/` for the curator and a second agent folder for the guide; instructions follow `agents/hr-onboarding/agent.yaml` structure (method, evidence standard, one item at a time, how to propose, clarifying question rule, what not to do, report flow results verbatim, cite article IDs).
-- **Todo List**: Write instructions; list tools per agent; README with tools table, KB, mock data table, limitations and the "real vs mock" table above.
-- **Relevant Context**: `agents/hr-onboarding/agent.yaml`, `agents/release-readiness/` if present.
-- **Status**: [x] done (instructions written, not run)
-- **Built / checked**:
-  - `agents/hr-tacit-knowledge/agent.yaml` (`hr_tk_curator`): tools `hr_tk_list_new_artifacts`, `hr_tk_get_artifact`, `hr_tk_scan_pii`, `hr_tk_find_related_articles`, `hr_tk_find_expert`, flow `hr_tk_review_draft`; KB `hr_tk_knowledge`. No write tool.
-  - `agents/hr-tacit-knowledge-guide/agent.yaml` (`hr_tk_guide`): tools `hr_tk_get_employee_profile`, `hr_tk_find_expert`, flow `hr_tk_answer_gap`; KB `hr_tk_knowledge`. No write, draft or PII tool.
-  - Both load as YAML; names match the manifest.
-  - `agents/hr-tacit-knowledge/README.md`: why an agent (and where it is not), tools table per agent, write tools, KB, case table, real-vs-mock table, limitations.
-- **Decisions to check in Sub-Task 8** (the instructions say this; whether the model follows them is unobserved):
-  - Curator shows one line per item (decision plus reason), then drafts the first new or update item and opens the form without asking, because the form is the expert's check.
-  - Curator has the KB so it can read the full text of an article before writing an UPDATE. If it cannot retrieve that text it must not open the form.
-  - Curator scans the exact title and body it passes to the flow and rewrites sensitive details in general terms. The publish tool's PII check is the safety net.
-  - Guide answers only from retrieved passages. For an uncovered question it names the expert, asks the learner, then starts `hr_tk_answer_gap`.
-  - Guide calls the profile tool only when the question depends on who is asking (Open Item 5).
-- **Open from this step**: none. The document route was decided in Sub-Task 6 (pasted text).
-- **Repo state**: `validate` now reports 4 extra problems (curator lists a KB the scenario does not own; guide lists 3 tools and a KB the scenario does not own). They exist because the manifest still has `tools: []`, `knowledge_bases: []` and `flows: []`; Sub-Task 7 fixes them. `tests/test_discovery.py::test_real_repo_scenarios_validate_clean` now fails too, besides `test_cli.py::test_real_repo_validates_and_dry_runs_cleanly`. Everything else passes (303).
+- **Expected Outcomes**: `agents/hr-tacit-knowledge/agent.yaml` for the curator and `agents/hr-tacit-knowledge-guide/agent.yaml` for the guide; instructions follow `agents/hr-onboarding/agent.yaml` structure; README documents both agents.
+- **Todo List**:
+  1. Write `agents/hr-tacit-knowledge/agent.yaml` (`hr_tk_curator`): tools `hr_tk_list_new_artifacts`, `hr_tk_get_artifact`, `hr_tk_scan_pii`, `hr_tk_find_related_articles`, `hr_tk_find_expert`, flow `hr_tk_review_draft`; KB `hr_tk_knowledge`. No write tool. Instructions: show one-line triage per item (decision + reason), then draft the first NEW or UPDATE item and open the review form without asking (the form is the expert's check); scan the exact title and body before the flow; if the full text of an article cannot be retrieved for an UPDATE, do not open the form; report flow results verbatim; on a flow error, state the error plainly and stop — do not ask for credentials.
+  2. Write `agents/hr-tacit-knowledge-guide/agent.yaml` (`hr_tk_guide`): tools `hr_tk_get_employee_profile`, `hr_tk_find_expert`, flow `hr_tk_answer_gap`; KB `hr_tk_knowledge`. No write, draft, or PII tool. Instructions: answer only from retrieved KB passages; cite the article ID; cite only articles with status `current`; for an uncovered question name the expert, confirm with the learner, then start `hr_tk_answer_gap`; call the profile tool only when the question depends on who is asking (role or tenure).
+  3. Write `agents/hr-tacit-knowledge/README.md`: why an agent (and where it is not), tools table per agent, write tools, KB, case table, real-vs-mock table, limitations. Include the sample document paste route for TK-003.
+- **Relevant Context**: `agents/hr-onboarding/agent.yaml`, `agents/release-readiness/` (multi-agent structure).
+- **Status**: [ ] pending
 
 ### Sub-Task 6: Sample upload document in a usable format
-- **Intent**: Provide the same sample document in a format the upload route accepts.
-- **Expected Outcomes**: `.docx` and `.txt` copies of the existing Markdown sample with identical content, validated.
-- **Todo List**: Decide the route (Open Item 1); create the copies in Agent mode (office tools are restricted to text files in Plan mode); run `office_read` validate and outline on the `.docx`.
+- **Intent**: Provide the sample document in a format usable in the demo.
+- **Expected Outcomes**: `docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt` exists as an exact plain-text copy of the `.md`.
+- **Todo List**:
+  1. Write `docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt` as an exact plain-text copy of the `.md`. The `.txt` is the file to open and copy from in the demo; the `.md` is the reference.
+  2. Confirm `agents/hr-tacit-knowledge/agent.yaml` states the document method: expert pastes the text; if no text is provided the agent asks for it; the source ID is the document title.
 - **Relevant Context**: `docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.md`.
-- **Status**: [x] done (scope changed by user decision)
-- **Decision (user)**: no upload route. The expert pastes the document text into the chat, so Open Item 1 is closed by avoiding it. No `.docx` was made, so no `office_read` check applies.
-- **Built / checked**:
-  - `docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt`: plain-text copy of the `.md`; the SHA-256 of both files is identical (`5F3FB619...A9AD`), so the content is the same byte for byte. The `.txt` is the one to open and copy from in the demo; the `.md` stays as the reference.
-  - `agents/hr-tacit-knowledge/agent.yaml`: document method now says the expert pastes the text; with no text it asks for it; the source ID is the document title.
-  - `agents/hr-tacit-knowledge/README.md`: case TK-003 and the limitations updated.
-- **Consequences to state in the demo**: pasting is manual (a small extra step, not zero effort). A real deployment would use a file or repository connector; that was not built or tested. The pasted text is about 2,500 characters and goes through the chat to the model; the scan tool takes up to 8,000.
-- **Not verified**: how the model handles a pasted block of that size with the instructions (Sub-Task 8). Whether the model scans the exact paste or a paraphrase is unobserved; the publish tool's PII check is the safety net.
+- **Decision (closed)**: no upload route. Open Item 1 is closed by avoiding it. No `.docx` needed.
+- **Consequences to state in the demo**: pasting is manual. A real deployment would use a file or repository connector. The pasted text is about 2,500 characters; the scan tool cap is 8,000.
+- **Status**: [ ] pending
 
 ### Sub-Task 7: Manifest, ground truth, validate
 - **Intent**: Make the scenario deployable and checkable.
-- **Expected Outcomes**: Manifest lists real names, `attached` excludes the two write tools; `ground_truth.json` has six cases and `smoke_prompts` (diagnosis only, no approval form); `python wxodemo.py validate hr-tacit-knowledge` prints `OK`.
-- **Todo List**: Fill manifest from the scaffold stub; write ground truth from the Mock World table; run validate.
+- **Expected Outcomes**: `scenarios/hr-tacit-knowledge/scenario.yaml` lists real names with write tools excluded from `attached`; `evaluation/hr-tacit-knowledge/ground_truth.json` has six cases and smoke prompts; `python wxodemo.py validate hr-tacit-knowledge` prints `OK` (3 demo-script problems are the accepted red state until Sub-Task 9).
+- **Todo List**:
+  1. Fill `scenarios/hr-tacit-knowledge/scenario.yaml`: `smoke_agent: hr_tk_guide`; one tool package `tools/hr_tk` with 8 `names` and 6 `attached` (exclude `hr_tk_publish_article` and `hr_tk_notify_expert`); KB `hr_tk_knowledge`; flows `hr_tk_review_draft` and `hr_tk_answer_gap`. Keep `status: soon`.
+  2. Write `evaluation/hr-tacit-knowledge/ground_truth.json`: six cases (TK-001 to TK-006) with owning agent, expected decision per item, expected draft fields, red herrings, key tools. Record the planted conflicts. Note that curator cases are browser-only and outside smoke, and that published articles are not searchable until re-import.
+  3. Add two `smoke_prompts`: TK-004 (employment certificate, Finland desk, superseded red herring) and TK-005 (visa letter, "who should I ask?" — must be answerable without starting a flow).
+  4. Run `python wxodemo.py validate hr-tacit-knowledge`. Expect OK on manifest, tool-name, KB, flow-name, and agent-ownership checks. The 3 demo-script problems (placeholder, AUTHOR NOTE, prompt count) stay until Sub-Task 9.
+  5. Run `smoke hr-tacit-knowledge --dry-run` and `deploy hr-tacit-knowledge --dry-run`; confirm output looks right.
+  6. Run the full test suite; confirm only `test_real_repo_validates_and_dry_runs_cleanly` fails (the accepted red state).
 - **Relevant Context**: `scenarios/incident-triage/scenario.yaml`, `evaluation/hr-onboarding/ground_truth.json`.
-- **Status**: [x] done, except `validate` printing `OK` (blocked on Sub-Task 9 by user decision)
-- **Built / checked**:
-  - `scenarios/hr-tacit-knowledge/scenario.yaml`: `smoke_agent: hr_tk_guide`; one tool package `tools/hr_tk` with 8 `names` and 6 `attached` (the two write tools `hr_tk_publish_article` and `hr_tk_notify_expert` are left out of `attached`); KB `hr_tk_knowledge`; flows `hr_tk_review_draft` and `hr_tk_answer_gap`. `status` stays `soon`.
-  - `evaluation/hr-tacit-knowledge/ground_truth.json`: six cases (TK-001 to TK-006) with the agent that owns each, the expected decision per item, the expected draft fields, red herrings and key tools. Notes record the planted conflicts, that the curator cases are browser-only and outside smoke, and that published articles are not searchable. Written before any live run and says so.
-  - `smoke_prompts`: two guide prompts, TK-004 (superseded article red herring) and TK-005 (uncovered visa question). The TK-005 prompt asks "who should I ask?" so it can be answered without the flow. Both are diagnosis-only.
-  - `validate`: the manifest, tool-name, KB, flow-name and agent-ownership checks now pass. 3 problems remain, all in the scaffolded demo script and slides (placeholder, AUTHOR NOTE, prompt count 2 vs 0). That is the red state the user accepted until Sub-Task 9.
-  - `smoke hr-tacit-knowledge --dry-run`: prints the two prompts for agent `hr_tk_guide`; nothing sent.
-  - `deploy hr-tacit-knowledge --dry-run`: order is tools, KB, flows, agents; the two agents are imported and deployed. Nothing deployed.
-  - Name check: no other scenario manifest contains `hr_tk_`, and no tool file outside `tools/hr_tk` defines an `hr_tk_` function.
-  - Tests: 304 pass, 1 fails (`test_cli.py::test_real_repo_validates_and_dry_runs_cleanly`, the accepted red state). `test_discovery.py` is green again.
-- **Limits to remember**: smoke covers the guide only; no smoke prompt reaches the curator, and none can reach a form. ground_truth `expected_pii_counts_in_source` holds for this one document.
+- **Status**: [ ] pending
 
 ### Sub-Task 8: Deploy and run
 - **Intent**: Observe real behaviour before writing demo claims.
-- **Expected Outcomes**: Deployed to the user's own instance; each case run several times; results recorded honestly.
-- **Todo List**: `python wxodemo.py deploy hr-tacit-knowledge`; wait for KB indexing; run smoke; run the browser flows (Confirm, Reject, edit then Confirm, the document drop-in); record failures.
-- **Relevant Context**: skill sections 7 and 8, `src/wxodemo/smoke.py`.
-- **Status**: [-] in progress. Deploy and guide smoke done; curator cases and every browser click still to do (user).
-- **Observed so far (user's instance 'techzone1'; one deploy, three smoke passes)**:
-  - `login`: environment active. `deploy hr-tacit-knowledge`: all steps `[ok]` (tool package `hr_tk`, KB, both flows, both agents imported and deployed), 2 min 3 s. **Both flows imported without error**, which the offline work could not show. Import success does not show the forms render or the buttons work.
-  - `status`: `deployed`, agents 2/2, tools 10/10 (8 tools + 2 flows), KBs 1/1.
-  - KB `hr_tk_knowledge`: index status `ready`, 6 documents, checked after the deploy and before the smoke run.
-  - Smoke, agent `hr_tk_guide`, 3 passes x 2 prompts = 6 runs, all status `completed`:
-    - TK-004 (certificate, Finland desk): 3 of 3 answered from HR-TK-ART-03 with the right steps (portal, category Certificates, short or long form, 3 working days, not the shared mailbox) and cited HR-TK-ART-03 with last-verified 2025-02-18. 0 of 3 gave the superseded process as the answer. Tools in all 3: `hr_tk_get_employee_profile`, then the KB. The profile call was not needed for this question, so the guide did **call a tool the answer did not depend on** (Open Item 5: over-calling observed, harmless here).
-    - TK-005 (visa letter): 3 of 3 said the KB has no article, named Marit Solberg, Mobility and Immigration Specialist, ID X-102, and offered to route the question; none started the flow. Tools in all 3: KB, then `hr_tk_find_expert`.
-  - Only the first 600 characters of each answer are shown by the smoke command; the end of each answer was not read. The console shows some characters garbled by the terminal encoding (quotes, hyphens in IDs); this is display only and was not checked in the stored thread.
-- **Not observed yet**:
-  - Curator cases TK-001, TK-002, TK-003, TK-006: smoke cannot reach the curator. Nothing about how the curator behaves has been seen.
-  - Any form: review form rendering, editable draft field pre-fill, Confirm, edit then Confirm, Reject; answer form, Submit answer, Decline; the flow result message reported verbatim.
-  - TK-005 after the learner agrees (the `hr_tk_answer_gap` call).
-  - Whether the curator reads the full text of an article before an UPDATE, and whether it scans the exact title and body it passes to the flow.
-  - Nothing here supports a claim of accuracy beyond these six runs.
-- **Curator, first browser session (read from `wxodemo export-chats`; one chat thread, three turns; the export folder is git-ignored)**:
-  - Turn 1, prompt `Review the newly harvested items from 2025-06-10 to 2025-06-11.`: the four-item summary came before any draft. A-101 NEW, A-104 IGNORE as expected. **A-102 was labelled DUPLICATE of HR-TK-ART-03, not IGNORE** (the ground truth says IGNORE; both mean "no draft"). It stopped after the summary and did **not** open the review form by itself, although the instructions say to.
-  - Turn 2 (user typed `scan PII of A-101`): `hr_tk_scan_pii` ran on the artifact; reported clean.
-  - Turn 3 (user typed `review A-101`): tools were `hr_tk_find_expert`, then the flow `hr_tk_review_draft`; the form task "Is this correct?" started and the agent's reply was `[Response processed]`. **`hr_tk_scan_pii` was not called in this turn on the draft**, so the instruction "scan the exact title and body before the flow" was not followed here (the scan in turn 2 was on the source text).
-  - Flow input the agent sent (from the trace): action `new`, source `A-101`, author role `Benefits Specialist`, verified date `2025-06-10`, pii_summary `0 personal data found`. The body contains the LE-3 form, the 30-day window, the "mid-month joiner" option and the medical declaration after 30 days. It does **not** contain the instruction "do not wait for the 1st of the next month". It adds a step A-101 does not state ("Verify the employee's actual start date in the HRIS").
-  - **The model wrote Unicode look-alikes**: non-breaking hyphens (U+2011) in `LE-3` and `mid-month`, and a narrow no-break space (U+202F) in `30 days`. A plain-text search for `LE-3` or `30 days` does not match them. This would carry into a published article and the ground truth `mentions` checks.
-  - **Reported by the user, and it matches the trace**: the form rendered, and the editable "Article text" field was **pre-filled with the full draft** (the same text as the body in the trace). So the editable field with a `DataMap` default works for pre-fill (Open Item 3, partly closed). Edit-then-Confirm, Confirm and Reject were not yet reported.
-  - The user typed `scan PII of A-101` and `review A-101` themselves, so the curator was never observed going from the summary to the form on its own. That behaviour from the instructions is **not yet observed**. The scan in turn 2 was on the source artifact, not on the finished draft.
-- **Second browser session: the flow call failed (user report plus trace)**:
-  - Two chats typed `review A-101` (about 14:02 and 14:03 UTC) ended with the agent saying the authentication token had expired and asking for a new token. The trace shows the call to the flow tool `review_knowledge_draft` returned `status_code 400, {"message":"token has expired"}`. The agent only relayed it.
-  - The same flow call worked at 13:53 UTC in the first session, so the draft and the flow code were not the cause. Whose token expired is **not established**; the likely candidate is the browser chat session. No fix was made. Retry after reloading the chat or signing in again.
-  - Instruction gap to consider after the retry: the agent asked the user for "a new valid token". The curator and guide instructions do not say what to do when a flow call fails with an error; they should state the error plainly and not ask for credentials.
-- **Third browser session: edit then Confirm, publish reported as refused (user report plus trace plus offline check)**:
-  - `edit A-101` only made the agent ask what to change. `Show me article draft I can edit` opened the form. After the user edited and pressed Confirm, the trace shows the flow ran `task.tool.hr_tk_publish_article` (`POST.runPython`, HTTP 200, about 240 ms) and then `Format Confirmed Result`. The agent reported: nothing published, "the publish step refused the article (it still contained disallowed content)".
-  - The flow message was "CONFIRMED BY EXPERT, BUT THE PUBLISH TOOL REFUSED. NOTHING WAS PUBLISHED. Tool result: None". So the flow script read `str(flow.nodes['hr_tk_publish_article'].output)` and got `None`. **The refusal reason was never visible.** The agent's words "disallowed content" are its own guess; no error code appears in the trace. The trace spans carry no tool input or output, so the real return value was not seen.
-  - Offline check: `hr_tk_publish_article` called directly with the metadata the agent sent (action `new`, source `A-101`, role `Benefits Specialist`, date `2025-06-10`, status `current`, approver `Expert reviewer`) and the unedited draft text, look-alike characters included, returns `status: success` and article ID `HR-TK-ART-07`. What the user typed into the field is not in any trace, so an edit that adds personal-data-like text cannot be ruled out, but nothing observed shows it.
-  - **This is the same unexplained empty read recorded in `plans/hr-onboarding-plan.md` (Sub-Task 6, live runs 1 and 2):** `str(flow.nodes[<tool node>].output)` gave `None` there too, although Incident Triage uses the same pattern. Cause not established in either scenario.
-  - **Consequence for this scenario:** with the current script, a successful publish is reported as a refusal, and a real refusal would also be reported without its reason. The "published" flag cannot be trusted until the read is fixed. No code was changed yet.
-  - Not yet observed: Confirm without an edit; Reject; the curator opening the form by itself after the summary; a scan of the finished draft before the flow.
-
+- **Expected Outcomes**: Deployed to the user's own instance; each of the six cases run at least once; results recorded honestly; the `None`-read problem in the review flow confirmed or ruled out before Sub-Task 9.
+- **Todo List**:
+  1. `python wxodemo.py deploy hr-tacit-knowledge`; wait for KB indexing (`status` shows KB `ready`, 6 documents).
+  2. `python wxodemo.py smoke hr-tacit-knowledge` (3 passes); record the tools called and whether TK-004 cites ART-03 (not ART-02); whether TK-005 names the right expert without starting the flow.
+  3. In the browser, open the curator agent. Run TK-001 ("Review the newly harvested items"): verify triage summary, then whether the agent opens the review form on its own after the summary or waits for a follow-up prompt. Adjust instructions after observing.
+  4. Confirm the editable "Article text" field is pre-filled with the draft body.
+  5. Click Confirm (without editing): record whether the publish result is read correctly or returns `None`. If `None` appears, diagnose and fix the result script before proceeding.
+  6. Click Reject: verify nothing is published.
+  7. Run TK-002 (contradicted article), TK-003 (pasted sample document), TK-005 in the guide (route question, then start the answer-gap flow), TK-006 (reject path).
+  8. Record all failures honestly. Do not write claims in the demo script about behaviour not observed.
+- **Relevant Context**: skill sections 7 and 8, `src/wxodemo/smoke.py`, `plans/hr-onboarding-plan.md` Sub-Task 6 (the `None`-read problem).
+- **Lessons from the previous attempt** (known problems to anticipate):
+  - `str(flow.nodes[<tool node>].output)` returned `None` after Confirm; the refusal reason was never visible. Diagnose this before assuming publish works.
+  - The model wrote Unicode look-alikes (non-breaking hyphens U+2011, narrow no-break spaces U+202F) in draft bodies. A plain-text search for `LE-3` or `30 days` does not match them. Record if it recurs.
+  - The curator did not go from the triage summary to the review form on its own; it waited for a follow-up prompt.
+  - The curator scanned the source artifact, not the finished draft, so the PII-scan-before-flow instruction was not followed.
+  - Guide over-called `hr_tk_get_employee_profile` on TK-004 (harmless, but unnecessary). Note if it recurs.
+  - A flow call returned `token has expired` after about 10 minutes; reload the browser session if this happens.
+- **Status**: [ ] pending
 
 ### Sub-Task 9: Demo script and slides
 - **Intent**: Write the demo from real runs.

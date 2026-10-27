@@ -51,7 +51,8 @@ and enforces the conventions below.
    links to this file and does not repeat the examples.
 4. Add the agent and its interactive examples to `docs/demo/standalone-agents.js`
    so it appears in `docs/demo/presentation.html`.
-5. Deploy with `wxodemo` (see below).
+5. Update [`README.md`](../README.md) (the Standalone agents table and Repository Structure) with the new agent.
+6. Deploy with `wxodemo` (see below).
 
 No manifest, no scenario.yaml and no CLI change required.
 

@@ -4,103 +4,6 @@ A development environment for building and deploying IBM watsonx Orchestrate age
 
 Agents, tools, knowledge bases, and flows in this repo are version-controlled and distributable. Run `python wxodemo.py deploy --all` to import everything into an existing WXO instance (see the [Quick start](#quick-start)). Re-running the deploy over existing resources is safe — re-import updates in place. A clean first install on a fresh instance has not been tested. All commands are documented in [`docs/wxodemo.md`](docs/wxodemo.md).
 
-## Repository Structure
-
-```
-lab-wxo/
-├── agents/                           # Scenario agent definitions (agent.yaml)
-│   ├── cloud-finops/
-│   ├── customer-returns/
-│   ├── hr-onboarding/
-│   ├── incident-triage/
-│   ├── pension-disability-triage/
-│   ├── pension-ove-advisor/
-│   ├── release-readiness/            # Supervisor agent
-│   ├── rr-ops/                       # Release readiness specialist: Operations
-│   ├── rr-qa/                        # Release readiness specialist: QA
-│   ├── rr-security/                  # Release readiness specialist: Security
-│   ├── travel-request/
-│   └── yel-income-assessment/
-├── tools/                            # Multi-file Python tool packages with static mock data
-│   ├── cloud_finops/                 # Spend, utilization, idle resources, reclaim & resize tools
-│   ├── customer_returns/             # Order lookup, warranty check, return history, refund tools
-│   ├── hr_onboarding/                # Pending hires, role access, department config, provisioning tools
-│   ├── incident_triage/              # Incident lookup, service health, logs, metrics, remediation tools
-│   ├── pension_disability/           # Claim dossier, qualifying months, medical summary, rehab & referral tools
-│   ├── pension_ove/                  # Member profile, pension accrual, reduction & simulation tools
-│   ├── release_readiness/            # Test summaries, CVE exposure, runbook check, health check tools
-│   ├── travel_request/               # Employee, budget, rates, reimbursement & request ID tools
-│   └── yel_income/                   # Business profile, sector benchmarks, benefit estimate & decision tools
-├── knowledge/                        # Knowledge base source documents and manifests
-│   ├── cloud-finops/                 # FinOps policies, tagging rules, rightsizing guidelines (.txt)
-│   ├── customer-returns/             # Return windows, warranty exceptions, refund conditions (.txt)
-│   ├── hr-onboarding/                # Role access matrix, compliance training requirements (.txt)
-│   ├── incident-triage/              # Runbooks for deployments, databases, auth, certificates (.txt)
-│   ├── pension-disability-triage/    # TyEL disability incapacity criteria, rehab priority, kuntoutustuki, qualifying months (.txt)
-│   ├── pension-ove-advisor/          # Finnish OVE pension legislation rules, age limits, reduction rules (.txt)
-│   ├── release-readiness/            # Release gating criteria, CVE severity policies (.txt)
-│   ├── travel-request/               # Finnish state travel regulation (PDF) and agency policy (.txt)
-│   └── yel-income-assessment/        # Statutory Finnish YEL entrepreneurial income calculation criteria (.txt)
-├── flows/                            # Governed approval workflow definitions
-│   ├── cf_approve_reclaim/           # Cloud FinOps: human approval before resource reclamation
-│   ├── cf_approve_resize/            # Cloud FinOps: human approval before instance rightsizing
-│   ├── customer_returns/             # Customer Returns: human approval before issuing refund
-│   ├── hr_onboarding/                # HR Onboarding: standard and compliance provisioning flows
-│   ├── incident_triage/              # Incident Triage: human approval before automated remediation
-│   ├── pension_disability/           # Disability Triage: claims handler approval before medical board referral
-│   ├── pension_ove/                  # Pension Advisor: formal OVE application submission flow
-│   ├── travel_request/               # Travel Request: human approval before booking/reimbursement
-│   └── yel_income/                   # YEL Assessment: human underwriter approval for confirmed income
-├── evaluation/                       # ADK evaluation test cases and ground truth
-│   ├── cloud-finops/
-│   ├── customer-returns/
-│   ├── hr-onboarding/
-│   ├── incident-triage/
-│   ├── pension-disability-triage/
-│   ├── pension-ove-advisor/
-│   ├── release-readiness/
-│   ├── travel-request/
-│   └── yel-income-assessment/
-├── scenarios/                        # Scenario manifests defining resources owned by each scenario
-│   ├── cloud-finops/scenario.yaml
-│   ├── customer-returns/scenario.yaml
-│   ├── hr-onboarding/scenario.yaml
-│   ├── incident-triage/scenario.yaml
-│   ├── pension-disability-triage/scenario.yaml
-│   ├── pension-ove-advisor/scenario.yaml
-│   ├── release-readiness/scenario.yaml
-│   ├── travel-request/scenario.yaml
-│   └── yel-income-assessment/scenario.yaml
-├── docs/
-│   ├── wxodemo.md                    # Full reference for the wxodemo CLI
-│   └── demo/                         # Demo scripts, presentation shell, and slide decks
-│       ├── presentation.html         # Slide shell; loads scenarios/*.js
-│       ├── cloud-finops-demo.md      # Human-readable scenario demo scripts
-│       ├── customer-returns-demo.md
-│       ├── hr-onboarding-demo.md
-│       ├── incident-triage-demo.md
-│       ├── pension-disability-triage-demo.md
-│       ├── pension-ove-advisor-demo.md
-│       ├── release-readiness-demo.md
-│       ├── travel-request-demo.md
-│       ├── yel-income-assessment-demo.md
-│       └── scenarios/                # Interactive slide scripts per scenario
-├── standalone/                       # Ad-hoc standalone agents (no scenario manifest required)
-│   ├── README.md                     # Standalone conventions and wxodemo usage
-│   ├── hello-world/                  # ADK setup check (agent + greeting tool)
-│   ├── metadata-extractor/           # Arbitrary metadata field extraction into strict JSON schemas
-│   ├── translator/                   # Translation agent (fixed language list, optional tone)
-│   └── travel-rules-qa/              # Finnish travel regulation PDF Q&A agent
-├── connections/                      # Connection templates (empty for mock demo)
-├── src/wxodemo/                      # The wxodemo CLI package (deploy, undeploy, status, smoke, ...)
-├── tests/                            # pytest suite for the CLI (no network or ADK login needed)
-├── wxodemo.py                        # Launcher: python wxodemo.py <command>
-├── pyproject.toml                    # Package metadata; `pip install -e .` gives a `wxodemo` command
-├── env.cfg                           # Secrets -- DO NOT COMMIT
-├── env.cfg.example                   # Template -- safe to commit
-└── requirements.txt                  # ibm-watsonx-orchestrate and pinned deps
-```
-
 ## Agents
 
 ### Demo scenario agents
@@ -125,8 +28,10 @@ Deployed with `python wxodemo.py deploy <name>` (see [Standalone Agents](#standa
 
 | Agent | Name in WXO | Description |
 |---|---|---|
+| [document-classifier](standalone/document-classifier/) | `document_classifier` | Classifies text or documents into user-specified categories with confidence and single-sentence reasoning in strict JSON |
 | [hello-world](standalone/hello-world/) | `hello_world` | Simple greeting agent with a `greeting` tool -- verifies ADK setup |
 | [metadata-extractor](standalone/metadata-extractor/) | `metadata_extractor` | Extracts user-specified arbitrary metadata fields from provided text into strict JSON schemas |
+| [priority-assessor](standalone/priority-assessor/) | `priority_assessor` | Assigns structured priority levels (Critical, High, Medium, Low) to incoming items using configured rules or common-sense defaults |
 | [translator](standalone/translator/) | `translator` | Translates user text into a named target language from a fixed supported list, with an optional tone or style; no tools, no knowledge base |
 | [travel-rules-qa](standalone/travel-rules-qa/) | `travel_rules_qa` | Answers English questions about the Finnish state travel regulation (Valtion matkustussääntö 2026) from a PDF knowledge base, citing Finnish sections |
 
@@ -327,3 +232,102 @@ This is a demo / lab repo. The following items are open as of the current state:
 - **Scenario `undeploy` (tools, flows, knowledge bases) has only been run with `--dry-run`** against the live instance. Standalone agent `undeploy` and `deploy` were run for real.
 - **`wxodemo smoke` was not run live against an instance in this form.** Its logic is covered by tests with a faked ADK client; a live run of the command itself has not been recorded.
 - **Promotion to live is required.** If `orchestrate agents deploy` is refused (for example on the Developer Edition), `wxodemo deploy` stops with exit code 1 and leaves the agent as a draft. This change has not been run against a Developer Edition instance.
+
+## Repository Structure
+
+```
+lab-wxo/
+├── agents/                           # Scenario agent definitions (agent.yaml)
+│   ├── cloud-finops/
+│   ├── customer-returns/
+│   ├── hr-onboarding/
+│   ├── incident-triage/
+│   ├── pension-disability-triage/
+│   ├── pension-ove-advisor/
+│   ├── release-readiness/            # Supervisor agent
+│   ├── rr-ops/                       # Release readiness specialist: Operations
+│   ├── rr-qa/                        # Release readiness specialist: QA
+│   ├── rr-security/                  # Release readiness specialist: Security
+│   ├── travel-request/
+│   └── yel-income-assessment/
+├── tools/                            # Multi-file Python tool packages with static mock data
+│   ├── cloud_finops/                 # Spend, utilization, idle resources, reclaim & resize tools
+│   ├── customer_returns/             # Order lookup, warranty check, return history, refund tools
+│   ├── hr_onboarding/                # Pending hires, role access, department config, provisioning tools
+│   ├── incident_triage/              # Incident lookup, service health, logs, metrics, remediation tools
+│   ├── pension_disability/           # Claim dossier, qualifying months, medical summary, rehab & referral tools
+│   ├── pension_ove/                  # Member profile, pension accrual, reduction & simulation tools
+│   ├── release_readiness/            # Test summaries, CVE exposure, runbook check, health check tools
+│   ├── travel_request/               # Employee, budget, rates, reimbursement & request ID tools
+│   └── yel_income/                   # Business profile, sector benchmarks, benefit estimate & decision tools
+├── knowledge/                        # Knowledge base source documents and manifests
+│   ├── cloud-finops/                 # FinOps policies, tagging rules, rightsizing guidelines (.txt)
+│   ├── customer-returns/             # Return windows, warranty exceptions, refund conditions (.txt)
+│   ├── hr-onboarding/                # Role access matrix, compliance training requirements (.txt)
+│   ├── incident-triage/              # Runbooks for deployments, databases, auth, certificates (.txt)
+│   ├── pension-disability-triage/    # TyEL disability incapacity criteria, rehab priority, kuntoutustuki, qualifying months (.txt)
+│   ├── pension-ove-advisor/          # Finnish OVE pension legislation rules, age limits, reduction rules (.txt)
+│   ├── release-readiness/            # Release gating criteria, CVE severity policies (.txt)
+│   ├── travel-request/               # Finnish state travel regulation (PDF) and agency policy (.txt)
+│   └── yel-income-assessment/        # Statutory Finnish YEL entrepreneurial income calculation criteria (.txt)
+├── flows/                            # Governed approval workflow definitions
+│   ├── cf_approve_reclaim/           # Cloud FinOps: human approval before resource reclamation
+│   ├── cf_approve_resize/            # Cloud FinOps: human approval before instance rightsizing
+│   ├── customer_returns/             # Customer Returns: human approval before issuing refund
+│   ├── hr_onboarding/                # HR Onboarding: standard and compliance provisioning flows
+│   ├── incident_triage/              # Incident Triage: human approval before automated remediation
+│   ├── pension_disability/           # Disability Triage: claims handler approval before medical board referral
+│   ├── pension_ove/                  # Pension Advisor: formal OVE application submission flow
+│   ├── travel_request/               # Travel Request: human approval before booking/reimbursement
+│   └── yel_income/                   # YEL Assessment: human underwriter approval for confirmed income
+├── evaluation/                       # ADK evaluation test cases and ground truth
+│   ├── cloud-finops/
+│   ├── customer-returns/
+│   ├── hr-onboarding/
+│   ├── incident-triage/
+│   ├── pension-disability-triage/
+│   ├── pension-ove-advisor/
+│   ├── release-readiness/
+│   ├── travel-request/
+│   └── yel-income-assessment/
+├── scenarios/                        # Scenario manifests defining resources owned by each scenario
+│   ├── cloud-finops/scenario.yaml
+│   ├── customer-returns/scenario.yaml
+│   ├── hr-onboarding/scenario.yaml
+│   ├── incident-triage/scenario.yaml
+│   ├── pension-disability-triage/scenario.yaml
+│   ├── pension-ove-advisor/scenario.yaml
+│   ├── release-readiness/scenario.yaml
+│   ├── travel-request/scenario.yaml
+│   └── yel-income-assessment/scenario.yaml
+├── docs/
+│   ├── wxodemo.md                    # Full reference for the wxodemo CLI
+│   └── demo/                         # Demo scripts, presentation shell, and slide decks
+│       ├── presentation.html         # Slide shell; loads scenarios/*.js
+│       ├── cloud-finops-demo.md      # Human-readable scenario demo scripts
+│       ├── customer-returns-demo.md
+│       ├── hr-onboarding-demo.md
+│       ├── incident-triage-demo.md
+│       ├── pension-disability-triage-demo.md
+│       ├── pension-ove-advisor-demo.md
+│       ├── release-readiness-demo.md
+│       ├── travel-request-demo.md
+│       ├── yel-income-assessment-demo.md
+│       └── scenarios/                # Interactive slide scripts per scenario
+├── standalone/                       # Ad-hoc standalone agents (no scenario manifest required)
+│   ├── README.md                     # Standalone conventions and wxodemo usage
+│   ├── document-classifier/          # Configurable document classification into candidate categories (strict JSON)
+│   ├── hello-world/                  # ADK setup check (agent + greeting tool)
+│   ├── metadata-extractor/           # Arbitrary metadata field extraction into strict JSON schemas
+│   ├── priority-assessor/            # Cross-industry priority assessment (Critical/High/Med/Low, strict JSON)
+│   ├── translator/                   # Translation agent (fixed language list, optional tone)
+│   └── travel-rules-qa/              # Finnish travel regulation PDF Q&A agent
+├── connections/                      # Connection templates (empty for mock demo)
+├── src/wxodemo/                      # The wxodemo CLI package (deploy, undeploy, status, smoke, ...)
+├── tests/                            # pytest suite for the CLI (no network or ADK login needed)
+├── wxodemo.py                        # Launcher: python wxodemo.py <command>
+├── pyproject.toml                    # Package metadata; `pip install -e .` gives a `wxodemo` command
+├── env.cfg                           # Secrets -- DO NOT COMMIT
+├── env.cfg.example                   # Template -- safe to commit
+└── requirements.txt                  # ibm-watsonx-orchestrate and pinned deps
+```
