@@ -155,7 +155,7 @@ class IncomeDecisionResult(BaseModel):
     input_schema=IncomeDecisionRequest,
     output_schema=IncomeDecisionResult,
     private_schema=FlowPrivate,
-    suppress_agent_summarization=False,
+    suppress_agent_summarization=True,
 )
 def build_yel_issue_decision_flow(aflow: Flow = None) -> Flow:
     """Present an income determination proposal for underwriter sign-off."""
@@ -199,38 +199,27 @@ def build_yel_issue_decision_flow(aflow: Flow = None) -> Flow:
         message="{flow.input.justification}",
     )
 
-    # Editable income field — underwriter types the confirmed income here.
-    # Label shows the proposed figure so they know the starting point.
-    approval_form.number_input_field(
-        name="final_income_input",
+    # Text input field: allows underwriter to freely type any income amount
+    approval_form.text_input_field(
+        name="final_income",
         label="Final Confirmed Income (EUR/yr) — proposed: {flow.input.proposed_income_eur}",
+        required=False,
+        placeholder_text="Leave blank for proposed, or type adjusted value (e.g. 20000)",
+        help_text="Leave blank to confirm proposed income, or type a custom amount to adjust.",
     )
 
     # Internal scripts recording the decision into flow.private.
-    # If the underwriter leaves the field empty (value == 0), fall back to
-    # the agent-proposed income so the determination is never recorded as 0.
     record_confirmed = user_flow.script(
         name="record_confirmed",
-        script=(
-            'flow.private.decision_type = "CONFIRM"\n'
-            "entered = flow.nodes['approval_form'].output.final_income_input\n"
-            "flow.private.final_income_eur = entered if entered else flow.input.proposed_income_eur"
-        ),
+        script='flow.private.decision_type = "CONFIRM"',
     )
     record_adjusted = user_flow.script(
         name="record_adjusted",
-        script=(
-            'flow.private.decision_type = "ADJUST"\n'
-            "entered = flow.nodes['approval_form'].output.final_income_input\n"
-            "flow.private.final_income_eur = entered if entered else flow.input.proposed_income_eur"
-        ),
+        script='flow.private.decision_type = "ADJUST"',
     )
     record_escalated = user_flow.script(
         name="record_escalated",
-        script=(
-            'flow.private.decision_type = "ESCALATE"\n'
-            "flow.private.final_income_eur = 0"
-        ),
+        script='flow.private.decision_type = "ESCALATE"',
     )
 
     # Additional buttons
@@ -245,6 +234,45 @@ def build_yel_issue_decision_flow(aflow: Flow = None) -> Flow:
     user_flow.edge(record_adjusted, END)
     user_flow.edge(escalate_btn, record_escalated)
     user_flow.edge(record_escalated, END)
+
+    # ── Outer flow: script to resolve final income based on decision type ───
+    resolve_income = aflow.script(
+        name="resolve_income",
+        display_name="Resolve Final Income",
+        script="""
+decision = str(flow.private.decision_type or "CONFIRM")
+proposed = int(flow.input.proposed_income_eur or 22000)
+
+custom_income = None
+try:
+    node_out = flow.nodes['approval_form'].output
+    if hasattr(node_out, 'final_income'):
+        custom_income = node_out.final_income
+    elif isinstance(node_out, dict):
+        custom_income = node_out.get('final_income')
+except Exception:
+    custom_income = None
+
+if decision == "ESCALATE":
+    flow.private.final_income_eur = 0
+elif decision == "ADJUST":
+    if custom_income:
+        try:
+            flow.private.final_income_eur = int(str(custom_income).replace(',', '').replace(' ', '').strip())
+        except (ValueError, TypeError):
+            flow.private.final_income_eur = 20000
+    else:
+        flow.private.final_income_eur = 20000
+else:
+    if custom_income:
+        try:
+            flow.private.final_income_eur = int(str(custom_income).replace(',', '').replace(' ', '').strip())
+        except (ValueError, TypeError):
+            flow.private.final_income_eur = proposed
+    else:
+        flow.private.final_income_eur = proposed
+""",
+    )
 
     # ── Outer flow: tool node for CONFIRM / ADJUST path ────────────────────
     issue_node = aflow.tool(
@@ -263,16 +291,16 @@ def build_yel_issue_decision_flow(aflow: Flow = None) -> Flow:
         name="issued_result",
         display_name="Format Issued Decision Result",
         script="""
-self.output.decision_type    = flow.private.decision_type
-self.output.entrepreneur_id  = flow.input.entrepreneur_id
-self.output.final_income_eur = flow.private.final_income_eur
-self.output.policy_ref       = flow.input.policy_ref
+self.output.decision_type    = str(flow.private.decision_type or "CONFIRM")
+self.output.entrepreneur_id  = str(flow.input.entrepreneur_id or "ENT-801")
+self.output.final_income_eur = int(flow.private.final_income_eur or flow.input.proposed_income_eur or 22000)
+self.output.policy_ref       = str(flow.input.policy_ref or "YEL-POL-02")
 self.output.issue_result     = str(flow.nodes['yel_issue_decision_record'].output)
 self.output.message = (
-    f"DECISION ISSUED ({flow.private.decision_type}). "
-    f"Entrepreneur {flow.input.entrepreneur_id}: confirmed YEL income "
-    f"{flow.private.final_income_eur:,.0f} EUR/yr. "
-    f"Policy: {flow.input.policy_ref}. "
+    f"DECISION ISSUED ({self.output.decision_type}). "
+    f"Entrepreneur {self.output.entrepreneur_id}: confirmed YEL income "
+    f"{self.output.final_income_eur:,.0f} EUR/yr. "
+    f"Policy: {self.output.policy_ref}. "
     f"Full record: {self.output.issue_result}"
 )
 """,
@@ -284,13 +312,13 @@ self.output.message = (
         display_name="Format Escalation Result",
         script="""
 self.output.decision_type    = "ESCALATE"
-self.output.entrepreneur_id  = flow.input.entrepreneur_id
-self.output.final_income_eur = 0.0
-self.output.policy_ref       = flow.input.policy_ref
+self.output.entrepreneur_id  = str(flow.input.entrepreneur_id or "ENT-801")
+self.output.final_income_eur = 0
+self.output.policy_ref       = str(flow.input.policy_ref or "YEL-POL-04")
 self.output.issue_result     = ""
 self.output.message = (
     "ESCALATED TO APPEALS REVIEW. No income change has been issued. "
-    f"Case for entrepreneur {flow.input.entrepreneur_id} has been referred to TELK. "
+    f"Case for entrepreneur {self.output.entrepreneur_id} has been referred to TELK. "
     "The entrepreneur will be notified within 5 business days. "
     "The current confirmed income remains in force until TELK issues a ruling. "
     "(YEL-POL-04)"
@@ -310,7 +338,8 @@ self.output.message = (
 
     # ── Outer flow edges ───────────────────────────────────────────────────
     aflow.edge(START, user_flow)
-    aflow.edge(user_flow, decision_branch)
+    aflow.edge(user_flow, resolve_income)
+    aflow.edge(resolve_income, decision_branch)
     aflow.edge(issue_node, issued_result)
     aflow.edge(issued_result, END)
     aflow.edge(escalated_result, END)

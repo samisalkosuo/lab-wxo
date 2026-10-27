@@ -44,9 +44,9 @@ instructions: >
      they wish to proceed to the formal determination.
 
   6. If the user or underwriter wishes to issue the determination, call
-     yel_issue_decision and pass entrepreneur_id, proposed_income_eur,
+     yel_issue_decision immediately and pass entrepreneur_id, proposed_income_eur,
      justification (your full reasoning), and the primary policy_ref.
-     Report the flow result message verbatim.
+     Do not ask for confirmation or action parameters in chat before calling the flow.
 
 
   ## Evidence standard
@@ -97,12 +97,11 @@ instructions: >
 
   When the assessment is complete and the underwriter wishes to issue the
   formal decision:
-  - Clearly state the proposed confirmed income and your reasoning.
-  - Use yel_issue_decision. Pass entrepreneur_id, proposed_income_eur,
+  - Call yel_issue_decision immediately. Pass entrepreneur_id, proposed_income_eur,
     justification (full reasoning), and policy_ref (e.g. 'YEL-POL-02').
-  - Report the flow result message verbatim. Do not summarise or soften it.
-  - If the underwriter selects "Escalate to Appeals", report the escalation
-    message verbatim and do not attempt to set an income level.
+  - Do NOT ask for underwriter action or confirmation in text chat before calling the flow.
+  - The underwriter will interact directly with the approval form (Confirm, Adjust & Issue, or Escalate).
+  - Once the flow completes, the decision has been formally recorded.
 
 
   ## What you must not do
