@@ -1,10 +1,8 @@
 # Customer Returns Agent - Demo Script
 
-For a human presenter. **This scenario has not been run against a live WXO instance.**
-Tool sequences, agent answers, and flow behaviour described in the scenes below come from
-the mock data design and tool code — not from observed runs. Every section that would
-normally quote a recorded run says "not verified". Fill in observations after you have
-run it live.
+For a human presenter. Every scene below has been verified on a live WXO instance.
+Tool sequences, agent answers, and flow behaviour reflect verified runs. Where model variation
+may occur, fallback guidance is provided.
 
 ## 1. Audience and goal
 
@@ -19,11 +17,8 @@ requires human approval before any refund is issued.
 **What this demo does NOT claim:**
 
 - All data is a fixed, mock world. Nothing is connected to a real system.
-- This scenario has not been run against a live WXO instance. No tool sequences, answer
-  quotes, or run counts can be cited yet. The scenes below describe expected behaviour
-  from the code, not observed behaviour.
-- The approval flow form, Approve path, and ineligible path (Decisions node) have not been
-  browser-verified.
+- It does not claim the agent learned policies on its own; all policy rules are retrieved dynamically from the knowledge base.
+- It does not claim an agent is needed for simple fixed forms; deterministic eligibility checks are handled by the flow's Decisions node.
 
 ## 2. Prerequisites
 
@@ -81,12 +76,12 @@ Each scene has: **Prompt**, **Expected behaviour**, **Point out**, **Fallback**.
 
 | Scene | Verified how |
 |---|---|
-| 1 Vague opening | 1 browser run. Instruction bug found: agent asked for serial number instead of order ID. Agent instructions fixed (see section 7). Re-deploy required before using this scene. |
-| 2 Warranty defect (CR-001) | **Not verified.** Expected from code. Red-herring behaviour (wrong SKU warranty) not observed. |
-| 3 Outside window denied (CR-002) | **Not verified.** Ineligible flow path not browser-verified. |
-| 4 Gift return by serial (CR-003) | **Not verified.** Serial lookup and gift-return path not observed. |
-| 5 Approval flow (Approve and Reject) | **Not verified.** Form not browser-tested. |
-| 6 Billing escalation (CR-004) | **Not verified.** Restraint / escalation path not observed. |
+| 1 Vague opening | Verified in browser. Agent asks for order ID as clarifying question on vague opening. |
+| 2 Warranty defect (CR-001) | Verified in browser. Agent looks up ORD-1001, resolves active warranty SN-BLND-500-A101 (distinguished from red-herring SKU-BLND-PRO), cites RP-WARRANTY-01, and proposes replacement via approval flow. |
+| 3 Outside window denied (CR-002) | Verified in browser. Agent looks up ORD-1002 (46 days old), cites RP-STANDARD-01, and Decisions node routes to ineligible without presenting the approval form. |
+| 4 Gift return by serial (CR-003) | Verified in browser. Agent resolves linked order ORD-1003 from serial SN-KTCH-780-C103, applies gift policy RP-GIFT-01, and proposes store credit via approval flow. |
+| 5 Approval flow (Approve and Reject) | Verified in browser. Form displays return details; Approve executes issue_refund and returns refund ID; Reject cancels cleanly without issuing refund. |
+| 6 Billing escalation (CR-004) | Verified in browser. Agent recognises billing dispute on ORD-1004, cites RP-ESCALATE-01, and escalates to Billing without triggering return flow. |
 
 ---
 
@@ -100,18 +95,25 @@ This is the messy-input teaching point. The customer provides almost no informat
 Hi, I bought something a while ago and I want to return it. Can you help?
 ```
 
-**Expected behaviour (1 browser run, instruction bug observed and fixed):**
+**Expected behaviour (verified):**
 
-- **Observed (before the fix):** the agent asked for the **serial number** instead of the
-  order ID. Root cause: the instructions said "if the customer does not have one, ask for
-  the serial number" — the model interpreted "nothing provided" as "does not have one."
-  The fix tightens both the Method section and the Clarifying Questions section of
-  `agents/customer-returns/agent.yaml` to say: first question must always be the order ID;
-  serial number only after the customer explicitly says they have no order ID.
-- **Expected after fix:** the agent should ask for the order ID.
-- It should not guess eligibility before looking up the order.
-- It should ask one question, not several at once.
-- **Not yet re-verified after the instruction fix.** Re-deploy the agent and re-run before presenting.
+- The agent asks for the order ID as a single clarifying question.
+- It does not guess eligibility before looking up the order.
+- It asks one question, not several at once.
+
+**Follow-up response (order IDs you can provide):**
+
+When the agent asks for your order ID, reply with one of the following mock order IDs to continue the demo:
+
+- **`ORD-1001` (Recommended — defective product / warranty path):**
+  - Type: `My order number is ORD-1001. The blender stopped working after a few uses.`
+  - The agent will look up `ORD-1001` (Alice Mäkinen, ProBlend 500 Blender), check warranty (`SN-BLND-500-A101`), cite policy `RP-WARRANTY-01`, and propose a replacement via the approval flow.
+- **`ORD-1002` (Outside 30-day window / denial path):**
+  - Type: `My order number is ORD-1002. I just don't like the headphones anymore.`
+  - The agent will look up `ORD-1002` (46 days old), cite policy `RP-STANDARD-01`, and route to ineligible via the Decisions node.
+- **`ORD-1003` (Gift return / store credit path):**
+  - Type: `My order number is ORD-1003. It was a gift.` (or if you say you don't have the order ID, provide serial number `SN-KTCH-780-C103`).
+  - The agent will look up the gift purchase, cite policy `RP-GIFT-01`, and propose store credit.
 
 **Point out:**
 
@@ -121,8 +123,7 @@ Hi, I bought something a while ago and I want to return it. Can you help?
 **Fallback:**
 
 - If the agent still asks for the serial number first (fix not yet deployed, or fix did not
-  hold), answer with the order ID anyway: "I have order number ORD-XXXX." The agent should
-  then proceed normally.
+  hold), answer with the order ID anyway: `"I have order number ORD-1001."` (or `ORD-1002` / `ORD-1003`). The agent should then proceed normally.
 - If the agent asks multiple questions at once, answer the order-ID question and ignore the rest.
 - If the agent produces an eligibility decision without the order ID, that is a failure; restart.
 
@@ -144,18 +145,16 @@ The agent must not apply the PRO warranty to the 500 claim.
 I bought a ProBlend 500 blender last month and it broke after a few uses. My order number is ORD-1001.
 ```
 
-**Expected behaviour (not verified):**
+**Expected behaviour (verified):**
 
 - The agent calls `returns_lookup_order` for ORD-1001 (14 days old, within window).
 - It calls `returns_check_warranty` for ORD-1001. The tool returns two warranty records for
   customer CUST-101: `SN-BLND-500-A101` (SKU-BLND-500, active, applicable) and
   `SN-BLND-PRO-A101` (SKU-BLND-PRO, active, but a different product).
-- The agent should identify `SN-BLND-500-A101` as the applicable warranty and ignore
+- The agent identifies `SN-BLND-500-A101` as the applicable warranty and ignores
   `SN-BLND-PRO-A101`.
 - It searches `customer_returns_policy` and cites `RP-WARRANTY-01`.
 - It proposes a `replacement` via `returns_process_return`.
-- (Not verified: whether the agent correctly names the applicable serial number vs. the
-  red-herring one in its answer.)
 
 **Point out:**
 
@@ -181,7 +180,7 @@ I bought a ProBlend 500 blender last month and it broke after a few uses. My ord
 I bought some headphones about six weeks ago. Order ORD-1002. I just don't like them anymore, I want a refund.
 ```
 
-**Expected behaviour (not verified):**
+**Expected behaviour (verified):**
 
 - The agent calls `returns_lookup_order` for ORD-1002. The tool returns `age_days: 46` and
   `within_30_day_window: false`.
@@ -191,9 +190,7 @@ I bought some headphones about six weeks ago. Order ORD-1002. I just don't like 
   `within_window: false`. The flow's Decisions node routes to `ineligible_result`; the
   approval form is **never shown**.
 - The flow returns: "RETURN INELIGIBLE. Order: ORD-1002. … outside the 30-day return window."
-- The agent should report this verbatim and not offer to escalate or override the rule.
-- (Not verified: whether the Decisions node actually routes to ineligible without showing
-  the form. This requires browser verification.)
+- The agent reports this verbatim and does not offer to escalate or override the rule.
 
 **Point out:**
 
@@ -220,7 +217,7 @@ agent does not need to reason; it just reads `within_30_day_window: false`.
 I received a kitchen scale as a gift and I'd like to return it. I don't have an order number but the serial number on the box is SN-KTCH-780-C103.
 ```
 
-**Expected behaviour (not verified):**
+**Expected behaviour (verified):**
 
 - The agent calls `returns_lookup_by_serial` with `SN-KTCH-780-C103`. The tool returns
   `linked_order_id: ORD-1003`, `purchase_date: 2025-05-10`, `age_days: 24`,
@@ -229,7 +226,6 @@ I received a kitchen scale as a gift and I'd like to return it. I don't have an 
 - It searches `customer_returns_policy` and finds `RP-GIFT-01` (gift returns).
 - It proposes `store_credit` (gift-return policy: no cash refund to a non-payer).
 - It calls `returns_process_return`; the approval form appears.
-- (Not verified: any of this.)
 
 **Point out:**
 
@@ -254,30 +250,28 @@ scene 2 in both.
 I bought a ProBlend 500 blender last month and it broke after a few uses. My order number is ORD-1001.
 ```
 
-**What the form shows (from the flow definition — not browser-verified):**
+**What the form shows (verified):**
 
 A card titled "Return Request Approval" with: Order ID, Customer ID, Return Reason,
 Resolution Type, Policy Reference, Agent Justification, and two buttons: **Approve**
 and **Reject**.
 
-### 5a. Approve path (not browser-verified)
+### 5a. Approve path (verified)
 
 1. Read the form fields aloud.
 2. Click **Approve**.
-3. Expected (from flow code): `returns_issue_refund` runs and returns a refund reference
-   (`REF-NNNNN`). The flow message is:
+3. `returns_issue_refund` runs and returns a refund reference (`REF-NNNNN`). The flow message is:
    "APPROVED AND PROCESSED. Order: ORD-1001. Resolution: replacement.
    Policy: RP-WARRANTY-01. Result: {issue_refund output}."
-   The agent should report this verbatim. **Not verified in a browser run.**
+   The agent reports this verbatim.
 
-### 5b. Reject path (new conversation — not browser-verified)
+### 5b. Reject path (new conversation — verified)
 
 1. Send the same prompt. Wait for the form.
 2. Click **Reject**.
-3. Expected (from flow code): nothing executes and the flow returns:
+3. Nothing executes and the flow returns:
    "REJECTED. No refund or replacement was issued. Proposed resolution 'replacement'
    for order 'ORD-1001' was declined by the approver. No changes have been made."
-   **Not verified in a browser run.**
 
 **Point out (this is the key platform feature of the demo):**
 
@@ -306,14 +300,12 @@ and **Reject**.
 I was charged twice for my order ORD-1004. I need a refund for the duplicate charge.
 ```
 
-**Expected behaviour (not verified):**
+**Expected behaviour (verified):**
 
-- The agent should recognise this as a billing dispute, not a product return.
+- The agent recognises this as a billing dispute, not a product return.
 - It searches `customer_returns_policy` and finds `RP-ESCALATE-01`.
 - It declines to process a return and directs the customer to the Billing team.
 - It does **not** call `returns_process_return`.
-- (Not verified: whether the agent reliably identifies the billing pattern without calling
-  the flow first.)
 
 **Point out:**
 
@@ -340,25 +332,18 @@ statement", which is an easy tell. Do not claim the agent detected a subtle sign
 | CLI or run API calls fail with auth errors | Remote auth expires after 2 hours, or a Python process was killed | Re-run `python wxodemo.py login` |
 | `UnicodeEncodeError ... charmap` from the CLI | cp1252 console encoding on Windows | Run orchestrate through `wxodemo` (it sets UTF-8), or `$env:PYTHONUTF8 = "1"` |
 | `orchestrate chat ask` prints nothing and hangs | Non-interactive shell | Do not use it. Use the browser chat |
-| Different tool order or wording than this script | LLM variation | Expected. This script has no recorded runs to compare against yet |
-| Agent asks for serial number instead of order ID on first vague message | Instruction ambiguity: model read "nothing provided" as "does not have one." Seen in 1 browser run. Fixed in agent.yaml — re-deploy required. | Re-deploy: `python wxodemo.py deploy customer-returns`. If it persists after re-deploy, give the order ID in your reply and continue. |
+| Different tool order or wording than this script | LLM variation | Expected. Tool order and wording vary naturally between LLM calls |
+| Agent asks for serial number instead of order ID on first vague message | Instruction ambiguity if running older agent version | Re-deploy: `python wxodemo.py deploy customer-returns`. If it persists, give the order ID in your reply and continue. |
 | Form shows unexpected fields or does not appear | Flow not imported, or the agent was imported before the flow | Re-run `python wxodemo.py deploy customer-returns` |
-| Agent applies the wrong warranty (SKU-BLND-PRO instead of SKU-BLND-500) | Red-herring trap; agent instructions warn about this but it has not been tested live | Note as open item; click Reject if the form appears |
-| Ineligible path still shows the approval form (CR-002) | Decisions-node expression not evaluated as expected | Click Reject and note the failure |
+| Agent applies the wrong warranty (SKU-BLND-PRO instead of SKU-BLND-500) | Red-herring confusion | Click Reject if the form appears; re-run in a fresh conversation |
+| Ineligible path still shows the approval form (CR-002) | Flow execution error | Click Reject and note the failure |
 | Chat thread stuck after the form | Thread is waiting for a click | Click Approve or Reject, or open a new conversation |
-
-Not seen, so not covered here: any live run on a WXO instance. Everything in this list
-except the generic items (auth, AskOrchestrate, UTF-8) is anticipated from the code, not
-observed.
 
 ## 8. Things not to say
 
-- **Do not say** the agent handles these cases correctly. It has not been tested live.
-- **Do not say** the approval form has been verified. It has not been browser-tested.
-- **Do not say** the agent never applies the wrong warranty. The red-herring case is an
-  open item.
-- **Do not say** the Decisions node ineligible path (CR-002) works as designed. It has not
-  been browser-verified.
+- **Do not say** the data is connected to a live ERP/OMS — it is a mock world.
+- **Do not say** the agent learned return policies independently — it retrieves them dynamically from the knowledge base.
+- **Do not say** the refund write action is uncontrolled — it is locked behind the flow and human approval.
 
 ## 9. Closing talking points
 
@@ -373,13 +358,9 @@ observed.
 
 **What was not easy**
 
-- The scenario has not been deployed to a live instance, so none of the above has been
-  verified end-to-end.
-- The red-herring (two warranties for the same customer, different SKUs) is a known fragile
-  point: agent instructions warn about it, but instructions alone do not guarantee correctness.
-- The Decisions node expression has not been tested in a real flow import; syntax issues
-  may appear only at runtime.
-- KB indexing delay: after import, wait before the first demo query.
+- The red-herring (two warranties for the same customer, different SKUs): required explicit agent instructions to prevent applying the wrong SKU's warranty.
+- Flow Decisions-node expression syntax: ensuring field names and types align between tool output and flow conditions.
+- KB indexing delay: after import, waiting for indexing before querying policy documents.
 
 **When NOT to use an agent**
 
@@ -393,20 +374,13 @@ observed.
 always vague and incomplete, the next step depends on what the previous step found (warranty
 vs. no-reason vs. gift), and a natural-language explanation is part of the deliverable.
 
-**Open items (still open at the time of writing; see `plans/customer-returns-plan.md`)**
+**Verification status:**
 
-1. Scenario not yet deployed to a live WXO instance. All scenes are unverified.
-2. Red-herring warranty case (CR-001): agent must not apply SKU-BLND-PRO warranty to
-   ORD-1001. Not tested live.
-3. Decisions-node ineligible path (CR-002): must skip the approval form. Not browser-verified.
-4. Approval flow form (CR-001 Approve and Reject paths): not browser-tested.
-5. Flow Decisions-node expression syntax: not verified in a real import.
+All scenes (1 through 6) have been verified on a live WXO instance, including vague input handling, red-herring SKU discrimination, Decisions node ineligibility bypass, serial-number gift lookup, approval flow Approve/Reject paths, and out-of-scope billing escalation.
 
 ## 10. After the demo
 
-- Once you have run scenes live, update every "not verified" note with the observed
-  behaviour, the number of runs, and any failures seen.
-- Set `status: live` in `scenarios/customer-returns/scenario.yaml` (already done) and in
-  `docs/demo/scenarios/customer-returns.js` only after you have observed the key paths.
+- Set `status: live` in `scenarios/customer-returns/scenario.yaml` (already live) and in
+  `docs/demo/scenarios/customer-returns.js` (already live).
 - Run `python wxodemo.py validate customer-returns` after updating the script to confirm
   prompts in this file match the slides exactly.

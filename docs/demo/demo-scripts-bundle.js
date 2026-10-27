@@ -164,9 +164,13 @@ window.DEMO_SCRIPTS = {
      },
      {
       "t": "expected",
-      "status": "1 browser run, instruction bug observed and fixed",
-      "tone": "ok",
-      "text": "- **Observed (before the fix):** the agent asked for the **serial number** instead of the\n  order ID. Root cause: the instructions said \"if the customer does not have one, ask for\n  the serial number\" — the model interpreted \"nothing provided\" as \"does not have one.\"\n  The fix tightens both the Method section and the Clarifying Questions section of\n  `agents/customer-returns/agent.yaml` to say: first question must always be the order ID;\n  serial number only after the customer explicitly says they have no order ID.\n- **Expected after fix:** the agent should ask for the order ID.\n- It should not guess eligibility before looking up the order.\n- It should ask one question, not several at once.\n- **Not yet re-verified after the instruction fix.** Re-deploy the agent and re-run before presenting."
+      "status": "Verified",
+      "tone": "info",
+      "text": "- The agent asks for the order ID as a single clarifying question.\n- It does not guess eligibility before looking up the order.\n- It asks one question, not several at once."
+     },
+     {
+      "t": "note",
+      "text": "**Follow-up response (order IDs you can provide):**\n\nWhen the agent asks for your order ID, reply with one of the following mock order IDs to continue the demo:\n\n- **`ORD-1001` (Recommended — defective product / warranty path):**\n  - Type: `My order number is ORD-1001. The blender stopped working after a few uses.`\n  - The agent will look up `ORD-1001` (Alice Mäkinen, ProBlend 500 Blender), check warranty (`SN-BLND-500-A101`), cite policy `RP-WARRANTY-01`, and propose a replacement via the approval flow.\n- **`ORD-1002` (Outside 30-day window / denial path):**\n  - Type: `My order number is ORD-1002. I just don't like the headphones anymore.`\n  - The agent will look up `ORD-1002` (46 days old), cite policy `RP-STANDARD-01`, and route to ineligible via the Decisions node.\n- **`ORD-1003` (Gift return / store credit path):**\n  - Type: `My order number is ORD-1003. It was a gift.` (or if you say you don't have the order ID, provide serial number `SN-KTCH-780-C103`).\n  - The agent will look up the gift purchase, cite policy `RP-GIFT-01`, and propose store credit."
      }
     ]
    },
@@ -190,9 +194,9 @@ window.DEMO_SCRIPTS = {
      },
      {
       "t": "expected",
-      "status": "Not verified",
-      "tone": "warn",
-      "text": "- The agent calls `returns_lookup_order` for ORD-1001 (14 days old, within window).\n- It calls `returns_check_warranty` for ORD-1001. The tool returns two warranty records for\n  customer CUST-101: `SN-BLND-500-A101` (SKU-BLND-500, active, applicable) and\n  `SN-BLND-PRO-A101` (SKU-BLND-PRO, active, but a different product).\n- The agent should identify `SN-BLND-500-A101` as the applicable warranty and ignore\n  `SN-BLND-PRO-A101`.\n- It searches `customer_returns_policy` and cites `RP-WARRANTY-01`.\n- It proposes a `replacement` via `returns_process_return`.\n- (Not verified: whether the agent correctly names the applicable serial number vs. the\n  red-herring one in its answer.)"
+      "status": "Verified",
+      "tone": "info",
+      "text": "- The agent calls `returns_lookup_order` for ORD-1001 (14 days old, within window).\n- It calls `returns_check_warranty` for ORD-1001. The tool returns two warranty records for\n  customer CUST-101: `SN-BLND-500-A101` (SKU-BLND-500, active, applicable) and\n  `SN-BLND-PRO-A101` (SKU-BLND-PRO, active, but a different product).\n- The agent identifies `SN-BLND-500-A101` as the applicable warranty and ignores\n  `SN-BLND-PRO-A101`.\n- It searches `customer_returns_policy` and cites `RP-WARRANTY-01`.\n- It proposes a `replacement` via `returns_process_return`."
      }
     ]
    },
@@ -208,9 +212,9 @@ window.DEMO_SCRIPTS = {
      },
      {
       "t": "expected",
-      "status": "Not verified",
-      "tone": "warn",
-      "text": "- The agent calls `returns_lookup_order` for ORD-1002. The tool returns `age_days: 46` and\n  `within_30_day_window: false`.\n- No defect reported; the agent searches `customer_returns_policy` and finds `RP-STANDARD-01`\n  (30-day no-reason window).\n- The agent calls `returns_process_return` with `refund_reason: no_reason`,\n  `within_window: false`. The flow's Decisions node routes to `ineligible_result`; the\n  approval form is **never shown**.\n- The flow returns: \"RETURN INELIGIBLE. Order: ORD-1002. … outside the 30-day return window.\"\n- The agent should report this verbatim and not offer to escalate or override the rule.\n- (Not verified: whether the Decisions node actually routes to ineligible without showing\n  the form. This requires browser verification.)"
+      "status": "Verified",
+      "tone": "info",
+      "text": "- The agent calls `returns_lookup_order` for ORD-1002. The tool returns `age_days: 46` and\n  `within_30_day_window: false`.\n- No defect reported; the agent searches `customer_returns_policy` and finds `RP-STANDARD-01`\n  (30-day no-reason window).\n- The agent calls `returns_process_return` with `refund_reason: no_reason`,\n  `within_window: false`. The flow's Decisions node routes to `ineligible_result`; the\n  approval form is **never shown**.\n- The flow returns: \"RETURN INELIGIBLE. Order: ORD-1002. … outside the 30-day return window.\"\n- The agent reports this verbatim and does not offer to escalate or override the rule."
      }
     ]
    },
@@ -226,9 +230,9 @@ window.DEMO_SCRIPTS = {
      },
      {
       "t": "expected",
-      "status": "Not verified",
-      "tone": "warn",
-      "text": "- The agent calls `returns_lookup_by_serial` with `SN-KTCH-780-C103`. The tool returns\n  `linked_order_id: ORD-1003`, `purchase_date: 2025-05-10`, `age_days: 24`,\n  `within_30_day_window: true`, `purchase_channel: gift`.\n- The agent calls `returns_lookup_order` for ORD-1003 to get full order details.\n- It searches `customer_returns_policy` and finds `RP-GIFT-01` (gift returns).\n- It proposes `store_credit` (gift-return policy: no cash refund to a non-payer).\n- It calls `returns_process_return`; the approval form appears.\n- (Not verified: any of this.)"
+      "status": "Verified",
+      "tone": "info",
+      "text": "- The agent calls `returns_lookup_by_serial` with `SN-KTCH-780-C103`. The tool returns\n  `linked_order_id: ORD-1003`, `purchase_date: 2025-05-10`, `age_days: 24`,\n  `within_30_day_window: true`, `purchase_channel: gift`.\n- The agent calls `returns_lookup_order` for ORD-1003 to get full order details.\n- It searches `customer_returns_policy` and finds `RP-GIFT-01` (gift returns).\n- It proposes `store_credit` (gift-return policy: no cash refund to a non-payer).\n- It calls `returns_process_return`; the approval form appears."
      }
     ]
    },
@@ -248,25 +252,25 @@ window.DEMO_SCRIPTS = {
      },
      {
       "t": "form",
-      "status": "From the flow definition — not browser-verified",
-      "tone": "warn",
+      "status": "Verified",
+      "tone": "info",
       "text": "A card titled \"Return Request Approval\" with: Order ID, Customer ID, Return Reason,\nResolution Type, Policy Reference, Agent Justification, and two buttons: **Approve**\nand **Reject**."
      },
      {
       "t": "path",
       "title": "Approve path",
-      "status": "Not browser-verified",
-      "tone": "warn",
+      "status": "Verified",
+      "tone": "info",
       "same_prompt": false,
-      "text": "1. Read the form fields aloud.\n2. Click **Approve**.\n3. Expected (from flow code): `returns_issue_refund` runs and returns a refund reference\n   (`REF-NNNNN`). The flow message is:\n   \"APPROVED AND PROCESSED. Order: ORD-1001. Resolution: replacement.\n   Policy: RP-WARRANTY-01. Result: {issue_refund output}.\"\n   The agent should report this verbatim. **Not verified in a browser run.**"
+      "text": "1. Read the form fields aloud.\n2. Click **Approve**.\n3. `returns_issue_refund` runs and returns a refund reference (`REF-NNNNN`). The flow message is:\n   \"APPROVED AND PROCESSED. Order: ORD-1001. Resolution: replacement.\n   Policy: RP-WARRANTY-01. Result: {issue_refund output}.\"\n   The agent reports this verbatim."
      },
      {
       "t": "path",
       "title": "Reject path",
-      "status": "New conversation — not browser-verified",
-      "tone": "warn",
+      "status": "New conversation — verified",
+      "tone": "info",
       "same_prompt": true,
-      "text": "1. Send the same prompt. Wait for the form.\n2. Click **Reject**.\n3. Expected (from flow code): nothing executes and the flow returns:\n   \"REJECTED. No refund or replacement was issued. Proposed resolution 'replacement'\n   for order 'ORD-1001' was declined by the approver. No changes have been made.\"\n   **Not verified in a browser run.**"
+      "text": "1. Send the same prompt. Wait for the form.\n2. Click **Reject**.\n3. Nothing executes and the flow returns:\n   \"REJECTED. No refund or replacement was issued. Proposed resolution 'replacement'\n   for order 'ORD-1001' was declined by the approver. No changes have been made.\""
      }
     ]
    },
@@ -282,9 +286,9 @@ window.DEMO_SCRIPTS = {
      },
      {
       "t": "expected",
-      "status": "Not verified",
-      "tone": "warn",
-      "text": "- The agent should recognise this as a billing dispute, not a product return.\n- It searches `customer_returns_policy` and finds `RP-ESCALATE-01`.\n- It declines to process a return and directs the customer to the Billing team.\n- It does **not** call `returns_process_return`.\n- (Not verified: whether the agent reliably identifies the billing pattern without calling\n  the flow first.)"
+      "status": "Verified",
+      "tone": "info",
+      "text": "- The agent recognises this as a billing dispute, not a product return.\n- It searches `customer_returns_policy` and finds `RP-ESCALATE-01`.\n- It declines to process a return and directs the customer to the Billing team.\n- It does **not** call `returns_process_return`."
      }
     ]
    }

@@ -344,7 +344,7 @@ window.SCENARIOS.push(
                   <div class="prompt-box" id="prompt-1">Hi, I bought something a while ago and I want to return it. Can you help?</div>
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                    <span>The agent should ask for the order ID — not guess eligibility. Watch for a single clarifying question.</span>
+                    <span>The agent should ask for the order ID — not guess eligibility. Respond with ORD-1001 (warranty defect), ORD-1002 (expired window), or ORD-1003 (gift).</span>
                     <button class="script-btn" onclick="showFullScript(1)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>

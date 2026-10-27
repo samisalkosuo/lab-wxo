@@ -82,6 +82,9 @@ instructions: >
     governance policy requires human approval before execution.
   - After `request_remediation` returns, report its `message` field verbatim to the
     user. Do not paraphrase or summarize the outcome.
+  - Call `request_remediation` at most once per incident. If it fails or returns no
+    `message`, tell the user it failed and stop. Never call it again to retry, because
+    that shows the approver a second form after they may already have decided.
   - If the evidence shows no action is needed (`no_action`), say so clearly. You do
     not need to call `request_remediation` for a non-incident; simply explain your
     conclusion and the evidence behind it.

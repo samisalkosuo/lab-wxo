@@ -79,6 +79,14 @@ class FlowPrivate(BaseModel):
         default="pending",
         description="Human decision written by userflow scripts: 'approved' or 'rejected'.",
     )
+    execution_result: str = Field(
+        default="",
+        description="Output of execute_remediation on approval. Empty on rejection.",
+    )
+    message: str = Field(
+        default="",
+        description="Final message for the agent, written by the result scripts.",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -233,22 +241,23 @@ def build_request_remediation_flow(aflow: Flow = None) -> Flow:
     execute_node.map_input(input_variable="parameters", expression='""')
 
     # Script: compose approved result for the agent
+    # The result scripts write to flow.private and the flow output is mapped
+    # explicitly below. Without that mapping the runtime auto-maps the END node
+    # from whichever script ran, which failed intermittently
+    # ("auto_data_mapping: No available next nodes available", flow_status=failed)
+    # and left the agent without the rejection/approval message.
     approved_result = aflow.script(
         name="approved_result",
         display_name="Format Approved Result",
         script="""
-self.output.decision         = "approved"
-self.output.service          = flow.input.service
-self.output.action           = flow.input.action
-self.output.incident_id      = flow.input.incident_id
-self.output.runbook_ref      = flow.input.runbook_ref
-self.output.execution_result = str(flow.nodes['execute_remediation'].output)
-self.output.message = (
+flow.private.decision         = "approved"
+flow.private.execution_result = str(flow.nodes['execute_remediation'].output)
+flow.private.message = (
     "APPROVED AND EXECUTED. "
     f"Service: {flow.input.service}, Action: {flow.input.action}. "
     f"Incident: {flow.input.incident_id or 'N/A'}. "
     f"Runbook: {flow.input.runbook_ref or 'N/A'}. "
-    f"Execution result: {self.output.execution_result}"
+    f"Execution result: {flow.private.execution_result}"
 )
 """,
     )
@@ -258,13 +267,9 @@ self.output.message = (
         name="rejected_result",
         display_name="Format Rejected Result",
         script="""
-self.output.decision         = "rejected"
-self.output.service          = flow.input.service
-self.output.action           = flow.input.action
-self.output.incident_id      = flow.input.incident_id
-self.output.runbook_ref      = flow.input.runbook_ref
-self.output.execution_result = ""
-self.output.message = (
+flow.private.decision         = "rejected"
+flow.private.execution_result = ""
+flow.private.message = (
     "REJECTED. No remediation was executed. "
     f"Proposed action '{flow.input.action}' on service '{flow.input.service}' "
     f"was declined by the approver. "
@@ -290,5 +295,14 @@ self.output.message = (
     aflow.edge(execute_node, approved_result)
     aflow.edge(approved_result, END)
     aflow.edge(rejected_result, END)
+
+    # ── Explicit flow output mapping (no LLM auto-mapping at END) ──────────
+    aflow.map_output(output_variable="decision",         expression="flow.private.decision")
+    aflow.map_output(output_variable="service",          expression="flow.input.service")
+    aflow.map_output(output_variable="action",           expression="flow.input.action")
+    aflow.map_output(output_variable="incident_id",      expression="flow.input.incident_id")
+    aflow.map_output(output_variable="runbook_ref",      expression="flow.input.runbook_ref")
+    aflow.map_output(output_variable="execution_result", expression="flow.private.execution_result")
+    aflow.map_output(output_variable="message",          expression="flow.private.message")
 
     return aflow
