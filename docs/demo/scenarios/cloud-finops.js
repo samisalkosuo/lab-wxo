@@ -325,6 +325,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Vague input — no service or resource named. Watch the agent call cf_get_spend_summary first, then drill into Compute (VMs).</span>
+                    <button class="script-btn" onclick="showFullScript(1)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -346,6 +347,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Watch for the red herring: vm-batch-weekend-01 looks idle on a 7-day window but has a Saturday batch job visible in the 30-day data.</span>
+                    <button class="script-btn" onclick="showFullScript(2)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -367,6 +369,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Run twice — once to show Approve (mock reclaim executes), once to show Reject (nothing happens). Use a fresh conversation for each path.</span>
+                    <button class="script-btn" onclick="showFullScript(3)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -388,6 +391,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>The saving figure in the tool result says "illustrative" — point that out. The agent should also mention the change-control window from CF-POL-03.</span>
+                    <button class="script-btn" onclick="showFullScript(4)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -409,6 +413,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>The right answer is to do nothing and escalate. Telemetry shows 0 GPU hours consumed. The agent should cite CF-POL-04 and not call any write tool.</span>
+                    <button class="script-btn" onclick="showFullScript(5)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
               </div>

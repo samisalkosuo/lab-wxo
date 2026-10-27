@@ -326,6 +326,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Main path: qualifying condition met, rehab exhausted, work capacity 30%. Expected disposition: pension eligible → medical board referral (DIS-POL-01).</span>
+                    <button class="script-btn" onclick="showFullScript(1)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -347,6 +348,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Trap: work capacity 55%, recovery potential significant, no workplace trial. Agent must recommend vocational rehabilitation, not pension. Cite DIS-POL-02.</span>
+                    <button class="script-btn" onclick="showFullScript(2)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -368,6 +370,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Red herring: 14 months looks like a refusal. Waiver applies (tyotapaturma, TyEL § 12). Agent must confirm accident documentation before accepting. Cite DIS-POL-04.</span>
+                    <button class="script-btn" onclick="showFullScript(3)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -389,6 +392,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Governed action: flow form appears for claims handler review. Approve submits referral (REF-XXXXX); Reject returns rejection message. Flow not verified in a browser yet.</span>
+                    <button class="script-btn" onclick="showFullScript(4)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -410,6 +414,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Restraint: 35% work capacity passes the medical threshold but 8/60 insured months fails the qualifying condition. No waiver. Agent must stop and refer to Kela (DIS-POL-04).</span>
+                    <button class="script-btn" onclick="showFullScript(5)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
               </div>

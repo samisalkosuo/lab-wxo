@@ -343,6 +343,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>The agent should ask for the member ID first rather than guessing figures. Watch for a single, focused clarifying question.</span>
+                    <button class="script-btn" onclick="showFullScript(1)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -364,6 +365,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Matti Virtanen (MEM-101). Watch the agent apply the 0.4%/mo penalty, life expectancy coefficient, and calculate the continuing 1.5% TyEL work accrual.</span>
+                    <button class="script-btn" onclick="showFullScript(2)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -385,6 +387,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Liisa Korhonen (MEM-102). Cohort 1966 requires age 62. The agent cites OVE-POL-01, states the shortfall months, and refuses early filing.</span>
+                    <button class="script-btn" onclick="showFullScript(3)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -406,6 +409,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Antti Mäkinen (MEM-103). The agent simulates both 25% and 50% options side-by-side with 80% work hours and explains the trade-offs.</span>
+                    <button class="script-btn" onclick="showFullScript(4)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -427,6 +431,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Triggers the ove_submit_application approval form in the chat UI. Click 'Approve' to issue the application reference ID.</span>
+                    <button class="script-btn" onclick="showFullScript(5)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -448,6 +453,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Eeva Koskinen (MEM-104). The agent detects active Kuntoutustuki, cites OVE-POL-02, and halts without filing an application.</span>
+                    <button class="script-btn" onclick="showFullScript(6)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
               </div>

@@ -9,6 +9,9 @@ Demo checks, per scenario id (docs/demo/scenarios/<id>.js):
      scenario is not live and the slides hold no prompts.
   5. copyPrompt('prompt-N') ids match their prompt-box ids and are unique.
   6. Every tool-chip in the .js is a real tool, flow or knowledge base name from the manifest.
+  7. Full-script button: when the .js has showFullScript(N) buttons, N is a prompt-box number and
+     docs/demo/demo-scripts-bundle.js holds this scenario with prompts equal to the demo .md
+     (otherwise the bundle is stale: re-run docs/demo/build-demo-scripts-bundle.py).
 
 Only reads files; never changes anything.
 """
@@ -16,6 +19,7 @@ Only reads files; never changes anything.
 from __future__ import annotations
 
 import html
+import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -25,6 +29,7 @@ from wxodemo.manifest import Scenario, load_scenarios, name_clashes, owned_names
 
 PRESENTATION = Path("docs") / "demo" / "presentation.html"
 SCRIPT_RE = re.compile(r'<script src="scenarios/([^"]+)\.js"></script>')
+BUNDLE = Path("docs") / "demo" / "demo-scripts-bundle.js"
 PROMPT_BOX_RE = re.compile(r'<div class="prompt-box" id="(prompt-\d+)">(.*?)</div>', re.S)
 
 
@@ -65,6 +70,30 @@ def md_prompts(md_text: str) -> list[str]:
 
 def js_prompts(js_text: str) -> list[tuple[str, str]]:
     return [(pid, html.unescape(text).strip()) for pid, text in PROMPT_BOX_RE.findall(js_text)]
+
+
+def bundle_prompts(root: Path, sid: str) -> list[str] | None:
+    """Prompts (with a slide card) of one scenario in demo-scripts-bundle.js; None if absent."""
+    path = root / BUNDLE
+    if not path.is_file():
+        return None
+    text = path.read_text(encoding="utf-8")
+    start = text.find("window.DEMO_SCRIPTS = ")
+    if start < 0:
+        return None
+    try:
+        data = json.loads(text[start + len("window.DEMO_SCRIPTS = "):].strip().rstrip(";"))
+    except ValueError:
+        return None
+    script = data.get(sid)
+    if script is None:
+        return None
+    return [
+        item["text"]
+        for scene in script["scenes"]
+        for item in scene["items"]
+        if item["t"] == "prompt" and item.get("card")
+    ]
 
 
 def check_demo(root: Path, scenario: Scenario, order: list[str]) -> DemoReport:
@@ -131,6 +160,25 @@ def check_demo(root: Path, scenario: Scenario, order: list[str]) -> DemoReport:
         problem(f"duplicate prompt-box ids: {ids}")
     if sorted(calls) != sorted(ids):
         problem(f"copyPrompt ids {calls} do not match prompt-box ids {ids}")
+
+    # 7: full-script buttons and the generated bundle
+    buttons = [int(n) for n in re.findall(r"showFullScript\((\d+)\)", js)]
+    if buttons:
+        numbers = {int(pid.split("-")[1]) for pid in ids}
+        for n in buttons:
+            if n not in numbers:
+                problem(f"showFullScript({n}) has no matching prompt-box")
+        in_bundle = bundle_prompts(root, sid)
+        if in_bundle is None:
+            problem(
+                f"{BUNDLE.as_posix()} has no entry for {sid}: "
+                "run python docs/demo/build-demo-scripts-bundle.py"
+            )
+        elif md is not None and in_bundle != md_prompts(md):
+            problem(
+                f"{BUNDLE.as_posix()} is stale (prompts differ from the demo script): "
+                "run python docs/demo/build-demo-scripts-bundle.py"
+            )
 
     # 6: tool chips against the manifest
     owned = owned_names(scenario)

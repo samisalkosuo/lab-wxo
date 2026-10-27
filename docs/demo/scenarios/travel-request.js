@@ -335,6 +335,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>The easy case: no approval needed. A form would give the same answer.</span>
+                    <button class="script-btn" onclick="showFullScript(1)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -356,6 +357,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Expect one message asking for the missing facts and no decision. Send the next prompt in the same conversation.</span>
+                    <button class="script-btn" onclick="showFullScript(2)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -377,6 +379,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>A trip abroad needs the manager even though the estimate is below 600 EUR. The hotel breakfast is not a free meal.</span>
+                    <button class="script-btn" onclick="showFullScript(3)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -398,6 +401,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Mileage is capped to the cheaper train fare. The number comes from the estimate tool.</span>
+                    <button class="script-btn" onclick="showFullScript(4)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -419,6 +423,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Not denied: the leave needs the manager. The holiday week is not part of the estimate.</span>
+                    <button class="script-btn" onclick="showFullScript(5)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -440,6 +445,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>The estimate is only slightly over the cost centre budget, so the director is needed. Deterministic logic, not agent reasoning.</span>
+                    <button class="script-btn" onclick="showFullScript(6)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -461,6 +467,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>No amount is given, because the rates for 2027 are agreed separately. The missing amount does not turn into DENIED.</span>
+                    <button class="script-btn" onclick="showFullScript(7)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -482,6 +489,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>The agent searches the PDF in Finnish and explains in English. Do not repeat percentages or call the Finnish quote exact.</span>
+                    <button class="script-btn" onclick="showFullScript(8)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -503,6 +511,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>The agent calls the approval flow. Run Approve and Reject in separate conversations. Rehearse this first: the form has not been seen working in a browser.</span>
+                    <button class="script-btn" onclick="showFullScript(9)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -524,6 +533,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>No tool is called, no decision and no id. The agent points to the expense system.</span>
+                    <button class="script-btn" onclick="showFullScript(10)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
               </div>

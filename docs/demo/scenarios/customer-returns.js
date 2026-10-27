@@ -345,6 +345,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>The agent should ask for the order ID — not guess eligibility. Watch for a single clarifying question.</span>
+                    <button class="script-btn" onclick="showFullScript(1)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -366,6 +367,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Alice has two warranty records. The agent must select SN-BLND-500-A101, not the PRO model warranty. Watch which serial it cites.</span>
+                    <button class="script-btn" onclick="showFullScript(2)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -387,6 +389,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>46 days old — outside the 30-day window. The Decisions node should return ineligible without showing the approval form.</span>
+                    <button class="script-btn" onclick="showFullScript(3)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -408,6 +411,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>No order ID — the agent uses serial-number lookup to find ORD-1003. Gift-return policy applies: store credit, not cash.</span>
+                    <button class="script-btn" onclick="showFullScript(4)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -429,6 +433,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Use a fresh conversation for each path. Approve: returns_issue_refund runs and returns a REF-NNNNN reference. Reject: nothing executes.</span>
+                    <button class="script-btn" onclick="showFullScript(5)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
 
@@ -450,6 +455,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Billing dispute — not a product return. The agent should cite RP-ESCALATE-01 and direct to the Billing team. No flow should be triggered.</span>
+                    <button class="script-btn" onclick="showFullScript(6)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
               </div>

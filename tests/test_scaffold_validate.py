@@ -188,6 +188,35 @@ def test_demo_check_skipped_without_slides(repo: Path):
     assert report.notes
 
 
+BUNDLE_JS = (
+    'window.DEMO_SCRIPTS = {"alpha": {"scenes": [{"num": "1", "title": "t", "items": '
+    '[{"t": "prompt", "card": 1, "note": "", "text": "What is up?"}]}]}};\n'
+)
+JS_BTN = JS_OK + '<button class="script-btn" onclick="showFullScript(1)">Show full script</button>'
+
+
+def test_demo_full_script_button_ok(repo: Path):
+    write(repo / "docs/demo/demo-scripts-bundle.js", BUNDLE_JS)
+    assert demo(repo, MD_OK, JS_BTN).problems == []
+
+
+def test_demo_full_script_bundle_missing(repo: Path):
+    report = demo(repo, MD_OK, JS_BTN)
+    assert any("demo-scripts-bundle.js has no entry" in p for p in report.problems)
+
+
+def test_demo_full_script_bundle_stale(repo: Path):
+    write(repo / "docs/demo/demo-scripts-bundle.js", BUNDLE_JS.replace("What is up?", "Old"))
+    report = demo(repo, MD_OK, JS_BTN)
+    assert any("is stale" in p for p in report.problems)
+
+
+def test_demo_full_script_button_bad_number(repo: Path):
+    write(repo / "docs/demo/demo-scripts-bundle.js", BUNDLE_JS)
+    report = demo(repo, MD_OK, JS_BTN.replace("showFullScript(1)", "showFullScript(7)"))
+    assert any("showFullScript(7)" in p for p in report.problems)
+
+
 def test_run_validate_reports_ok_and_fail(repo: Path, capsys):
     write(repo / "docs/demo/alpha-demo.md", MD_OK)
     write(repo / "docs/demo/scenarios/alpha.js", JS_OK)

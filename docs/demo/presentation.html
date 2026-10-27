@@ -875,6 +875,258 @@
       fill: var(--accent-amber);
     }
 
+    /* Low-emphasis grey button on the tip row: opens the full script view */
+    .script-btn {
+      margin-left: auto;
+      flex-shrink: 0;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 10px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .script-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+      background: var(--bg-surface-elevated);
+    }
+
+    /* Full script view (replaces the Live Demo Prompts slide body; not in the TOC) */
+    .sv-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sv-toolbar-bottom {
+      justify-content: center;
+      margin: 4px 0 20px;
+    }
+
+    .sv-scene-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sv-scene-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .sv-back-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .sv-back-btn:hover:not(:disabled) {
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+    }
+
+    .sv-back-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .sv-scene {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sv-step {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sv-section {
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--text-muted);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      background: var(--bg-primary);
+    }
+
+    .sv-section.sv-setup {
+      border-left-color: var(--accent-cyan);
+    }
+
+    .sv-section.sv-expected {
+      border-left-color: var(--accent-green);
+    }
+
+    .sv-section.sv-form {
+      border-left-color: var(--accent-purple);
+    }
+
+    .sv-section.sv-path {
+      border-left-color: var(--accent-amber);
+    }
+
+    .sv-section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .sv-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .sv-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .sv-chip-ok {
+      color: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+
+    .sv-chip-warn {
+      color: var(--accent-amber);
+      border-color: var(--accent-amber);
+    }
+
+    .sv-label-note {
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 500;
+    }
+
+    .sv-prompt-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .sv-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .sv-prompt-box {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.5;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .sv-md {
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .sv-md p, .sv-md ul, .sv-md ol, .sv-md pre, .sv-md blockquote, .sv-md table {
+      margin: 0 0 8px 0;
+    }
+
+    .sv-md ul, .sv-md ol {
+      padding-left: 22px;
+    }
+
+    .sv-md li {
+      margin-bottom: 3px;
+    }
+
+    .sv-md h4 {
+      font-size: 13.5px;
+      color: var(--text-primary);
+      margin: 6px 0 6px 0;
+    }
+
+    .sv-md strong {
+      color: var(--text-primary);
+    }
+
+    .sv-md code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 3px;
+      padding: 0 4px;
+    }
+
+    .sv-md pre {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .sv-md pre code {
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .sv-md blockquote {
+      border-left: 3px solid var(--accent-amber);
+      padding: 2px 0 2px 12px;
+    }
+
+    .sv-md table {
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    .sv-md th, .sv-md td {
+      border: 1px solid var(--border-subtle);
+      padding: 4px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
     /* Bottom Navigation Bar */
     .bottom-bar {
       height: 60px;
@@ -1301,6 +1553,7 @@
   <script src="scenarios/yel-income-assessment.js"></script>
   <script src="scenarios/pension-disability-triage.js"></script>
   <script src="sample-docs-bundle.js"></script>
+  <script src="demo-scripts-bundle.js"></script>
   <script src="standalone-agents.js"></script>
   <script>
     // Data Models
@@ -1312,6 +1565,8 @@
     let currentScenarioIdx = -1;
     let currentAgentIdx = -1;
     let currentSlideIdx = 0;
+    // When not null, the Live Demo Prompts slide shows the full script of this scene (0-based index)
+    let scriptScene = null;
 
     // Elements
     const slideStage = document.getElementById("slide-stage");
@@ -1344,6 +1599,7 @@
       currentScenarioIdx = -1;
       currentAgentIdx = -1;
       currentSlideIdx = 0;
+      scriptScene = null;
       updateNavItems();
       renderDeck();
     }
@@ -1424,7 +1680,7 @@
       // Check URL hash (e.g. #scenario/0/2 or #agent/1/0 or #home)
       if (window.location.hash && window.location.hash !== "#home" && window.location.hash !== "#") {
         const parts = window.location.hash.replace("#", "").split("/");
-        if (parts.length === 3) {
+        if (parts.length >= 3) {
           const type = parts[0];
           const itemIdx = parseInt(parts[1], 10);
           const slIdx = parseInt(parts[2], 10);
@@ -1436,6 +1692,11 @@
             currentType = "scenario";
             currentScenarioIdx = itemIdx;
             if (!isNaN(slIdx) && slIdx < scenariosData[itemIdx].slides.length) currentSlideIdx = slIdx;
+            // e.g. #scenario/3/5/script/2 restores the full script view of scene index 2
+            const sceneNo = parseInt(parts[4], 10);
+            if (parts[3] === "script" && !isNaN(sceneNo) && isPromptsSlide(scenariosData[itemIdx], currentSlideIdx)) {
+              scriptScene = sceneNo;
+            }
           }
         } else if (parts.length === 2) {
           const sIdx = parseInt(parts[0], 10);
@@ -1460,6 +1721,7 @@
       currentType = "scenario";
       currentScenarioIdx = index;
       currentSlideIdx = 0;
+      scriptScene = null;
       updateNavItems();
       renderDeck();
     }
@@ -1469,6 +1731,7 @@
       currentType = "agent";
       currentAgentIdx = index;
       currentSlideIdx = 0;
+      scriptScene = null;
       updateNavItems();
       renderDeck();
     }
@@ -1651,19 +1914,19 @@
 
       // Update Hash
       const currentIdx = currentType === "scenario" ? currentScenarioIdx : currentAgentIdx;
-      window.location.hash = `${currentType}/${currentIdx}/${currentSlideIdx}`;
+      const scriptOn = scriptScene !== null && currentType === "scenario" && isPromptsSlide(deck, currentSlideIdx);
+      window.location.hash = `${currentType}/${currentIdx}/${currentSlideIdx}` + (scriptOn ? `/script/${scriptScene}` : "");
 
       // Render Slide Content
       slideContent.innerHTML = `
         <div class="slide-header">
           <div class="slide-tag">${slide.tag}</div>
-          <h1 class="slide-title">${slide.title}</h1>
-          <p class="slide-subtitle">${slide.subtitle}</p>
+          <h1 class="slide-title">${scriptOn ? "Full Demo Script" : slide.title}</h1>
+          <p class="slide-subtitle">${scriptOn ? "What to type, and what the agent is expected to do, one scene at a time." : slide.subtitle}</p>
         </div>
-        ${slide.render()}
+        ${scriptOn ? renderFullScript(deck, scriptScene) : slide.render()}
       `;
 
-      // Scroll top
       slideStage.scrollTop = 0;
     }
 
@@ -1671,6 +1934,7 @@
       const deck = getActiveDeck();
       if (deck && index >= 0 && index < deck.slides.length) {
         currentSlideIdx = index;
+        scriptScene = null;
         renderCurrentSlide();
       }
     }
@@ -1679,6 +1943,7 @@
       const deck = getActiveDeck();
       if (deck && currentSlideIdx < deck.slides.length - 1) {
         currentSlideIdx++;
+        scriptScene = null;
         renderCurrentSlide();
       }
     }
@@ -1686,6 +1951,7 @@
     function prevSlide() {
       if (currentSlideIdx > 0) {
         currentSlideIdx--;
+        scriptScene = null;
         renderCurrentSlide();
       }
     }
@@ -1729,6 +1995,205 @@
       document.body.setAttribute("data-theme", isLight ? "light" : "dark");
       document.getElementById("theme-icon").textContent = isLight ? "🌙" : "☀️";
       document.getElementById("theme-label").textContent = isLight ? "Dark Mode" : "Light Mode";
+    }
+
+    // ---- Full script view (Live Demo Prompts slide) -------------------------------------
+    // Not a slide: it is never listed in the TOC, dots or counter. Data: window.DEMO_SCRIPTS
+    // (generated by docs/demo/build-demo-scripts-bundle.py from docs/demo/<id>-demo.md).
+    function isPromptsSlide(deck, idx) {
+      return !!deck && !!deck.slides[idx] && deck.slides[idx].title === "Live Demo Prompts";
+    }
+
+    // cardNo = the prompt-N number of the card whose button was pressed; opens that card's scene
+    function showFullScript(cardNo) {
+      const deck = getActiveDeck();
+      if (currentType !== "scenario" || !isPromptsSlide(deck, currentSlideIdx)) return;
+      const script = (window.DEMO_SCRIPTS || {})[deck.id];
+      let idx = script ? script.scenes.findIndex(s => s.items.some(it => it.t === "prompt" && it.card === cardNo)) : -1;
+      scriptScene = idx < 0 ? 0 : idx;
+      renderCurrentSlide();
+    }
+
+    function gotoScriptScene(idx) {
+      scriptScene = idx;
+      renderCurrentSlide();
+    }
+
+    function closeFullScript() {
+      scriptScene = null;
+      renderCurrentSlide();
+    }
+
+    function svEscape(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function svInline(s) {
+      const codes = [];
+      s = s.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
+      s = svEscape(s)
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/(^|[\s(])\*([^*\s][^*]*)\*(?=[\s).,:;]|$)/g, "$1<em>$2</em>");
+      return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${svEscape(codes[+i])}</code>`);
+    }
+
+    // Small markdown subset: paragraphs, ### headings, bullets (nested), numbered lists,
+    // fenced code, blockquotes, tables, bold, italic, inline code.
+    function svMarkdown(text) {
+      const lines = text.split("\n");
+      let out = "";
+      let i = 0;
+      const indentOf = l => l.match(/^ */)[0].length;
+      const listRe = /^(\s*)([-*]|\d+\.)\s+(.*)$/;
+
+      function renderList(start, baseIndent) {
+        const ordered = /\d+\./.test(lines[start].match(listRe)[2]);
+        let html = ordered ? "<ol>" : "<ul>";
+        let j = start;
+        while (j < lines.length) {
+          const m = lines[j].match(listRe);
+          if (!m || indentOf(lines[j]) < baseIndent) break;
+          if (indentOf(lines[j]) > baseIndent) break;
+          let item = svInline(m[3]);
+          j++;
+          // continuation lines and nested lists
+          while (j < lines.length) {
+            const nm = lines[j].match(listRe);
+            if (nm && indentOf(lines[j]) > baseIndent) {
+              const sub = renderList(j, indentOf(lines[j]));
+              item += sub.html;
+              j = sub.next;
+            } else if (lines[j].trim() && !nm && indentOf(lines[j]) > baseIndent) {
+              item += " " + svInline(lines[j].trim());
+              j++;
+            } else {
+              break;
+            }
+          }
+          html += `<li>${item}</li>`;
+        }
+        html += ordered ? "</ol>" : "</ul>";
+        return { html, next: j };
+      }
+
+      while (i < lines.length) {
+        const line = lines[i];
+        if (!line.trim()) { i++; continue; }
+        if (line.startsWith("```")) {
+          const code = [];
+          i++;
+          while (i < lines.length && !lines[i].startsWith("```")) code.push(lines[i++]);
+          i++;
+          out += `<pre><code>${svEscape(code.join("\n"))}</code></pre>`;
+        } else if (/^#{3,4}\s/.test(line)) {
+          out += `<h4>${svInline(line.replace(/^#+\s+/, ""))}</h4>`;
+          i++;
+        } else if (line.startsWith(">")) {
+          const q = [];
+          while (i < lines.length && lines[i].startsWith(">")) q.push(lines[i++].replace(/^>\s?/, ""));
+          out += `<blockquote>${svInline(q.join(" "))}</blockquote>`;
+        } else if (line.trim().startsWith("|")) {
+          const rows = [];
+          while (i < lines.length && lines[i].trim().startsWith("|")) rows.push(lines[i++]);
+          const cells = r => r.trim().replace(/^\||\|$/g, "").split("|").map(c => svInline(c.trim()));
+          const body = rows.filter(r => !/^\s*\|[\s:|-]+\|\s*$/.test(r));
+          out += "<table>" + body.map((r, k) =>
+            "<tr>" + cells(r).map(c => (k === 0 ? `<th>${c}</th>` : `<td>${c}</td>`)).join("") + "</tr>").join("") + "</table>";
+        } else if (listRe.test(line)) {
+          const r = renderList(i, indentOf(line));
+          out += r.html;
+          i = r.next;
+        } else {
+          const p = [];
+          while (i < lines.length && lines[i].trim() && !lines[i].startsWith("```") && !listRe.test(lines[i])
+                 && !lines[i].startsWith(">") && !lines[i].trim().startsWith("|") && !/^#{3,4}\s/.test(lines[i])) {
+            p.push(lines[i++].trim());
+          }
+          out += `<p>${svInline(p.join(" "))}</p>`;
+        }
+      }
+      return out;
+    }
+
+    const SV_COPY_ICON = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>`;
+
+    // One scene at a time: setup, then each prompt step followed by what to expect.
+    function renderFullScript(deck, sceneIdx) {
+      const script = (window.DEMO_SCRIPTS || {})[deck.id];
+      const back = `<button class="sv-back-btn" onclick="closeFullScript()">&larr; Back to prompts</button>`;
+      if (!script || !script.scenes.length) {
+        return `<div class="sv-toolbar">${back}</div><div class="prompt-tip"><span>No full script is available for this scenario yet.</span></div>`;
+      }
+      const total = script.scenes.length;
+      const idx = Math.min(Math.max(sceneIdx, 0), total - 1);
+      const scene = script.scenes[idx];
+      const nav = `
+        <div class="sv-scene-nav">
+          <button class="sv-back-btn" ${idx === 0 ? "disabled" : ""} onclick="gotoScriptScene(${idx - 1})">&lsaquo; Previous scene</button>
+          <span class="sv-scene-count">Scene ${idx + 1} of ${total}</span>
+          <button class="sv-back-btn" ${idx === total - 1 ? "disabled" : ""} onclick="gotoScriptScene(${idx + 1})">Next scene &rsaquo;</button>
+        </div>`;
+
+      const promptCount = scene.items.filter(it => it.t === "prompt").length;
+      let n = 0;
+      let step = 0;
+      let last = null; // last prompt of this scene, repeated by "send the same prompt" paths
+
+      const promptBlock = (text, label, note) => {
+        n++;
+        const id = `sv-prompt-${n}`;
+        const noteHtml = note ? ` <span class="sv-label-note">(${svEscape(note)})</span>` : "";
+        return `
+          <div class="sv-prompt-head">
+            <span class="sv-label">${label}${noteHtml}</span>
+            <button class="copy-btn" onclick="copyPrompt('${id}', this)">${SV_COPY_ICON} Copy Prompt</button>
+          </div>
+          <div class="sv-prompt-box" id="${id}">${svEscape(text)}</div>`;
+      };
+      const chip = (status, tone) => status ? `<span class="sv-chip sv-chip-${tone}">${svEscape(status)}</span>` : "";
+      const section = (title, status, tone, inner, cls = "", pre = "") => `
+        <div class="sv-section ${cls}">
+          <div class="sv-section-head"><span class="sv-section-title">${title}</span>${chip(status, tone)}</div>
+          ${pre}
+          <div class="sv-md">${inner}</div>
+        </div>`;
+
+      const body = scene.items.map(it => {
+        switch (it.t) {
+          case "note":
+            return `<div class="sv-section sv-setup"><div class="sv-md">${svMarkdown(it.text)}</div></div>`;
+          case "prompt": {
+            step++;
+            last = it;
+            const label = promptCount > 1 ? `Step ${step} &middot; Prompt` : "Prompt";
+            return `<div class="sv-step">${promptBlock(it.text, label, it.note)}</div>`;
+          }
+          case "expected":
+            return section("What to expect", it.status, it.tone, svMarkdown(it.text), "sv-expected");
+          case "form":
+            return section("Approval form", it.status, it.tone, svMarkdown(it.text), "sv-form");
+          case "path": {
+            const again = it.same_prompt && last ? `<div class="sv-step">${promptBlock(last.text, "Prompt (same as above, new conversation)")}</div>` : "";
+            return section(svEscape(it.title), it.status, it.tone, svMarkdown(it.text), "sv-path", again);
+          }
+          default:
+            return "";
+        }
+      });
+      return `
+        <div class="sv-toolbar">${back}${nav}</div>
+        <div class="sv-scene">
+          <div class="prompt-meta">
+            <span class="scene-pill">Scene ${svEscape(scene.num)}</span>
+            <span class="prompt-title">${svEscape(scene.title)}</span>
+          </div>
+          ${body.join("")}
+        </div>
+        <div class="sv-toolbar sv-toolbar-bottom">${nav}</div>`;
     }
 
     // Copy to clipboard utility

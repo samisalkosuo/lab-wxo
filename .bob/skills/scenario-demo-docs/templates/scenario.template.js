@@ -16,10 +16,12 @@
 // - Classes available (defined in presentation.html): card, card-header, card-icon (icon-blue|purple|teal|green|
 //   amber|red), card-title, card-body, grid-2, grid-3, callout-banner, fit-card, fit-group, fit-label, fit-value,
 //   fit-pills, fit-pill, tool-chip, service-tag, table-container, prompt-card, prompt-box, scene-pill, copy-btn,
-//   prompt-tip. Do not add new CSS for a scenario.
+//   prompt-tip, script-btn. Do not add new CSS for a scenario.
 // - Slide 1 (Overview) includes a dedicated .fit-card directly under .callout-banner with Industry (specific vertical
 //   or "Cross-Industry"), Function, and Target Roles pills.
 // - Each prompt-box needs a unique id (prompt-1, prompt-2, ...) and its copy button must call copyPrompt('<same id>', this).
+// - Each prompt-card ends with a script-btn calling showFullScript(N), N = the prompt-N number. It opens the full
+//   script built from docs/demo/{{ID}}-demo.md; run python docs/demo/build-demo-scripts-bundle.py after editing it.
 // - Prompt text must be identical to the "Prompt (type exactly)" blocks in docs/demo/{{ID}}-demo.md.
 window.SCENARIOS = window.SCENARIOS || [];
 window.SCENARIOS.push(
@@ -319,6 +321,7 @@ window.SCENARIOS.push(
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>{{PROMPT_1_TIP}}</span>
+                    <button class="script-btn" onclick="showFullScript(1)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>
               </div>
