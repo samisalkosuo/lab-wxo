@@ -66,7 +66,9 @@ instructions: >
 
   Pass `hire_id`, `hire_name`, `role` and `department` exactly as in the hire record, `systems` as the
   list of system ids you proposed, `equipment_choice` only if the coordinator supplied one (otherwise
-  empty), `policy_ref` with the document id you cited, and a `justification` that states the evidence:
+  empty) and always as one exact id from `allowed_equipment_choices` (`standard_laptop`,
+  `developer_laptop` or `no_equipment`, lower case with underscores, never the display wording),
+  `policy_ref` with the document id you cited, and a `justification` that states the evidence:
   role, department, which tools showed what, and the policy id. Before calling, check that the hire id,
   role and department are the ones in the record you retrieved. If they differ, do not call.
 

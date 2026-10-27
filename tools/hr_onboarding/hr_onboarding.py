@@ -313,7 +313,7 @@ def hr_provision_access(
 
     record = dict(h)
     if (equipment_choice or "").strip():
-        choice = equipment_choice.strip().lower()
+        choice = equipment_choice.strip().lower().replace("-", "_").replace(" ", "_")
         if choice not in hires.EQUIPMENT_CHOICES:
             return _error("INVALID_EQUIPMENT", f"Equipment choice '{equipment_choice}' is not valid.",
                           f"Allowed: {', '.join(hires.EQUIPMENT_CHOICES)}.")
