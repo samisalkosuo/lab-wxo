@@ -1,0 +1,26 @@
+ARTICLE ID: HR-TK-ART-02
+TITLE: Requesting an Employment Certificate (Legacy Process — Superseded)
+STATUS: superseded
+OWNER ROLE: HR Operations
+LAST VERIFIED: 2023-06-01
+APPLIES TO: Historical reference only — superseded by HR-TK-ART-03
+
+NOTE: This article describes the old paper-form process, which was replaced in 2024.
+Do not follow this procedure. Use HR-TK-ART-03 instead.
+
+SYMPTOMS
+(Historical — this article is superseded)
+- Employee needs a proof-of-employment letter.
+- HR Coordinator receives a request for an employment certificate.
+
+PROCEDURE (LEGACY — DO NOT USE)
+The old process required:
+1. Complete paper form HR-CERT-2022.
+2. Submit to HR Administration in person or by internal mail.
+3. HR Administration processes within 5 working days.
+4. Certificate delivered by internal mail.
+
+This process was replaced when the Employee Self-Service portal was introduced in 2024.
+
+OUTCOME
+(Historical) Certificate issued via paper form and internal mail.

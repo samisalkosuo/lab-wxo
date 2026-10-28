@@ -1,0 +1,21 @@
+spec_version: v1
+kind: knowledge_base
+name: hr_tk_knowledge
+description: |
+  Tacit knowledge base for the HR Tacit Knowledge demo. Contains procedures, workarounds
+  and process guidance captured from experienced HR Specialists, reviewed by subject-matter
+  experts, and made available to new hires and role-changers.
+
+  Scope: Finland HR Operations processes. DOES NOT COVER benefits enrolment, stock options,
+  or visa and work permit documentation (for those, use hr_tk_find_expert to route the
+  question to the right expert).
+
+  Cite the article ID (e.g. HR-TK-ART-03) in every answer. Cite only articles with
+  status CURRENT. Do not cite SUPERSEDED articles as authoritative guidance.
+documents:
+  - articles/HR-TK-ART-01.txt
+  - articles/HR-TK-ART-02.txt
+  - articles/HR-TK-ART-03.txt
+  - articles/HR-TK-ART-04.txt
+  - articles/HR-TK-ART-05.txt
+  # HR-TK-ART-06.txt is created by TK-001 (the curator publishes it); add it here after that run.

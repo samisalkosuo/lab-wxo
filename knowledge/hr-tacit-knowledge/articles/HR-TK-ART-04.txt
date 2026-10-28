@@ -1,0 +1,39 @@
+ARTICLE ID: HR-TK-ART-04
+TITLE: Internal Position Change Request Process — Finland
+STATUS: current
+OWNER ROLE: HR Specialist
+LAST VERIFIED: 2024-08-20
+APPLIES TO: Finland HR Coordinators and managers
+NOTE: The form and processing time in this article are STALE. The correct procedure since
+January 2025 uses e-form PR-1 (not form HR-22) and takes 5 working days (not 10).
+This article is scheduled for update. Until revised, use e-form PR-1 and 5 working days.
+
+SYMPTOMS
+- A manager or employee asks how to request an internal position change in Finland.
+- A coordinator receives a position-change request and is unsure which form to use.
+- An employee asks how long a position change takes to process.
+- A position-change request was submitted on the old paper form HR-22 and was rejected.
+
+PROCEDURE
+1. OPEN THE HR PORTAL.
+   Log into the HR portal (HR > Requests > Position Change).
+   Note: use e-form PR-1 (the old paper form HR-22 was retired in January 2025).
+
+2. COMPLETE E-FORM PR-1.
+   Fill in the employee name, current position, requested new position, effective date,
+   and the manager confirmation. Attach any supporting documentation.
+
+3. SUBMIT THE REQUEST.
+   Submit the completed e-form PR-1 in the HR portal.
+
+4. WAIT FOR PROCESSING.
+   HR processes internal position change requests within 5 working days.
+   (The intranet page still shows 10 working days — this is stale. Use 5 working days.)
+
+5. CONFIRM THE CHANGE.
+   HR will confirm the change by email to the manager and the employee.
+
+OUTCOME
+- The internal position change is processed within 5 working days.
+- Both the manager and the employee receive a confirmation email.
+- The HR record is updated to reflect the new position and effective date.

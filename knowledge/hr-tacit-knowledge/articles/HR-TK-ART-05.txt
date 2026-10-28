@@ -1,0 +1,36 @@
+ARTICLE ID: HR-TK-ART-05
+TITLE: Internal Position Change Request Process — Sweden
+STATUS: current
+OWNER ROLE: HR Specialist
+LAST VERIFIED: 2025-01-08
+APPLIES TO: Sweden HR Coordinators and managers
+
+SYMPTOMS
+- A manager or employee in Sweden asks how to request an internal position change.
+- A coordinator in Sweden receives a position-change request and is unsure of the process.
+- A Sweden-based employee asks how long a position change takes to process.
+
+PROCEDURE
+1. OPEN THE HR PORTAL.
+   Log into the HR portal (HR > Requests > Position Change). Use the Sweden HR portal instance.
+
+2. COMPLETE THE SWEDEN POSITION-CHANGE FORM.
+   Fill in the employee name, current position, requested new position, effective date,
+   and the manager confirmation.
+
+3. SUBMIT THE REQUEST.
+   Submit the completed form in the HR portal.
+
+4. WAIT FOR PROCESSING.
+   Sweden HR processes internal position change requests within 7 working days.
+
+5. CONFIRM THE CHANGE.
+   HR will send a confirmation to the manager and the employee by email.
+
+OUTCOME
+- The internal position change is processed within 7 working days in Sweden.
+- Both the manager and the employee receive a confirmation email.
+- The HR record is updated with the new position and effective date.
+
+NOTE: This article covers the Sweden process only. For Finland, see HR-TK-ART-04.
+The processing time and form differ between countries.

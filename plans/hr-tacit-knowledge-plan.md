@@ -1,6 +1,6 @@
 # HR Tacit Knowledge Capture & Guide - Plan
 
-> Scenario id: `hr-tacit-knowledge` | Resource prefix: `hr_tk_` (user decision) | Status: `soon` until verified in the browser.
+> Scenario id: `hr-tacit-knowledge` | Resource prefix: `hr_tk_` (user decision) | Status: **`live`** — all nine sub-tasks complete.
 > Conventions: skills `wxo-scenario-authoring`, `wxo-adk`, `scenario-demo-docs`. Closest reference in shape: `hr-onboarding` (read tools + KB + governed flows), `release-readiness` (more than one agent).
 > Prefix check: no existing `scenarios/*/scenario.yaml` or `tools/` name starts with `hr_tk_`. The existing `hr_` names belong to `hr-onboarding` and must not be reused. Re-run the check before the first import.
 
@@ -237,14 +237,14 @@ Process one at a time; the user checks each before the next.
   - The curator scanned the source artifact, not the finished draft, so the PII-scan-before-flow instruction was not followed.
   - Guide over-called `hr_tk_get_employee_profile` on TK-004 (harmless, but unnecessary). Note if it recurs.
   - A flow call returned `token has expired` after about 10 minutes; reload the browser session if this happens.
-- **Status**: [ ] pending
+- **Status**: [x] complete
 
 ### Sub-Task 9: Demo script and slides
 - **Intent**: Write the demo from real runs.
 - **Expected Outcomes**: `docs/demo/hr-tacit-knowledge-demo.md` and `docs/demo/scenarios/hr-tacit-knowledge.js` with identical prompts, a Target Fit card (Industry: Cross-Industry; Function: HR Shared Services and Knowledge Management; Roles: HR Specialist (expert), HR Operations Lead, People Experience Manager, New Hire / Role-changer), the real-vs-mock table, and a "verified / not verified" section filled only from runs.
 - **Todo List**: Use the `scenario-demo-docs` templates; run `validate`; open the presentation from `file://`.
 - **Relevant Context**: `docs/demo/hr-onboarding-demo.md`, `docs/demo/scenarios/hr-onboarding.js`.
-- **Status**: [ ] pending
+- **Status**: [x] complete — demo script rewritten from six browser-verified runs; `status: live` set in manifest and slides; `validate` → `[ok]`; bundle rebuilt.
 
 ## Open Items
 

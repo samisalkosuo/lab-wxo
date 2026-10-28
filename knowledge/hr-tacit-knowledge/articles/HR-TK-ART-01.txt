@@ -1,0 +1,52 @@
+ARTICLE ID: HR-TK-ART-01
+TITLE: Correcting a Retroactive Leave Start Date Without Triggering Overpayment Recovery
+STATUS: current
+OWNER ROLE: Senior HR Specialist
+LAST VERIFIED: 2024-11-15
+APPLIES TO: All Finland HR Specialists
+NOTE: The payroll cutoff date in this article (18th of the month) is STALE. The correct
+cutoff since the January 2025 system migration is the 22nd. This article is scheduled for
+update. Use the 22nd in all communications until this article is revised.
+
+SYMPTOMS
+- A manager requests a retroactive change to an employee leave start date.
+- The system sends an automatic overpayment-recovery letter before the correction is confirmed.
+- The employee receives a recovery letter and is distressed before HR has finished the correction.
+- The HR Specialist needs to correct a leave start date without triggering the automatic letter.
+
+PROCEDURE
+1. OPEN THE PAYROLL HOLD FIRST.
+   Before making any date change, contact the payroll team to place a manual hold on the
+   salary component for the affected employee. This prevents the automatic
+   overpayment-recovery calculation from running during the correction window.
+   Note: payroll team contact details are on the HR Operations intranet page.
+
+2. CHANGE THE LEAVE START DATE.
+   With the hold in place, update the leave start date in the HR system. The system
+   calculates the correction silently, without triggering the recovery letter.
+
+3. REVIEW THE RECALCULATION.
+   The overnight batch recalculates the amounts. Check the result the next morning.
+   If the amount looks correct, proceed to step 4.
+
+4. AGREE ON A REPAYMENT SCHEDULE (IF ANY).
+   If a repayment is owed, agree on the schedule with the employee.
+   - Up to 3 periods: no manager approval needed; the HR Specialist can confirm.
+   - 4 or more periods: written approval from the line manager is required.
+   Document the agreement in the case notes with the date and the employee verbal consent.
+
+5. RELEASE THE HOLD AND CALL THE EMPLOYEE.
+   Release the payroll hold after the schedule is agreed. Call the employee before any
+   letter is generated. The system sends the recovery letter automatically once the hold
+   is released, so the employee must be prepared before the letter arrives.
+
+PAYROLL CUTOFF
+The intranet page on payroll corrections still states the cutoff as the 18th of the month.
+This is stale: since the January 2025 payroll system migration, the cutoff is the 22nd.
+Corrections submitted after the 22nd fall into the following month run.
+(Planned update pending HR Content team action.)
+
+OUTCOME
+- The retroactive leave start date is corrected without an unexpected recovery letter.
+- The employee is informed before any letter arrives.
+- The repayment schedule is documented in the case notes.

@@ -1,0 +1,42 @@
+ARTICLE ID: HR-TK-ART-03
+TITLE: Requesting an Employment Certificate via Employee Self-Service
+STATUS: current
+OWNER ROLE: HR Operations Lead
+LAST VERIFIED: 2025-03-10
+APPLIES TO: All employees in Finland
+
+SYMPTOMS
+- An employee needs a proof-of-employment letter (for a bank, landlord, authority, or other party).
+- A new hire asks how to get an employment certificate.
+- A coordinator is asked to help an employee obtain official confirmation of employment status.
+- An employee needs to confirm job title, start date, or employment type in writing.
+
+PROCEDURE
+1. LOG INTO EMPLOYEE SELF-SERVICE.
+   Open Employee Self-Service (ESS) at the link on the HR intranet homepage.
+
+2. NAVIGATE TO MY DOCUMENTS > CERTIFICATES.
+   From the ESS menu, select My Documents, then Certificates.
+
+3. SELECT EMPLOYMENT CERTIFICATE.
+   Choose Employment Certificate from the certificate type list.
+
+4. SELECT THE LANGUAGE.
+   Choose Finnish, English, or Swedish.
+
+5. ADD A NOTE IF NEEDED.
+   If the recipient needs a specific reference (for example a bank loan letter or
+   a rental application), add a note in the free-text field. HR Operations will
+   contact the employee if further information is needed.
+
+6. SUBMIT THE REQUEST.
+   Click Submit. The request goes directly to HR Operations for processing.
+
+7. WAIT FOR PROCESSING.
+   HR Operations processes employment certificate requests within 3 working days.
+   The certificate is delivered electronically via the ESS portal.
+
+OUTCOME
+- Employee receives an official employment certificate in the requested language within 3 working days.
+- Certificate includes job title, start date, and employment type.
+- Additional details (salary, specific references) are included only if the employee requested them.

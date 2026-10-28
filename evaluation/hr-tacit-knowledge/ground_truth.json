@@ -1,0 +1,151 @@
+{
+  "version": "1.0",
+  "description": "Ground truth for the HR Tacit Knowledge scenario (core evaluation tier). All people, processes and documents are fictional. Smoke prompts are guide-only (TK-004, TK-005); curator cases require the browser chat UI.",
+  "notes": [
+    "smoke_prompts are single-turn and diagnosis-only. The run API cannot answer a flow form.",
+    "Curator cases (TK-001, TK-002, TK-003, TK-006) require the browser chat UI and are not covered by smoke.",
+    "Planted conflicts: ART-01 states cutoff as 18th (real: 22nd). ART-04 states form HR-22 / 10 days (real: e-form PR-1 / 5 days). ART-02 is superseded by ART-03. ART-05 is the Sweden look-alike for TK-002.",
+    "Published articles are NOT searchable until the KB is re-imported. The publish tool returns the article text but does not write to disk.",
+    "The editable draft field (text_input_field DataMap default) and expert assignment (assign_to) are unverified in this repo. Re-test in the browser."
+  ],
+  "smoke_prompts": [
+    {
+      "id": "TK-004-employment-certificate",
+      "prompt": "I'm Emilia Saarinen, new HR Coordinator at the Finland desk. How do I get an employment certificate for an employee who needs it for a bank?"
+    },
+    {
+      "id": "TK-005-visa-letter",
+      "prompt": "An employee is asking for a work permit support letter from HR. I've never handled this before. Who should I ask about this?"
+    }
+  ],
+  "cases": {
+    "TK-001": {
+      "id": "TK-001",
+      "owning_agent": "hr_tk_curator",
+      "description": "Triage a mixed batch of 4 artifacts; draft one new article from A-101",
+      "entry_prompt": "Review the newly harvested items.",
+      "artifacts_in_batch": ["A-101", "A-102", "A-103", "A-104"],
+      "expected_triage": {
+        "A-101": {"decision": "NEW", "reason": "Undocumented workaround for retroactive role-change salary correction; hr_tk_find_related_articles returns nothing (ART-06 is not seeded — it is created by this very run)."},
+        "A-102": {"decision": "IGNORE or DUPLICATE", "reason": "Chat snippet about employment certificates; fully covered by HR-TK-ART-03."},
+        "A-103": {"decision": "DUPLICATE", "reason": "Near-duplicate of HR-TK-ART-03 (employment certificate process)."},
+        "A-104": {"decision": "IGNORE", "reason": "Meeting reminder with no actionable knowledge."}
+      },
+      "expected_draft_article_id": "HR-TK-ART-06",
+      "expected_draft_action": "new",
+      "red_herrings": [
+        "A-102 (chat snippet) looks helpful but is already covered by ART-03.",
+        "A-103 (near-duplicate) covers the same topic as ART-03."
+      ],
+      "expected_key_tools": [
+        "hr_tk_list_new_artifacts",
+        "hr_tk_get_artifact",
+        "hr_tk_scan_pii",
+        "hr_tk_find_related_articles",
+        "hr_tk_find_expert",
+        "hr_tk_review_draft"
+      ],
+      "approval_required": true,
+      "browser_only": true,
+      "notes": "After the triage summary, the curator should draft the ART for A-101 without waiting. The known issue is that the curator waits for a follow-up prompt — adjust instructions if this recurs."
+    },
+    "TK-002": {
+      "id": "TK-002",
+      "owning_agent": "hr_tk_curator",
+      "description": "A-105 contradicts ART-04 (Finland position-change form and processing time)",
+      "entry_prompt": "Review the newly harvested items. (same batch, focus on A-105)",
+      "artifact": "A-105",
+      "expected_triage": {
+        "A-105": {"decision": "UPDATE", "article_to_update": "HR-TK-ART-04", "reason": "A-105 states e-form PR-1 / 5 days; ART-04 states form HR-22 / 10 days. Direct contradiction — propose an update."}
+      },
+      "red_herrings": [
+        "ART-05 covers the Sweden position-change process. It has similar topics but is for a different country. The agent must not propose an update to ART-05."
+      ],
+      "expected_key_tools": [
+        "hr_tk_get_artifact",
+        "hr_tk_find_related_articles",
+        "hr_tk_scan_pii",
+        "hr_tk_review_draft"
+      ],
+      "approval_required": true,
+      "browser_only": true
+    },
+    "TK-003": {
+      "id": "TK-003",
+      "owning_agent": "hr_tk_curator",
+      "description": "Expert pastes the sample document; curator redacts PII, drafts new article, flags ART-01 update",
+      "entry_prompt": "I have some personal notes about correcting retroactive leave start dates. Here is the text: [paste content of docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt]",
+      "source_document": "docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt",
+      "expected_behavior": {
+        "pii_detection": "Scan must find at least: email addresses, Finnish national IDs, employee IDs (E-nnnnn), phone numbers, salary amounts, health terms (surgery, sick leave)",
+        "placement_new": "New article for the hold-first sequence (the payroll cutoff conflict is separate)",
+        "placement_flag": "Agent should also flag that the document states the cutoff as 22nd while ART-01 states 18th — propose an UPDATE to ART-01",
+        "draft_must_be_clean": "The draft body passed to the review flow must pass hr_tk_scan_pii (no PII detected)"
+      },
+      "red_herrings": [
+        "The document's cutoff statement (22nd) appears to contradict ART-01 (18th). The contradiction is intentional — ART-01 is stale."
+      ],
+      "expected_key_tools": [
+        "hr_tk_scan_pii",
+        "hr_tk_find_related_articles",
+        "hr_tk_find_expert",
+        "hr_tk_review_draft"
+      ],
+      "approval_required": true,
+      "browser_only": true,
+      "notes": "The expert pastes the text in chat (no file upload). The scan tool cap is 8000 chars; the document is ~2500 chars. The draft body must contain the hold-first procedure without any of the employee names or IDs."
+    },
+    "TK-004": {
+      "id": "TK-004",
+      "owning_agent": "hr_tk_guide",
+      "description": "New hire at Finland desk asks about employment certificates; current ART-03 answers it",
+      "entry_prompt": "I'm Emilia Saarinen, new HR Coordinator at the Finland desk. How do I get an employment certificate for an employee who needs it for a bank?",
+      "expected_response": {
+        "cites_article": "HR-TK-ART-03",
+        "procedure": "Employee logs into ESS > My Documents > Certificates > Employment Certificate; processing is 3 working days",
+        "does_not_cite": "HR-TK-ART-02 (superseded — must not be cited as authoritative)"
+      },
+      "red_herrings": [
+        "ART-02 (superseded) covers the same topic with the old paper-form process. The agent must cite only ART-03 (current) and must not present ART-02 as guidance."
+      ],
+      "expected_key_tools": [
+        "hr_tk_get_employee_profile"
+      ],
+      "approval_required": false,
+      "browser_only": false,
+      "notes": "hr_tk_get_employee_profile may be called (role: HR Coordinator, desk: Finland) but is not required — the answer is the same regardless of tenure. Over-calling the profile tool is harmless but note if it recurs."
+    },
+    "TK-005": {
+      "id": "TK-005",
+      "owning_agent": "hr_tk_guide",
+      "description": "New hire asks about work permit / visa letter; KB does not cover it; guide routes to expert X-102",
+      "entry_prompt": "An employee is asking for a work permit support letter from HR. I've never handled this before. Who should I ask about this?",
+      "expected_response": {
+        "kb_coverage": "The KB does not cover visa or work permit documentation (stated in KB description).",
+        "names_expert": "Janne Korhonen (X-102), HR Operations Lead, topics include visa documentation and international mobility",
+        "asks_confirmation_before_flow": "The agent must ask the learner whether to route the question; it must NOT start the flow without confirmation",
+        "no_flow_for_smoke": "The smoke prompt ends here — the learner would need to confirm routing in a follow-up turn"
+      },
+      "red_herrings": [],
+      "expected_key_tools": [
+        "hr_tk_find_expert"
+      ],
+      "approval_required": false,
+      "browser_only": false,
+      "notes": "The smoke run should end at a question ('Would you like me to route this to Janne Korhonen?') — never at a flow call. If the agent starts the flow without confirmation, this is a failure to follow instructions."
+    },
+    "TK-006": {
+      "id": "TK-006",
+      "owning_agent": "hr_tk_curator",
+      "description": "Expert rejects the draft in the review flow; nothing is published",
+      "entry_prompt": "(Use any draft from TK-001 or TK-002; click Reject in the review form)",
+      "expected_behavior": {
+        "after_reject": "The flow returns decision: 'rejected'. The curator reports: 'REJECTED BY EXPERT. Nothing was published.' No article is written."
+      },
+      "red_herrings": [],
+      "approval_required": false,
+      "browser_only": true,
+      "notes": "Verify that the rejection path does not call hr_tk_publish_article. The non-confirm branch has default=True in the conditions node."
+    }
+  }
+}

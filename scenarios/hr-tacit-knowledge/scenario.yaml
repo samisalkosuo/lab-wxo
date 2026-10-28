@@ -1,0 +1,65 @@
+# scenario.yaml - manifest for the HR Tacit Knowledge scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Status stays `soon` until the scenario is deployed and its demo script is written from real runs.
+#
+# Two agents: hr_tk_curator (content capture) and hr_tk_guide (learner support).
+# smoke_agent: hr_tk_guide — smoke prompts TK-004 and TK-005 are guide-side only.
+# Curator cases (TK-001 to TK-003, TK-006) require the browser and are not covered by smoke.
+
+id: hr-tacit-knowledge
+name: HR Tacit Knowledge
+description: Captures tacit HR knowledge from work artefacts, gets expert review, and answers new-hire questions with citations
+status: live
+
+smoke_agent: hr_tk_guide
+
+agents:
+  # hr_tk_curator is listed first so that if a supervisor pattern is ever added,
+  # it can reference it. For now both agents are independent.
+  - name: hr_tk_curator
+    path: agents/hr-tacit-knowledge
+    kind: native
+  - name: hr_tk_guide
+    path: agents/hr-tacit-knowledge-guide
+    kind: native
+
+tools:
+  - path: tools/hr_tk
+    entry: hr_tk.py
+    names:
+      - hr_tk_list_new_artifacts
+      - hr_tk_get_artifact
+      - hr_tk_scan_pii
+      - hr_tk_find_related_articles
+      - hr_tk_find_expert
+      - hr_tk_get_employee_profile
+      - hr_tk_publish_article
+      - hr_tk_notify_expert
+    # hr_tk_publish_article and hr_tk_notify_expert are deliberately NOT in attached:
+    # only the hr_tk_review_draft and hr_tk_answer_gap flows call them (least privilege).
+    attached:
+      - hr_tk_list_new_artifacts
+      - hr_tk_get_artifact
+      - hr_tk_scan_pii
+      - hr_tk_find_related_articles
+      - hr_tk_find_expert
+      - hr_tk_get_employee_profile
+
+knowledge_bases:
+  - name: hr_tk_knowledge
+    path: knowledge/hr-tacit-knowledge
+
+flows:
+  - name: hr_tk_review_draft
+    path: flows/hr_tk
+    file: hr_tk_review_draft.py
+  - name: hr_tk_answer_gap
+    path: flows/hr_tk
+    file: hr_tk_answer_gap.py
+
+evaluation:
+  path: evaluation/hr-tacit-knowledge
+  tier: core
+
+demo:
+  script: docs/demo/hr-tacit-knowledge-demo.md

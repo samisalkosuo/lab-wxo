@@ -370,6 +370,144 @@ window.DEMO_SCRIPTS = {
    }
   ]
  },
+ "hr-tacit-knowledge": {
+  "scenes": [
+   {
+    "num": "1",
+    "title": "TK-001: Batch Triage (Curator)",
+    "items": [
+     {
+      "t": "note",
+      "text": "**Agent: HR Tacit Knowledge Curator (`hr_tk_curator`)**"
+     },
+     {
+      "t": "prompt",
+      "card": 1,
+      "note": "",
+      "text": "Review the newly harvested items."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- The curator calls `hr_tk_list_new_artifacts` and receives artefacts A-101 through A-104.\n- Produces a triage summary: A-101 NEW (undocumented workaround for retroactive role-change salary corrections), A-102 DUPLICATE/IGNORE (employment certificate chat, covered by ART-03), A-103 DUPLICATE (near-duplicate of ART-03), A-104 IGNORE (meeting reminder noise).\n- For A-101: calls `hr_tk_get_artifact`, `hr_tk_find_related_articles` (returns nothing for role-change/salary), `hr_tk_scan_pii` (returns `clean: true` because A-101 uses role labels not names), `hr_tk_find_expert` — then either opens `hr_tk_review_draft` immediately or waits for a follow-up prompt.\n- The review form opens with a title like **\"Article Review\"**, metadata fields (article type, source artifact, author role, placement summary), and the draft body shown in a read-only display field.\n- The form title shows \"(0 questions)\" — this is expected; display fields are not counted as input questions.\n- On Confirm, the agent reports verbatim from the flow result: **\"CONFIRMED AND RECORDED. Article (new): 'Handling Retroactive Role-Change Salary Corrections ...'\"** with the article ID and a note that the article is not searchable until re-import.\n- **Observed variation:** the curator sometimes waits after triage and does not draft automatically. If so, type: \"Please draft an article for A-101.\""
+     }
+    ]
+   },
+   {
+    "num": "2",
+    "title": "TK-002: Contradiction Detection (Curator)",
+    "items": [
+     {
+      "t": "note",
+      "text": "**Agent: HR Tacit Knowledge Curator (`hr_tk_curator`)**"
+     },
+     {
+      "t": "prompt",
+      "card": 2,
+      "note": "",
+      "text": "Review the newly harvested items. Focus on ticket A-105."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- The curator fetches A-105 (ticket SHR-4490: Finland position-change form changed from HR-22 to e-form PR-1, processing time 10 days → 5 days).\n- Calls `hr_tk_find_related_articles` with keywords around \"position change Finland\" — returns HR-TK-ART-04 (Finland, current) and possibly HR-TK-ART-05 (Sweden).\n- Identifies A-105 as an UPDATE to HR-TK-ART-04 (not a new article, not an update to ART-05).\n- Drafts a correction for ART-04, scans for PII, opens the review form with `article_id: HR-TK-ART-04`."
+     }
+    ]
+   },
+   {
+    "num": "3",
+    "title": "TK-003: Document Drop-in with PII (Curator)",
+    "items": [
+     {
+      "t": "note",
+      "text": "**Agent: HR Tacit Knowledge Curator (`hr_tk_curator`)**"
+     },
+     {
+      "t": "note",
+      "text": "**Before this scene:** open `docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt` and have the full text ready to paste."
+     },
+     {
+      "t": "prompt",
+      "card": 3,
+      "note": "",
+      "text": "I have some personal notes about correcting retroactive leave start dates. Can you turn this into a KB article? Here are my notes: [paste the full contents of docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt]"
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- The curator treats the pasted text as an artefact, calls `hr_tk_scan_pii` on the text — returns `clean: false` with findings: emails, national IDs (format `DDMMYY-NNNC`), employee IDs (E-48291, E-51034, E-49900, E-47711), phone numbers (+358...), salary amounts (€1,240.00, €980.50, €38,400, €320.00), health terms (surgery, sick leave, medical leave), and known names (Kaisa Mäkinen, Tero Virtanen, Sanna Lehtinen, Eero Salonen, Maarit Virtanen).\n- Rewrites the draft replacing PII with general terms (\"the employee\", role labels, generic dates).\n- Re-scans the cleaned draft — returns `clean: true`.\n- Calls `hr_tk_find_related_articles` with retroactive leave keywords — returns HR-TK-ART-01. The curator flags the conflict: the document says cutoff is the **22nd** while ART-01 states the **18th**.\n- Opens the review form with the cleaned draft and the conflict note."
+     }
+    ]
+   },
+   {
+    "num": "4",
+    "title": "TK-004: Guide Answers from Current Article (Guide)",
+    "items": [
+     {
+      "t": "note",
+      "text": "**Agent: HR Tacit Knowledge Guide (`hr_tk_guide`)**"
+     },
+     {
+      "t": "prompt",
+      "card": 4,
+      "note": "",
+      "text": "I'm Emilia Saarinen, new HR Coordinator at the Finland desk. How do I get an employment certificate for an employee who needs it for a bank?"
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- The guide may call `hr_tk_get_employee_profile` to fetch Emilia's profile (role: HR Coordinator, desk: Finland, tenure: 2 months). This is optional — the procedure is the same regardless of role.\n- Searches `hr_tk_knowledge` for the employment certificate procedure.\n- Answers with the procedure from HR-TK-ART-03 (current): ESS > My Documents > Certificates > Employment Certificate; select language; submit; 3 working days.\n- Cites **HR-TK-ART-03** in the answer. Does NOT cite HR-TK-ART-02 (superseded legacy process) as current guidance.\n- **Observed variation:** the guide sometimes calls `hr_tk_get_employee_profile` even when the question is role-independent. This is harmless and demonstrates the guide's context-awareness; note it if it recurs."
+     }
+    ]
+   },
+   {
+    "num": "5",
+    "title": "TK-005: Guide Routes a KB Gap to an Expert (Guide)",
+    "items": [
+     {
+      "t": "note",
+      "text": "**Agent: HR Tacit Knowledge Guide (`hr_tk_guide`)**"
+     },
+     {
+      "t": "prompt",
+      "card": 5,
+      "note": "",
+      "text": "An employee is asking for a work permit support letter from HR. I've never handled this before. Who should I ask about this?"
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- The guide searches `hr_tk_knowledge`. The KB description explicitly excludes visa and work permit documentation — no results match.\n- Calls `hr_tk_find_expert` with a topic around \"work permit letter visa documentation\".\n- Returns expert Janne Korhonen (X-102, HR Operations Lead) whose topics include visa documentation and international mobility.\n- Tells the learner: the KB does not cover this topic; suggests routing to Janne Korhonen.\n- **Asks for confirmation** before starting `hr_tk_answer_gap`. Does NOT start the flow immediately.\n- If the learner types \"Yes, please route it to Janne\", the guide starts `hr_tk_answer_gap`, which shows a form for the expert to provide an answer or decline."
+     }
+    ]
+   },
+   {
+    "num": "6",
+    "title": "TK-006: Governance — Expert Rejects the Draft (Browser only)",
+    "items": [
+     {
+      "t": "note",
+      "text": "**Agent: HR Tacit Knowledge Curator (`hr_tk_curator`)**"
+     },
+     {
+      "t": "note",
+      "text": "**No copy prompt — this scene continues from Scene 1 or 2.** After the review form appears in the browser, click **Reject** instead of Confirm."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- The flow takes the default (non-confirm) branch (conditions node: `default=True`).\n- The flow returns `decision: 'rejected'`.\n- The curator reports: **\"REJECTED BY EXPERT. Nothing was published.\"** (verbatim from the flow result field).\n- `hr_tk_publish_article` is NOT called. No article is written."
+     }
+    ]
+   }
+  ]
+ },
  "incident-triage": {
   "scenes": [
    {
