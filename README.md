@@ -30,6 +30,7 @@ Deployed with `python wxodemo.py deploy <name>` (see [Standalone Agents](#standa
 |---|---|---|
 | [document-classifier](standalone/document-classifier/) | `document_classifier` | Classifies text or documents into user-specified categories with confidence and single-sentence reasoning in strict JSON |
 | [hello-world](standalone/hello-world/) | `hello_world` | Simple greeting agent with a `greeting` tool -- verifies ADK setup |
+| [information-redactor](standalone/information-redactor/) | `information_redactor` | Detects and masks sensitive information and personal identifiers in pasted text before sharing; typed placeholders, no tools, no knowledge base |
 | [metadata-extractor](standalone/metadata-extractor/) | `metadata_extractor` | Extracts user-specified arbitrary metadata fields from provided text into strict JSON schemas |
 | [priority-assessor](standalone/priority-assessor/) | `priority_assessor` | Assigns structured priority levels (Critical, High, Medium, Low) to incoming items using configured rules or common-sense defaults |
 | [translator](standalone/translator/) | `translator` | Translates user text into a named target language from a fixed supported list, with an optional tone or style; no tools, no knowledge base |
@@ -318,6 +319,7 @@ lab-wxo/
 │   ├── README.md                     # Standalone conventions and wxodemo usage
 │   ├── document-classifier/          # Configurable document classification into candidate categories (strict JSON)
 │   ├── hello-world/                  # ADK setup check (agent + greeting tool)
+│   ├── information-redactor/         # Sensitive information / personal identifier masking agent
 │   ├── metadata-extractor/           # Arbitrary metadata field extraction into strict JSON schemas
 │   ├── priority-assessor/            # Cross-industry priority assessment (Critical/High/Med/Low, strict JSON)
 │   ├── translator/                   # Translation agent (fixed language list, optional tone)
