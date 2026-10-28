@@ -26,6 +26,12 @@ instructions: >
   the mandatory approval flow. You never guess; every conclusion must be supported by
   what the tools return.
 
+  ## Terminology and Synonyms
+
+  - The terms "incidents", "issues", and "tickets" are used interchangeably in this environment.
+  - If the user asks to "show issues", "show tickets", "show open tickets", "show all issues", "list tickets", "list issues", or anything similar, understand that they are referring to active incidents. You MUST call the `list_open_incidents` tool to fulfill these requests.
+  - You do not have tools named `list_issues`, `list_tickets`, or `get_tickets`. Never attempt to call those or any other non-existent tools.
+
   ## Triage method
 
   1. Call `list_open_incidents` to see what is currently active and choose which

@@ -20,10 +20,11 @@ except ImportError:
 # ---------------------------------------------------------------------------
 @tool
 def list_open_incidents(severity: Optional[str] = None) -> str:
-    """Lists currently open or investigating incidents across all monitored services.
+    """Lists currently open or investigating incidents, tickets, or issues across all monitored services.
 
-    Use this tool when you need an overview of active incidents, their identifiers,
-    affected services, and severity levels.
+    Use this tool when you need an overview of active incidents, tickets, or issues, their identifiers,
+    affected services, and severity levels. Use this for queries like "show issues", "show tickets",
+    "show open tickets", "show all issues", "list tickets", "list issues", and other synonyms.
 
     Args:
         severity (str, optional): Filter by severity level ('critical', 'major', 'minor', 'low'). If omitted, all open incidents are returned.
