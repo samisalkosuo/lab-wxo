@@ -19,6 +19,7 @@ Shape:
          "items": [
            {"t": "note", "text": "..."},
            {"t": "prompt", "card": 1, "note": "", "text": "..."},
+           {"t": "prompt", "card": null, "label": "Sample document", "note": "...", "text": "..."},
            {"t": "expected", "status": "observed", "tone": "ok", "text": "..."},
            {"t": "form", "status": "...", "tone": "warn", "text": "..."},
            {"t": "path", "title": "Approve path", "status": "", "tone": "info",
@@ -50,6 +51,9 @@ SCENE_RE = re.compile(r"^##\s+Scene\s+(\S+?)\s+[-\u2013\u2014]\s+(.*\S)\s*$")
 H2_RE = re.compile(r"^##\s")
 LABEL_RE = re.compile(r"^\*\*[^*\n]+\*\*")
 PROMPT_LABEL_RE = re.compile(r"^\*\*(Prompt|What to type)\s*(?:\((.*?)\))?\s*:?\s*\*\*")
+# "**Sample document (note):** hr-tk-sample/file.txt" -> copyable block with the file's text.
+# The path is relative to docs/demo/, so the .txt stays the single source of the text.
+SAMPLE_DOC_RE = re.compile(r"^\*\*Sample document\s*(?:\((.*?)\))?\s*:?\s*\*\*\s*(\S+)\s*$")
 DROP_LABELS = ("**Point out", "**Fallback", "**Be straight")
 EXPECTED_RE = re.compile(r"^Expected behaviour\s*(?:\((.*)\))?\s*:?$")
 PAREN_RE = re.compile(r"^\s*\((.*?)\)\s*:\s*(.*)$|^\s*\((.*?)\)\s*(.*)$", re.S)
@@ -195,6 +199,13 @@ def parse_scene(lines: list[str], card_start: int) -> tuple[list[dict], int]:
                 continue
             if LABEL_RE.match(line) or line.startswith("### "):
                 dropping = line.startswith(DROP_LABELS)
+                sm = SAMPLE_DOC_RE.match(line)
+                if sm:
+                    flush_md()
+                    doc = (SCRIPT_DIR / sm.group(2)).read_text(encoding="utf-8-sig")
+                    items.append({"t": "prompt", "card": None, "label": "Sample document",
+                                  "note": sm.group(1) or "", "text": doc.strip()})
+                    continue
                 pm = PROMPT_LABEL_RE.match(line)
                 if pm:
                     flush_md()

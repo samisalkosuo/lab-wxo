@@ -535,10 +535,24 @@ window.SCENARIOS.push(
                       Copy Prompt
                     </button>
                   </div>
-                  <div class="prompt-box" id="prompt-3">I have some personal notes about correcting retroactive leave start dates. Can you turn this into a KB article? Here are my notes: [paste the full contents of docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt]</div>
+                  <div class="prompt-box" id="prompt-3">I have some personal notes about correcting retroactive leave start dates. Can you turn this into a KB article? Here are my notes:</div>
+                  <div class="prompt-card-top" style="margin-top:4px;">
+                    <div class="prompt-meta">
+                      <span class="scene-pill">Step 2</span>
+                      <span class="prompt-title">Sample document — paste after the prompt</span>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('sample-doc-3', this)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy Document
+                    </button>
+                  </div>
+                  <div class="prompt-box" id="sample-doc-3" data-sample-doc="hr-tk-sample/expert-notes-retroactive-leave-dates.txt">Loading document…</div>
                   <div class="prompt-tip">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                    <span>Agent: hr_tk_curator. Open the .txt file from docs/demo/hr-tk-sample/ and paste its contents after the colon. PII includes names, national IDs, phone numbers, salary amounts, health terms. The agent should also flag that the document says the cutoff is the 22nd while HR-TK-ART-01 says the 18th.</span>
+                    <span>Agent: hr_tk_curator. Two copy steps: click Copy Prompt and paste it into the chat (do not send), then come back, click Copy Document and paste it right after the colon. PII includes names, national IDs, phone numbers, salary amounts, health terms. The agent should also flag that the document says the cutoff is the 22nd while HR-TK-ART-01 says the 18th.</span>
                     <button class="script-btn" onclick="showFullScript(3)" title="Open the full demo script for this scene">Show full script</button>
                   </div>
                 </div>

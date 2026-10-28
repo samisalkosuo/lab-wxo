@@ -40,7 +40,7 @@ For a human presenter. All six scenes were verified in the browser chat UI durin
 - [ ] Confirm both agents exist: `orchestrate agents list` should show `hr_tk_curator` and `hr_tk_guide`.
 - [ ] Reload the browser chat page and confirm both agents are selectable.
 - [ ] No data reset is needed. The mock world is static and read-only. Each scene needs only a fresh conversation.
-- [ ] Have the sample document open and ready to copy: `docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt` (for scene 3).
+- [ ] Scene 3 needs the sample expert notes. In the presentation (Live Demo Prompts slide) they have their own Copy button, so no file needs to be opened.
 - [ ] Do not force-kill `orchestrate` or `python` processes if something hangs.
 
 ## 5. How to read this script
@@ -134,13 +134,15 @@ Review the newly harvested items. Focus on ticket A-105.
 
 **Agent: HR Tacit Knowledge Curator (`hr_tk_curator`)**
 
-**Before this scene:** open `docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt` and have the full text ready to paste.
+**Two copy steps:** first copy the prompt below and paste it into the chat (do not send yet), then come back to the presentation, copy the sample document and paste it right after "Here are my notes:". Then send.
 
 **Prompt (type exactly):**
 
 ```
-I have some personal notes about correcting retroactive leave start dates. Can you turn this into a KB article? Here are my notes: [paste the full contents of docs/demo/hr-tk-sample/expert-notes-retroactive-leave-dates.txt]
+I have some personal notes about correcting retroactive leave start dates. Can you turn this into a KB article? Here are my notes:
 ```
+
+**Sample document (paste after the prompt):** hr-tk-sample/expert-notes-retroactive-leave-dates.txt
 
 **Expected behaviour (observed):**
 

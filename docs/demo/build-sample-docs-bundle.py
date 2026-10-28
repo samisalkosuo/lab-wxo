@@ -21,6 +21,8 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
 SAMPLE_DOCS_DIR = SCRIPT_DIR / "sample-docs"
+# Extra scenario sample files bundled under "<dir>/<filename>": (directory name, glob)
+EXTRA_DOCS = [("hr-tk-sample", "*.txt")]
 OUTPUT_FILE = SCRIPT_DIR / "sample-docs-bundle.js"
 
 
@@ -34,6 +36,9 @@ def build_bundle() -> None:
     for md_path in md_files:
         key = f"sample-docs/{md_path.name}"
         docs[key] = md_path.read_text(encoding="utf-8")
+    for dirname, pattern in EXTRA_DOCS:
+        for path in sorted((SCRIPT_DIR / dirname).glob(pattern)):
+            docs[f"{dirname}/{path.name}"] = path.read_text(encoding="utf-8-sig")
 
     lines = [
         "// AUTO-GENERATED — do not edit by hand.",

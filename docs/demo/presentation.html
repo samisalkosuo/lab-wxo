@@ -2139,7 +2139,7 @@
           <button class="sv-back-btn" ${idx === total - 1 ? "disabled" : ""} onclick="gotoScriptScene(${idx + 1})">Next scene &rsaquo;</button>
         </div>`;
 
-      const promptCount = scene.items.filter(it => it.t === "prompt").length;
+      const promptCount = scene.items.filter(it => it.t === "prompt" && !it.label).length;
       let n = 0;
       let step = 0;
       let last = null; // last prompt of this scene, repeated by "send the same prompt" paths
@@ -2168,6 +2168,9 @@
           case "note":
             return `<div class="sv-section sv-setup"><div class="sv-md">${svMarkdown(it.text)}</div></div>`;
           case "prompt": {
+            if (it.label) {
+              return `<div class="sv-step">${promptBlock(it.text, it.label, it.note)}</div>`;
+            }
             step++;
             last = it;
             const label = promptCount > 1 ? `Step ${step} &middot; Prompt` : "Prompt";
