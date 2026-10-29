@@ -15,6 +15,7 @@ Deployed with `python wxodemo.py deploy` from the scenario manifests in `scenari
 | [cloud-finops](agents/cloud-finops/) | `cloud_finops` | `cloud-finops` | Investigates spend anomalies, recommends rightsizing, and governs cloud resource reclamation through human approval flows |
 | [customer-returns](agents/customer-returns/) | `customer_returns` | `customer-returns` | Conversational returns agent evaluating warranty and return policies; issues governed refunds via approval flow |
 | [hr-onboarding](agents/hr-onboarding/) | `hr_onboarding` | `hr-onboarding` | Conversational HR onboarding assistant that analyzes role-based access policies and initiates governed IT provisioning flows |
+| [hr-tacit-knowledge](agents/hr-tacit-knowledge/) | `hr_tk_curator`, `hr_tk_guide` | `hr-tacit-knowledge` | Curates tacit HR knowledge from harvested work artefacts via expert review flow (`hr_tk_curator`) and answers employee questions with citations (`hr_tk_guide`) |
 | [incident-triage](agents/incident-triage/) | `incident_triage` | `incident-triage` | Diagnoses production incidents with runbook knowledge; routes automated remediation through human approval |
 | [pension-disability-triage](agents/pension-disability-triage/) | `pension_disability_triage` | `pension-disability-triage` | Triages Finnish statutory disability pension claims (TyEL/YEL), enforces rehabilitation-first priority, handles occupational accident waivers, and governs medical board referrals through a human approval flow |
 | [pension-ove-advisor](agents/pension-ove-advisor/) | `pension_ove_advisor` | `pension-ove-advisor` | Advises Finnish pension members on partial early old-age pension (OVE), calculates actuarial reductions, simulates combined income, and files applications |
@@ -242,6 +243,8 @@ lab-wxo/
 │   ├── cloud-finops/
 │   ├── customer-returns/
 │   ├── hr-onboarding/
+│   ├── hr-tacit-knowledge/           # HR tacit knowledge: curator agent
+│   ├── hr-tacit-knowledge-guide/     # HR tacit knowledge: guide agent
 │   ├── incident-triage/
 │   ├── pension-disability-triage/
 │   ├── pension-ove-advisor/
@@ -255,6 +258,7 @@ lab-wxo/
 │   ├── cloud_finops/                 # Spend, utilization, idle resources, reclaim & resize tools
 │   ├── customer_returns/             # Order lookup, warranty check, return history, refund tools
 │   ├── hr_onboarding/                # Pending hires, role access, department config, provisioning tools
+│   ├── hr_tk/                        # Artifact triage, PII scan, related articles, expert matching & publishing tools
 │   ├── incident_triage/              # Incident lookup, service health, logs, metrics, remediation tools
 │   ├── pension_disability/           # Claim dossier, qualifying months, medical summary, rehab & referral tools
 │   ├── pension_ove/                  # Member profile, pension accrual, reduction & simulation tools
@@ -265,6 +269,7 @@ lab-wxo/
 │   ├── cloud-finops/                 # FinOps policies, tagging rules, rightsizing guidelines (.txt)
 │   ├── customer-returns/             # Return windows, warranty exceptions, refund conditions (.txt)
 │   ├── hr-onboarding/                # Role access matrix, compliance training requirements (.txt)
+│   ├── hr-tacit-knowledge/           # HR process knowledge base articles (.txt)
 │   ├── incident-triage/              # Runbooks for deployments, databases, auth, certificates (.txt)
 │   ├── pension-disability-triage/    # TyEL disability incapacity criteria, rehab priority, kuntoutustuki, qualifying months (.txt)
 │   ├── pension-ove-advisor/          # Finnish OVE pension legislation rules, age limits, reduction rules (.txt)
@@ -276,6 +281,7 @@ lab-wxo/
 │   ├── cf_approve_resize/            # Cloud FinOps: human approval before instance rightsizing
 │   ├── customer_returns/             # Customer Returns: human approval before issuing refund
 │   ├── hr_onboarding/                # HR Onboarding: standard and compliance provisioning flows
+│   ├── hr_tk/                        # HR Tacit Knowledge: expert review for draft articles and knowledge gap flows
 │   ├── incident_triage/              # Incident Triage: human approval before automated remediation
 │   ├── pension_disability/           # Disability Triage: claims handler approval before medical board referral
 │   ├── pension_ove/                  # Pension Advisor: formal OVE application submission flow
@@ -285,6 +291,7 @@ lab-wxo/
 │   ├── cloud-finops/
 │   ├── customer-returns/
 │   ├── hr-onboarding/
+│   ├── hr-tacit-knowledge/
 │   ├── incident-triage/
 │   ├── pension-disability-triage/
 │   ├── pension-ove-advisor/
@@ -295,6 +302,7 @@ lab-wxo/
 │   ├── cloud-finops/scenario.yaml
 │   ├── customer-returns/scenario.yaml
 │   ├── hr-onboarding/scenario.yaml
+│   ├── hr-tacit-knowledge/scenario.yaml
 │   ├── incident-triage/scenario.yaml
 │   ├── pension-disability-triage/scenario.yaml
 │   ├── pension-ove-advisor/scenario.yaml
@@ -308,6 +316,7 @@ lab-wxo/
 │       ├── cloud-finops-demo.md      # Human-readable scenario demo scripts
 │       ├── customer-returns-demo.md
 │       ├── hr-onboarding-demo.md
+│       ├── hr-tacit-knowledge-demo.md
 │       ├── incident-triage-demo.md
 │       ├── pension-disability-triage-demo.md
 │       ├── pension-ove-advisor-demo.md
@@ -324,6 +333,7 @@ lab-wxo/
 │   ├── priority-assessor/            # Cross-industry priority assessment (Critical/High/Med/Low, strict JSON)
 │   ├── translator/                   # Translation agent (fixed language list, optional tone)
 │   └── travel-rules-qa/              # Finnish travel regulation PDF Q&A agent
+├── traffic-gen/                      # Periodic background traffic generator for WXO instances
 ├── connections/                      # Connection templates (empty for mock demo)
 ├── src/wxodemo/                      # The wxodemo CLI package (deploy, undeploy, status, smoke, ...)
 ├── tests/                            # pytest suite for the CLI (no network or ADK login needed)
