@@ -9,6 +9,7 @@ from pathlib import Path
 
 from wxodemo import __version__
 from wxodemo.adk import AdkError, login
+from wxodemo.api_eval import run_test_upload
 from wxodemo.chats import ExportError, run_export_chats
 from wxodemo.config import UsageError, load_config, log_path, repo_root
 from wxodemo.deploy import run_deploy, run_status, run_undeploy
@@ -168,6 +169,17 @@ def cmd_eval(args: argparse.Namespace) -> int:
     return run_eval(root, target.scenario, _config_for(args), args.dry_run)
 
 
+def cmd_test_upload(args: argparse.Namespace) -> int:
+    root = repo_root()
+    targets, problems = all_targets(root)
+    for problem in problems:
+        warn(problem)
+    chosen = resolve_targets(targets, [args.target], kind=args.kind)
+    return run_test_upload(
+        root, chosen[0], _config_for(args), evaluate=args.eval, dry_run=args.dry_run
+    )
+
+
 def cmd_export_chats(args: argparse.Namespace) -> int:
     output = Path(args.output_dir) if args.output_dir else repo_root() / "export"
     return run_export_chats(
@@ -268,6 +280,18 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("scenario", help="scenario id")
     p.add_argument("--dry-run", action="store_true", help="show the command; run nothing")
     p.set_defaults(func=cmd_eval)
+
+    p = sub.add_parser(
+        "test-upload",
+        help="upload test cases to WXO Tests tab and optionally trigger evaluation in UI",
+    )
+    p.add_argument("target", help="scenario or agent name")
+    p.add_argument("--kind", choices=("scenario", "standalone"), help="target kind")
+    p.add_argument(
+        "--eval", action="store_true", help="also trigger evaluation in WXO Evaluations tab"
+    )
+    p.add_argument("--dry-run", action="store_true", help="preview prompts without uploading")
+    p.set_defaults(func=cmd_test_upload)
 
     p = sub.add_parser("export-chats", help="export agent conversations to Markdown and JSON")
     p.add_argument("--agent", help="only this agent (name or id)")

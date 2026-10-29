@@ -252,6 +252,13 @@ def validate_scenario(m: Scenario) -> list[str]:
             err(f"evaluation.tier must be one of {TIERS}")
         if not truth.is_file():
             err(f"{ev['path']}/ground_truth.json not found (the core evaluation tier is required)")
+        if ev.get("tier") == "full":
+            config = root / ev["path"] / "eval_config.yaml"
+            if not config.is_file():
+                err(f"{ev['path']}/eval_config.yaml not found (required for full evaluation tier)")
+            tc_dir = root / ev["path"] / "test_cases"
+            if not tc_dir.is_dir() or not list(tc_dir.glob("*.json")):
+                err(f"{ev['path']}/test_cases/*.json not found (required for full evaluation tier)")
     elif m.get("status") == "live":
         err("evaluation section missing (ground_truth.json is required for a live scenario)")
     if ev and m.get("status") == "live" and truth.is_file():

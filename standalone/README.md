@@ -24,6 +24,8 @@ standalone/
     ├── agent.yaml          # ADK native-agent definition
     ├── README.md           # purpose, dependencies, deploy commands, known limits
     ├── examples.md         # example prompts (mandatory; consumed by future tools)
+    ├── eval_config.yaml    # ADK evaluation configuration
+    ├── test_cases/         # automated test cases (JSON)
     └── <tool>.py           # optional: Python tool(s) the agent needs
 ```
 
@@ -49,7 +51,9 @@ and enforces the conventions below.
    [`translator/examples.md`](translator/examples.md)). Include at least 3 examples,
    covering the normal path and any refusal or clarification path. The agent `README.md`
    links to this file and does not repeat the examples.
-4. Add the agent and its interactive examples to `docs/demo/standalone-agents.js`
+4. Create test cases in `standalone/<your-agent-name>/test_cases/*.json` and `eval_config.yaml`
+   derived from the examples and expected behaviors.
+5. Add the agent and its interactive examples to `docs/demo/standalone-agents.js`
    so it appears in `docs/demo/presentation.html`.
 5. Update [`README.md`](../README.md) (the Standalone agents table and Repository Structure) with the new agent.
 6. Deploy with `wxodemo` (see below).
@@ -71,6 +75,10 @@ python wxodemo.py list --kind standalone
 
 # Deploy one agent
 python wxodemo.py deploy travel_rules_qa
+
+# Upload test cases to WXO Tests tab (and optionally evaluate)
+python wxodemo.py test-upload travel_rules_qa
+python wxodemo.py test-upload travel_rules_qa --eval
 
 # Deploy all standalone agents
 python wxodemo.py deploy --all --kind standalone

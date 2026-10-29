@@ -70,7 +70,7 @@ flows: []
 
 evaluation:
   path: evaluation/{sid}
-  tier: core
+  tier: full
 
 demo:
   script: docs/demo/{sid}-demo.md
@@ -98,6 +98,49 @@ def ground_truth_text(name: str) -> str:
   "description": "Ground truth for the {name} scenario (core evaluation tier).",
   "smoke_prompts": [],
   "cases": {{}}
+}}
+"""
+
+
+def eval_config_text(sid: str, agent: str) -> str:
+    return f"""# Evaluation configuration for the {agent} agent.
+# Run with:
+#   python wxodemo.py eval {sid}
+# (same as: orchestrate evaluations evaluate --config evaluation/{sid}/eval_config.yaml)
+
+test_paths:
+  - evaluation/{sid}/test_cases/
+
+output_dir: evaluation/{sid}/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly."
+"""
+
+
+def starter_test_case_text(sid: str, agent: str, name: str) -> str:
+    return f"""{{
+  "agent": "{agent}",
+  "goals": {{
+    "summarize": []
+  }},
+  "goal_details": [
+    {{
+      "name": "summarize",
+      "type": "text",
+      "response": "Expected summary response.",
+      "keywords": [
+        "keyword1"
+      ]
+    }}
+  ],
+  "story": "Starter test story for {name} scenario.",
+  "starting_sentence": "Help me with {name}."
 }}
 """
 
@@ -206,6 +249,8 @@ def build_plan(root: Path, sid: str, name: str, desc: str, agent_name: str | Non
         (root / "scenarios" / sid / "scenario.yaml", manifest_text(sid, name, desc, agent)),
         (root / "agents" / sid / "agent.yaml", agent_text(agent, desc)),
         (root / "evaluation" / sid / "ground_truth.json", ground_truth_text(name)),
+        (root / "evaluation" / sid / "eval_config.yaml", eval_config_text(sid, agent)),
+        (root / "evaluation" / sid / "test_cases" / "tc_01.json", starter_test_case_text(sid, agent, name)),
         (root / "docs" / "demo" / f"{sid}-demo.md", demo),
     ]
     if not js_path.exists():

@@ -17,7 +17,8 @@ window 03:00 → fires at 03:38
 ```
 
 Each iteration picks an agent and a prompt at random from the active pool, POSTs to the WXO
-run API, and logs the result to stdout. Errors are printed but never stop the loop.
+run API (targeting the agent's `live` environment by default), and logs the result to stdout.
+Errors are printed but never stop the loop.
 
 **Flow-triggering agents** (those whose scenario defines approval flows) are sent via
 fire-and-forget: the request is sent but the app does not wait for the run to complete,
@@ -44,6 +45,16 @@ All other agents are polled until the run reaches a terminal status or a 3-minut
 | `WXO_ENV_TYPE` | no | `ibm_iam` | `ibm_iam` (IBM Cloud) or `mcsp` (AWS-hosted) |
 | `CALL_INTERVAL_MINUTES` | no | `1` | Window size in minutes; one call fires per window at a random second |
 | `AGENT_FILTER` | no | _(all)_ | Comma-separated agent names to restrict the pool, e.g. `incident_triage,hello_world` |
+| `WXO_ENVIRONMENT` | no | `live` | Agent environment that runs are sent to: `live` or `draft`. See below |
+
+### Why `live` is the default
+
+Runs sent without an `environment_id` execute against the **draft** agent. Draft runs appear in
+Observability / Analytics, but the WXO **Home** dashboard (Messages, Adoption, …) only counts
+**live** usage. The generator therefore looks up each agent's `live` environment ID from
+`GET /v1/orchestrate/agents` and sends it as `environment_id`. Agents without a live
+environment are skipped with a warning. Set `WXO_ENVIRONMENT=draft` to omit `environment_id`
+and exercise the draft agents instead.
 
 ---
 
@@ -67,6 +78,16 @@ docker run --rm \
   -e WXO_URL=https://api.eu-de.watson-orchestrate.cloud.ibm.com/instances/your-instance-id \
   -e WXO_ENV_TYPE=ibm_iam \
   -e CALL_INTERVAL_MINUTES=1 \
+  wxo-traffic-gen
+```
+
+To send runs to the draft agents instead of live:
+
+```bash
+docker run --rm \
+  -e WXO_API_KEY=your-api-key-here \
+  -e WXO_URL=https://api.eu-de.watson-orchestrate.cloud.ibm.com/instances/your-instance-id \
+  -e WXO_ENVIRONMENT=draft \
   wxo-traffic-gen
 ```
 

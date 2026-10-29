@@ -36,7 +36,7 @@ Names: folders and files that humans browse are `kebab-case`; Python package fol
 | Tools | `tools/<pkg>/<pkg>.py`, `tools/<pkg>/data/*.py`, `tools/<pkg>/requirements.txt`, `__init__.py` | One top-level entry file with `@tool` functions. Mock world in `data/`. `requirements.txt` pins `ibm-watsonx-orchestrate==2.18.2`. Copy the import fallback from `tools/incident_triage/incident_triage.py` (`try: from .data import ... except ImportError: from data import ...`). |
 | Knowledge base | `knowledge/<id>/<name>.yaml` + `runbooks/*.txt` (or policy docs) | Built-in KB takes xlsx, docx, pdf, pptx, csv, html, txt; **markdown is not supported**, use `.txt`. Give every document a stable ID (like `RB-DEPLOY-01`) that the agent can cite. |
 | Flow (if a write/approval gate is needed) | `flows/<pkg>/<flow_name>.py` | See section 5. |
-| Ground truth | `evaluation/<id>/ground_truth.json` | Always (section 6). |
+| Ground truth & tests | `evaluation/<id>/ground_truth.json`, `eval_config.yaml`, `test_cases/*.json` | Always required (`tier: full`, see section 6). |
 | Demo script | `docs/demo/<id>-demo.md` | From the `scenario-demo-docs` template. |
 | Presentation | `docs/demo/scenarios/<id>.js` + one `<script src>` line in `presentation.html` | Slide `tag` text ("Scenario N • ...") must match the sidebar position, which is the order of the script tags. |
 
@@ -57,10 +57,15 @@ The `hello-world` setup-check agent is not a scenario; it lives in `standalone/h
 
 Use `flows/incident_triage/request_remediation.py` as the reference: input schema (Pydantic), user activity form with an Approve button and a separate Reject button, a conditions branch on the recorded decision, a tool node calling the internal write tool, and result scripts. Items that are unverified or were fragile and must be re-tested in the **browser chat UI** (not just the CLI) for every new flow: the form renders, Approve runs the write tool, Reject does not, and the agent resumes and reports the `message` verbatim. The evaluator cannot drive the approval form.
 
-## 6. Evaluation: two tiers
+## 6. Evaluation: Standard Full Tier
 
-- **Core, always created:** `evaluation/<id>/ground_truth.json`, a small file with one entry per demo case: id, the user-visible symptom, expected root cause or outcome, expected action (or `no_action`), whether human approval is required, red herrings, and the expected key tools. It is the checklist for the demo script and the expectations for the smoke test. Keep the shape of `evaluation/incident-triage/ground_truth.json`; the top-level key may be named after the case type (`cases` in the scaffold, `incidents` in Incident Triage). **One key is fixed: `smoke_prompts`**, a list of `{"id": ..., "prompt": ...}` that `wxodemo smoke` sends to the agent and the validator requires for a live scenario. Write them diagnosis-only; an approval form cannot be answered through the run API.
-- **Optional, off by default:** ADK `test_cases/` and `eval_config.yaml`. Add them only if the user asks for a quality run. Incident Triage's optional tier produced a 0 of 15 final-answer check and hand-installed dependencies. Set `evaluation.tier: core` or `full` in the manifest accordingly.
+Every scenario ships with a complete evaluation suite (`evaluation.tier: full` in `scenario.yaml`):
+
+- **Ground Truth (`evaluation/<id>/ground_truth.json`):** Checklist for the demo script and expectations for smoke tests. Includes:
+  - `smoke_prompts`: a list of `{"id": ..., "prompt": ...}` objects used by `wxodemo smoke`.
+  - `cases` (or `incidents`): case definitions with symptoms, expected outcomes, expected tools, and red herrings.
+- **Evaluation Config (`evaluation/<id>/eval_config.yaml`):** Configuration for the ADK evaluation framework (`test_paths`, `output_dir`, `n_runs`, and `llm_user_config` persona guidelines).
+- **Test Cases (`evaluation/<id>/test_cases/tc_*.json`):** Structured test cases specifying the agent name, goal dependency graph (`goals`), step details (`goal_details` with `tool_call` arguments and `text` expected response/keywords), narrative `story`, and `starting_sentence`.
 
 ## 7. Build order
 
@@ -69,8 +74,8 @@ Use `flows/incident_triage/request_remediation.py` as the reference: input schem
 3. Knowledge base documents.
 4. Write tool and flow (if any).
 5. Agent YAML and README.
-6. Manifest and `ground_truth.json` (run `python wxodemo.py new-scenario` first: it creates both as stubs, plus the demo script and slide placeholders). `validate` must print `OK`.
-7. Deploy (`python wxodemo.py deploy <id>`; a scenario stays `status: soon` until it is ready, and `soon` scenarios are skipped by `deploy --all`), then run each demo prompt several times (a single pass proves little; `python wxodemo.py smoke <id>` does one pass of the `smoke_prompts`) and record what actually happened.
+6. Manifest, `ground_truth.json`, `eval_config.yaml`, and test cases (run `python wxodemo.py new-scenario` first: it scaffolds all evaluation files and stubs). `validate` must print `OK`.
+7. Deploy (`python wxodemo.py deploy <id>`; a scenario stays `status: soon` until it is ready, and `soon` scenarios are skipped by `deploy --all`), then run smoke and evaluation (`python wxodemo.py smoke <id>` and `python wxodemo.py eval <id> --dry-run`).
 8. Demo markdown and presentation slides from the `scenario-demo-docs` templates (including the Slide 1 Target Fit card for industry, function, and roles). Fill "what was and was not verified" only from real runs.
 
 ## 8. Verify, do not assume

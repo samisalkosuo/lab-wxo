@@ -1,0 +1,26 @@
+{
+  "agent": "hello_world",
+  "goals": {
+    "greeting-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "greeting-1",
+      "tool_name": "greeting",
+      "args": {}
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Hello World!",
+      "keywords": [
+        "Hello World!"
+      ]
+    }
+  ],
+  "story": "The user greets the agent.",
+  "starting_sentence": "Hello"
+}

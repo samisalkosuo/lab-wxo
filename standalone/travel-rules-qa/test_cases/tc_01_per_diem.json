@@ -1,0 +1,21 @@
+{
+  "agent": "travel_rules_qa",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Under the Finnish travel regulation (Valtion matkustussääntö), a domestic trip must last at least 6 hours for a partial per diem (osapäiväraha) and over 10 hours for a full per diem (kokopäiväraha).",
+      "keywords": [
+        "6 hours",
+        "10 hours",
+        "päiväraha",
+        "per diem"
+      ]
+    }
+  ],
+  "story": "The user asks about domestic per diem duration thresholds under Finnish government travel rules.",
+  "starting_sentence": "How many hours does a domestic trip need to last before per diem is paid?"
+}

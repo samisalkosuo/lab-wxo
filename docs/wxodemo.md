@@ -80,6 +80,7 @@ Commands that need no credentials: `list`, `validate`, `new-scenario`, `logs`, `
 | `validate [names...] [--kind K]` | Manifest checks plus demo-consistency checks. Default: all scenarios. |
 | `smoke <scenario> [--only ID]... [--dry-run]` | Sends the scenario's smoke prompts to its deployed agent. |
 | `eval <scenario> [--dry-run]` | Runs the ADK evaluation for a scenario. |
+| `test-upload <target> [--eval] [--dry-run]` | Uploads test cases to WXO Tests tab (and optionally evaluates). |
 | `export-chats [options]` | Exports agent chats and traces. |
 | `new-scenario <id> --name N --description D [--agent-name A] [--dry-run]` | Scaffolds a new scenario. |
 | `logs [-n N]` | Prints the log file path and its last N lines (default 20). |

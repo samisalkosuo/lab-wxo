@@ -37,6 +37,8 @@ def test_scaffold_creates_files_and_script_tag(repo: Path):
     assert (repo / "scenarios/gamma-one/scenario.yaml").is_file()
     assert (repo / "agents/gamma-one/agent.yaml").is_file()
     assert (repo / "evaluation/gamma-one/ground_truth.json").is_file()
+    assert (repo / "evaluation/gamma-one/eval_config.yaml").is_file()
+    assert (repo / "evaluation/gamma-one/test_cases/tc_01.json").is_file()
     assert (repo / "docs/demo/scenarios/gamma-one.js").is_file()
     assert (
         repo / "docs/demo/gamma-one-demo.md"
@@ -54,6 +56,7 @@ def test_scaffold_manifest_is_valid_yaml_with_soon_status(repo: Path):
     scaffold.run_new_scenario(repo, "gamma-one", "Gamma One", "A thing", None, False)
     created = load_scenarios(repo)["gamma-one"]
     assert created.get("status") == "soon"
+    assert created.get("evaluation").get("tier") == "full"
     assert created.get("agents")[0]["name"] == "gamma_one"
 
 

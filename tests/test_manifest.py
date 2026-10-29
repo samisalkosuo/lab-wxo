@@ -51,6 +51,21 @@ def test_evaluation_tier_and_missing_ground_truth(repo):
     assert any("ground_truth.json not found" in p for p in found)
 
 
+def test_full_evaluation_tier_needs_config_and_test_cases(repo):
+    edit_manifest(repo, "tier: core", "tier: full")
+    found = problems(repo)
+    assert any("eval_config.yaml not found" in p for p in found)
+    assert any("test_cases/*.json not found" in p for p in found)
+
+    write(repo / "evaluation/alpha/eval_config.yaml", "test_paths: []\n")
+    found = problems(repo)
+    assert not any("eval_config.yaml" in p for p in found)
+    assert any("test_cases/*.json not found" in p for p in found)
+
+    write(repo / "evaluation/alpha/test_cases/tc_01.json", "{}")
+    assert not any("evaluation" in p or "test_cases" in p for p in problems(repo))
+
+
 def test_live_scenario_needs_an_evaluation_section(repo):
     edit_manifest(repo, "evaluation:\n  path: evaluation/alpha\n  tier: core\n", "")
     assert any("evaluation section missing" in p for p in problems(repo))

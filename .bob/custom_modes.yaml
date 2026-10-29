@@ -17,14 +17,14 @@ customModes:
 
       Always follow the build order from wxo-scenario-authoring section 7:
       plan (identifying Industry, Function, and Target Roles) -> mock data and tools ->
-      knowledge base -> flow (if needed) -> agent YAML -> manifest and ground_truth.json ->
-      deploy and smoke test -> demo markdown and slides (including the Slide 1 .fit-card).
+      knowledge base -> flow (if needed) -> agent YAML -> manifest, ground_truth.json, eval_config.yaml and test_cases ->
+      deploy and smoke/eval test -> demo markdown and slides (including the Slide 1 .fit-card).
 
       CLI reference (python wxodemo.py <command>):
       - new-scenario <id> --name "..." --description "..."
-          Scaffold manifest stub, agent stub, ground_truth.json, demo script and slide
-          placeholders. Always run this first when creating a new scenario.
-      - validate <id>           Check manifest + demo-script consistency. Must print OK.
+          Scaffold manifest stub, agent stub, ground_truth.json, eval_config.yaml, test_cases/tc_01.json,
+          demo script and slide placeholders. Always run this first when creating a new scenario.
+      - validate <id>           Check manifest, evaluation suite, and demo-script consistency. Must print OK.
       - deploy <id>             Import all resources into WXO (requires login).
       - deploy <id> --dry-run   Preview deploy commands without running them.
       - undeploy <id>           Remove resources from WXO (requires login).
@@ -33,6 +33,7 @@ customModes:
       - smoke <id>              Send smoke prompts to the deployed agent (requires login).
       - eval <id> --dry-run     Preview the ADK evaluation command without running it.
       - eval <id>               Run ADK evaluation for the scenario (requires login).
+      - test-upload <id> [--eval] Upload test cases to WXO Tests tab (and optionally trigger UI evaluation).
       - login                   Register and activate the WXO environment from env.cfg.
                                 Must be run before any command that talks to a live instance.
 
@@ -51,6 +52,8 @@ customModes:
          Fix every PROBLEM before continuing.
       2. python wxodemo.py smoke <id> --dry-run
          Confirm all smoke_prompts are present and well-formed.
+      3. python wxodemo.py eval <id> --dry-run
+         Confirm evaluation config and test cases are present and well-formed.
       For real smoke / deploy / eval, run `python wxodemo.py login` first
       and note that these require a live WXO instance.
       Report what was and was not verified
@@ -86,21 +89,23 @@ customModes:
       Conventions:
       - One subdirectory per agent: standalone/<agent-name>/agent.yaml (ADK native agent),
         standalone/<agent-name>/README.md (purpose, dependencies, deploy and teardown
-        commands, known limits) and standalone/<agent-name>/examples.md (MANDATORY).
+        commands, known limits), standalone/<agent-name>/examples.md (MANDATORY),
+        eval_config.yaml, and standalone/<agent-name>/test_cases/*.json.
       - examples.md is mandatory for every agent because future tools consume it. Format:
         a "# <agent_name> — Examples" heading, one intro sentence, then a numbered list
         where each item is `N. *"prompt"* — expected behaviour` (prompt in italics and
         quotes, followed by an em dash and the expected behaviour or source section; a
         continuation line is allowed). Use at least 3 examples covering the normal path
         and any refusal or clarification path.
+      - Author test cases in standalone/<agent-name>/test_cases/*.json and eval_config.yaml
+        derived from examples.md and expected tool behaviors.
       - Never put example prompts in the agent README. The README has an "Examples"
         section that only links to examples.md. When updating an agent, keep examples.md
-        in sync with its behaviour.
-      - No scenario.yaml, no manifest entry, no ground truth, no demo script
-        or slides.
+        and test_cases/ in sync with its behaviour.
+      - No scenario.yaml, no manifest entry, no demo script or scenario slides.
       - Deploy and undeploy go through python wxodemo.py (list, deploy <name>, undeploy
-        <name>, --dry-run). It discovers standalone agents automatically; do not edit
-        the CLI to register a new agent.
+        <name>, test-upload <name>, --dry-run). It discovers standalone agents automatically;
+        do not edit the CLI to register a new agent.
       - An agent may reuse knowledge bases and tools that scenarios already deploy. Do not
         duplicate them. The agent README must name every resource that has to be live
         already, with the command to import it.
@@ -110,6 +115,7 @@ customModes:
       - deploy <name>            Import the agent into WXO (requires login).
       - deploy <name> --dry-run  Preview deploy commands without running them.
       - undeploy <name>          Remove the agent from WXO (requires login).
+      - test-upload <name> [--eval] Upload test cases to WXO Tests tab (and optionally evaluate).
       - undeploy <name> --dry-run Preview undeploy commands without running them.
       - status <name>            Compare the repo agent with what is live in WXO.
       - login                    Register and activate the WXO environment from env.cfg.
@@ -131,13 +137,16 @@ customModes:
       Finish every task in this order:
       1. Confirm standalone/<name>/examples.md exists, follows the format above, and is
          linked from the agent README.
-      2. python wxodemo.py list --kind standalone
+      2. Confirm standalone/<name>/test_cases/ and eval_config.yaml exist.
+      3. python wxodemo.py list --kind standalone
          Verify the agent is discovered (fix agent.yaml or directory layout if missing).
-      3. python wxodemo.py deploy <name> --dry-run
+      4. python wxodemo.py test-upload <name> --dry-run
+         Verify test cases and prompts are discovered.
+      5. python wxodemo.py deploy <name> --dry-run
          Confirm the deploy commands look correct.
-      4. Update docs/demo/standalone-agents.js to include the agent overview and
+      6. Update docs/demo/standalone-agents.js to include the agent overview and
          interactive example slides in docs/demo/presentation.html.
-      5. Update README.md (the Standalone agents table and Repository Structure) with
+      7. Update README.md (the Standalone agents table and Repository Structure) with
          the new standalone agent.
       For real deploy / undeploy, run `python wxodemo.py login` first, then
       `python wxodemo.py status <name>` after to confirm the agent is live.

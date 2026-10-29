@@ -9,6 +9,8 @@ Environment variables:
   WXO_ENV_TYPE           optional  ibm_iam (default) or mcsp
   CALL_INTERVAL_MINUTES  optional  window size in minutes, default 1
   AGENT_FILTER           optional  comma-separated agent names to restrict the pool
+  WXO_ENVIRONMENT        optional  live (default) or draft; runs are sent to this agent environment.
+                                   The Home dashboard counts live usage only.
 
 Stdlib only — no third-party packages required.
 """
@@ -54,12 +56,20 @@ class AgentSpec:
 
 
 @dataclass
+class CatalogEntry:
+    """Agent as registered in WXO: its ID and its environment IDs by name."""
+    agent_id: str
+    environments: dict[str, str]
+
+
+@dataclass
 class PoolEntry:
-    """Agent that is both locally discovered and confirmed live in WXO."""
+    """Agent that is both locally discovered and confirmed deployed in WXO."""
     name: str
     agent_id: str
     flow_triggering: bool
     prompts: list[str]
+    environment_id: str | None = None  # None = omit from the run (WXO targets the draft agent)
 
 
 # ---------------------------------------------------------------------------
@@ -381,8 +391,8 @@ def _extract_field(item: str, field: str) -> str:
 # WXO catalog and pool resolution
 # ---------------------------------------------------------------------------
 
-def load_catalog(api: Api, base_url: str) -> dict[str, str]:
-    """GET /v1/orchestrate/agents → {name: agent_id}."""
+def load_catalog(api: Api, base_url: str) -> dict[str, CatalogEntry]:
+    """GET /v1/orchestrate/agents → {name: CatalogEntry(agent_id, {env_name: env_id})}."""
     url = f"{base_url.rstrip('/')}/v1/orchestrate/agents"
     try:
         result = api.request(url)
@@ -391,27 +401,47 @@ def load_catalog(api: Api, base_url: str) -> dict[str, str]:
     items = result if isinstance(result, list) else (result or {}).get("data", [])
     if not isinstance(items, list):
         raise RuntimeError(f"Unexpected agent list response: {type(result)}")
-    catalog: dict[str, str] = {}
+    catalog: dict[str, CatalogEntry] = {}
     for item in items:
         if isinstance(item, dict) and item.get("id") and item.get("name"):
-            catalog[item["name"]] = item["id"]
+            envs = {
+                e["name"]: e["id"]
+                for e in (item.get("environments") or [])
+                if isinstance(e, dict) and e.get("name") and e.get("id")
+            }
+            catalog[item["name"]] = CatalogEntry(agent_id=item["id"], environments=envs)
     return catalog
 
 
-def resolve_pool(specs: list[AgentSpec], catalog: dict[str, str]) -> list[PoolEntry]:
-    """Match discovered specs against live WXO agents. Warn about any not found."""
+def resolve_pool(
+    specs: list[AgentSpec], catalog: dict[str, CatalogEntry], environment: str
+) -> list[PoolEntry]:
+    """Match discovered specs against WXO agents. Warn about any not found or lacking the environment.
+
+    environment 'draft' sends no environment_id; any other name must exist on the agent.
+    """
     pool: list[PoolEntry] = []
     for spec in specs:
-        agent_id = catalog.get(spec.name)
-        if not agent_id:
+        found = catalog.get(spec.name)
+        if not found:
             _warn(f"Agent '{spec.name}' not found in WXO (not deployed?), skipping.")
             continue
+        environment_id: str | None = None
+        if environment != "draft":
+            environment_id = found.environments.get(environment)
+            if not environment_id:
+                _warn(
+                    f"Agent '{spec.name}' has no '{environment}' environment "
+                    f"(has: {', '.join(sorted(found.environments)) or 'none'}); skipping."
+                )
+                continue
         pool.append(
             PoolEntry(
                 name=spec.name,
-                agent_id=agent_id,
+                agent_id=found.agent_id,
                 flow_triggering=spec.flow_triggering,
                 prompts=spec.prompts,
+                environment_id=environment_id,
             )
         )
     return pool
@@ -427,10 +457,12 @@ def send_prompt(api: Api, base_url: str, entry: PoolEntry) -> None:
     label = f"{entry.name:<30}  \"{short}\""
 
     url = f"{base_url.rstrip('/')}/v1/orchestrate/runs"
-    body = {
+    body: dict[str, Any] = {
         "message": {"role": "user", "content": prompt},
         "agent_id": entry.agent_id,
     }
+    if entry.environment_id:
+        body["environment_id"] = entry.environment_id
     try:
         resp = api.request(url, method="POST", body=body)
     except RuntimeError as exc:
@@ -490,6 +522,7 @@ def main() -> None:
     base_url = os.environ.get("WXO_URL", "").rstrip("/")
     env_type = os.environ.get("WXO_ENV_TYPE", "ibm_iam")
     interval_minutes = int(os.environ.get("CALL_INTERVAL_MINUTES", "1"))
+    environment = os.environ.get("WXO_ENVIRONMENT", "live").strip().lower() or "live"
     agent_filter_raw = os.environ.get("AGENT_FILTER", "")
     agent_filter = [n.strip() for n in agent_filter_raw.split(",") if n.strip()] if agent_filter_raw else []
 
@@ -512,6 +545,7 @@ def main() -> None:
     _log(f"Repo root: {repo_root}")
     _log(f"WXO URL:   {base_url}")
     _log(f"Interval:  {interval_minutes} min/window (random offset each window)")
+    _log(f"Target environment: {environment}")
 
     specs = discover_agents(repo_root, agent_filter)
     if not specs:
@@ -541,9 +575,13 @@ def main() -> None:
         sys.exit(1)
     _log(f"WXO catalog: {len(catalog)} agent(s) found.")
 
-    pool = resolve_pool(specs, catalog)
+    pool = resolve_pool(specs, catalog, environment)
     if not pool:
-        print("ERROR: No agents matched between manifests and WXO. Check deployments.", file=sys.stderr)
+        print(
+            f"ERROR: No agents matched between manifests and WXO for environment '{environment}'. "
+            "Check deployments.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     _log(f"Active pool ({len(pool)} agent(s)):")

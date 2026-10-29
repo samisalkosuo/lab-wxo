@@ -152,6 +152,21 @@ def expected_resources(target: Target) -> Expected:
     return Expected(agents=[agent.name], tools=[n for t in agent.tools for n in t.names], kbs=[])
 
 
+def target_test_cases(root: Path, target: Target) -> list[Path]:
+    """Find test case files for a scenario or standalone agent."""
+    if target.scenario is not None:
+        ev = target.scenario.get("evaluation")
+        if ev and ev.get("path"):
+            tc_dir = root / ev["path"] / "test_cases"
+            if tc_dir.is_dir():
+                return sorted(tc_dir.glob("*.json"))
+    elif target.agent is not None:
+        tc_dir = target.agent.dir / "test_cases"
+        if tc_dir.is_dir():
+            return sorted(tc_dir.glob("*.json"))
+    return []
+
+
 def _scenarios_first(targets: list[Target]) -> list[Target]:
     """Scenarios own the knowledge bases standalone agents use, so they go first."""
     return sorted(targets, key=lambda t: t.kind != "scenario")
@@ -244,6 +259,10 @@ def run_deploy(targets: list[Target], cfg: Config | None, root: Path, dry_run: b
                     f"Knowledge base(s) not found: {', '.join(missing)}. The agent will not "
                     f"answer from documents until they exist (deploy the scenario that owns them)."
                 )
+        if target:
+            tests = target_test_cases(root, target)
+            if tests:
+                plain(f"  Test suite: {len(tests)} test case(s) ready in {tests[0].parent.relative_to(root).as_posix()}")
         _execute(actions, root, dry_run)
 
     if dry_run:
