@@ -54,14 +54,15 @@ repo, **rebuilding the container is sufficient** to include it:
 | `WXO_ENV_TYPE` | `ibm_iam` | `ibm_iam` or `mcsp` |
 | `CALL_INTERVAL_MINUTES` | `1` | Window size in minutes; one call fires at a random second within each window |
 | `AGENT_FILTER` | _(all)_ | Comma-separated agent names to restrict the pool (optional) |
+| `WXO_ENVIRONMENT` | `live` | `live` or `draft`; runs carry the agent's matching `environment_id` (omitted for `draft`). The WXO Home dashboard counts live usage only. See `plans/traffic-gen-live-environment-plan.md` |
 
 ### REST API calls used
 
 | Purpose | Endpoint |
 |---|---|
 | Get IAM token | `POST https://iam.cloud.ibm.com/identity/token` (or MCSP URL) |
-| List agents | `GET {WXO_URL}/v1/orchestrate/agents` → `[{id, name}]` |
-| Send prompt | `POST {WXO_URL}/v1/orchestrate/runs` with `{message: {role, content}, agent_id}` |
+| List agents | `GET {WXO_URL}/v1/orchestrate/agents` → `[{id, name, environments: [{id, name}]}]` |
+| Send prompt | `POST {WXO_URL}/v1/orchestrate/runs` with `{message: {role, content}, agent_id, environment_id}` |
 | Poll for result | `GET {WXO_URL}/v1/orchestrate/runs/{run_id}` |
 
 ---
