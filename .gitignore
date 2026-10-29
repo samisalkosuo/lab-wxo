@@ -1,5 +1,7 @@
 ﻿local/
 export/
+evaluation/**/results
+
 
 # Environment & Secrets
 env.cfg
