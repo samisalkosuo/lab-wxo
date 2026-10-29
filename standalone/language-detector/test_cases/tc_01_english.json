@@ -1,0 +1,23 @@
+{
+  "agent": "language_detector",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Returns JSON identifying English with iso_639_1 'en', iso_639_2 'eng', bcp47 'en', script 'Latin', high confidence, proportion 1.0, and mixed false.",
+      "keywords": [
+        "en",
+        "eng",
+        "English",
+        "Latin",
+        "mixed",
+        "proportion"
+      ]
+    }
+  ],
+  "story": "The user submits an English sentence and expects a language detection JSON response.",
+  "starting_sentence": "Detect the language: 'The quick brown fox jumps over the lazy dog.'"
+}

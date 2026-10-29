@@ -1,0 +1,25 @@
+{
+  "agent": "language_detector",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Returns detection JSON with mixed true, containing both English (from 'can you translate this') and Finnish (from the EKP paragraph), with proportions summing to 1.0.",
+      "keywords": [
+        "English",
+        "Finnish",
+        "fi",
+        "fin",
+        "en",
+        "eng",
+        "mixed",
+        "true"
+      ]
+    }
+  ],
+  "story": "The user sends an English question followed by a Finnish news paragraph. The entire message is treated as one flat block of text, producing a mixed result with both English and Finnish detected.",
+  "starting_sentence": "can you translate this?\n\nEuroopan keskuspankki EKP pitää ohjauskorkonsa odotetusti ennallaan.\nNeuvoston mukaan pohjainflaatio on pysynyt jotakuinkin vakaana, vaikka energian hinnat ovat jatkaneet nousuaan.\nEKP nosti ohjauskorkoa viime kuussa, jolloin talletuskorko nousi 2,25 prosentista 2,50 prosenttiin."
+}

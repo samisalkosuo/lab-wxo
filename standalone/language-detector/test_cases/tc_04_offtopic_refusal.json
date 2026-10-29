@@ -1,0 +1,22 @@
+{
+  "agent": "language_detector",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Returns detection JSON with mixed true, containing both English (the question 'Translate this to French') and English for 'Hello world' — the entire message is treated as one flat text.",
+      "keywords": [
+        "en",
+        "eng",
+        "English",
+        "mixed",
+        "proportion"
+      ]
+    }
+  ],
+  "story": "The user sends a message that mixes an English question with English quoted text. The entire message is treated as one flat block — all words are detected regardless of whether they look like a question or content.",
+  "starting_sentence": "Translate this to French: 'Hello world.'"
+}

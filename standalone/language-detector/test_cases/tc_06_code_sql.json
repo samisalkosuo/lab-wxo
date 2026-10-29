@@ -1,0 +1,21 @@
+{
+  "agent": "language_detector",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Returns JSON identifying the language as Code with iso_639_1 null, iso_639_2 null, bcp47 null, and a notes field mentioning SQL.",
+      "keywords": [
+        "Code",
+        "null",
+        "SQL",
+        "notes"
+      ]
+    }
+  ],
+  "story": "The user submits a SQL query and expects the agent to classify the input as Code with a notes field identifying it as SQL.",
+  "starting_sentence": "Language detection: 'SELECT * FROM users WHERE id = 1;'"
+}

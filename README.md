@@ -34,6 +34,7 @@ Deployed with `python wxodemo.py deploy <name>` (see [Standalone Agents](#standa
 | [information-redactor](standalone/information-redactor/) | `information_redactor` | Detects and masks sensitive information and personal identifiers in pasted text before sharing; typed placeholders, no tools, no knowledge base |
 | [metadata-extractor](standalone/metadata-extractor/) | `metadata_extractor` | Extracts user-specified arbitrary metadata fields from provided text into strict JSON schemas |
 | [priority-assessor](standalone/priority-assessor/) | `priority_assessor` | Assigns structured priority levels (Critical, High, Medium, Low) to incoming items using configured rules or common-sense defaults |
+| [language-detector](standalone/language-detector/) | `language_detector` | Detects language or mixed languages in any text; returns structured JSON with full name, ISO 639-1, ISO 639-2, BCP 47 tag, script, confidence, and proportion per language |
 | [translator](standalone/translator/) | `translator` | Translates user text into a named target language from a fixed supported list, with an optional tone or style; no tools, no knowledge base |
 | [travel-rules-qa](standalone/travel-rules-qa/) | `travel_rules_qa` | Answers English questions about the Finnish state travel regulation (Valtion matkustussääntö 2026) from a PDF knowledge base, citing Finnish sections |
 

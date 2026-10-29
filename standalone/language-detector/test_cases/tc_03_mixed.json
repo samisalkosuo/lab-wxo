@@ -1,0 +1,24 @@
+{
+  "agent": "language_detector",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Returns JSON with mixed true and detected_languages array containing at least two languages (e.g. English, German, French) with proportions summing to 1.0.",
+      "keywords": [
+        "mixed",
+        "true",
+        "detected_languages",
+        "proportion",
+        "English",
+        "German",
+        "French"
+      ]
+    }
+  ],
+  "story": "The user submits a sentence mixing English, German, and French words and expects a mixed-language JSON response.",
+  "starting_sentence": "Detect language: 'We went to the café. Das war sehr gut! Totalement incroyable.'"
+}

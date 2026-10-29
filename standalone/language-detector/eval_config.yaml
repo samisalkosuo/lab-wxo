@@ -1,0 +1,18 @@
+# Evaluation configuration for the language_detector agent.
+# Upload test cases to WXO with:
+#   python wxodemo.py test-upload language-detector
+# or to upload and evaluate:
+#   python wxodemo.py test-upload language-detector --eval
+
+test_paths:
+  - standalone/language-detector/test_cases/
+
+output_dir: standalone/language-detector/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Provide text for language detection. Do not ask follow-up questions."

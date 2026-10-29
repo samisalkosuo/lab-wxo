@@ -1,0 +1,23 @@
+{
+  "agent": "language_detector",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Returns JSON identifying Chinese with bcp47 'zh-Hans' or 'zh-Hant', script 'Han', iso_639_1 'zh', iso_639_2 'zho', proportion 1.0, and mixed false.",
+      "keywords": [
+        "zh",
+        "zho",
+        "Chinese",
+        "Han",
+        "zh-Hans",
+        "zh-Hant"
+      ]
+    }
+  ],
+  "story": "The user submits a short Chinese text and expects JSON identifying Chinese with the Han script and an appropriate BCP 47 tag.",
+  "starting_sentence": "What language? '你好世界'"
+}
