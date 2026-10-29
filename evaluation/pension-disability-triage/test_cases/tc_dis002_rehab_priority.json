@@ -1,0 +1,75 @@
+{
+  "agent": "pension_disability_triage",
+  "goals": {
+    "pdis_get_claim_dossier-1": [
+      "pdis_verify_qualifying_months-1"
+    ],
+    "pdis_verify_qualifying_months-1": [
+      "pdis_get_medical_summary-1"
+    ],
+    "pdis_get_medical_summary-1": [
+      "pdis_assess_rehab_eligibility-1"
+    ],
+    "pdis_assess_rehab_eligibility-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "pdis_get_claim_dossier-1",
+      "tool_name": "pdis_get_claim_dossier",
+      "args": {
+        "claimant_id": "CLM-702"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_verify_qualifying_months-1",
+      "tool_name": "pdis_verify_qualifying_months",
+      "args": {
+        "claimant_id": "CLM-702"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_get_medical_summary-1",
+      "tool_name": "pdis_get_medical_summary",
+      "args": {
+        "claimant_id": "CLM-702"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_assess_rehab_eligibility-1",
+      "tool_name": "pdis_assess_rehab_eligibility",
+      "args": {
+        "claimant_id": "CLM-702"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Claimant CLM-702 has work capacity of 55% with recovery potential. Under the Rehabilitation before Pension principle (DIS-POL-02), vocational rehabilitation takes priority over pension.",
+      "keywords": [
+        "CLM-702",
+        "DIS-POL-02",
+        "vocational_rehab"
+      ]
+    }
+  ],
+  "story": "Evaluate CLM-702 following back surgery. Do not call pdis_refer_claim — report if pension applies or vocational rehab applies under policy.",
+  "starting_sentence": "Member CLM-702 has applied for a disability pension following back surgery. Use your tools to evaluate the claim. Do NOT call pdis_refer_claim — just report whether a pension can be granted at this stage or whether another pathway applies, and cite the relevant policy."
+}

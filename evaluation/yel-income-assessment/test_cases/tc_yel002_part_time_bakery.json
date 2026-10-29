@@ -1,0 +1,62 @@
+{
+  "agent": "yel_income_assessment",
+  "goals": {
+    "yel_get_business_profile-1": [
+      "yel_get_sector_benchmark-1"
+    ],
+    "yel_get_sector_benchmark-1": [
+      "yel_calculate_income_recommendation-1"
+    ],
+    "yel_calculate_income_recommendation-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "yel_get_business_profile-1",
+      "tool_name": "yel_get_business_profile",
+      "args": {
+        "entrepreneur_id": "ENT-802"
+      },
+      "arg_matching": {
+        "entrepreneur_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "yel_get_sector_benchmark-1",
+      "tool_name": "yel_get_sector_benchmark",
+      "args": {
+        "sector_code": "NACE C.10"
+      },
+      "arg_matching": {
+        "sector_code": "fuzzy"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "yel_calculate_income_recommendation-1",
+      "tool_name": "yel_calculate_income_recommendation",
+      "args": {
+        "entrepreneur_id": "ENT-802"
+      },
+      "arg_matching": {
+        "entrepreneur_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Bakery owner ENT-802 works part-time (20 h/wk). Under YEL-POL-04, the income recommendation is adjusted for actual owner work input rather than company turnover. The current confirmed income of EUR 32,000/yr is sufficient and no mandatory increase is warranted.",
+      "keywords": [
+        "ENT-802",
+        "part-time",
+        "32,000",
+        "YEL-POL-04"
+      ]
+    }
+  ],
+  "story": "Bakery owner ENT-802 is contesting a proposed YEL income of EUR 38,000. Retrieve profile, benchmark, and calculate correct income.",
+  "starting_sentence": "Artisan bakery owner ENT-802 is contesting a proposed YEL income of EUR 38,000. Retrieve her profile and sector benchmark, then calculate the income recommendation. Do NOT call yel_issue_decision — just report what the correct recommended income should be and why the turnover-based proposal was too high."
+}

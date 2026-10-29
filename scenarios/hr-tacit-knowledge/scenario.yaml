@@ -59,7 +59,7 @@ flows:
 
 evaluation:
   path: evaluation/hr-tacit-knowledge
-  tier: core
+  tier: full
 
 demo:
   script: docs/demo/hr-tacit-knowledge-demo.md

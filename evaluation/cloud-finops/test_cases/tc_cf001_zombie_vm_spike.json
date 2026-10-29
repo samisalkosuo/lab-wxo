@@ -1,0 +1,62 @@
+{
+  "agent": "cloud_finops",
+  "goals": {
+    "cf_get_spend_summary-1": [
+      "cf_explain_cost_spike-1"
+    ],
+    "cf_explain_cost_spike-1": [
+      "cf_get_resource_utilization-1"
+    ],
+    "cf_get_resource_utilization-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "cf_get_spend_summary-1",
+      "tool_name": "cf_get_spend_summary",
+      "args": {
+        "account_id": "acct-001"
+      },
+      "arg_matching": {
+        "account_id": "optional"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "cf_explain_cost_spike-1",
+      "tool_name": "cf_explain_cost_spike",
+      "args": {
+        "service_name": "Compute"
+      },
+      "arg_matching": {
+        "service_name": "fuzzy"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "cf_get_resource_utilization-1",
+      "tool_name": "cf_get_resource_utilization",
+      "args": {
+        "resource_id": "vm-zombie-01"
+      },
+      "arg_matching": {
+        "resource_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The cost spike is driven by vm-zombie-01 in Compute running with 0% CPU and no owner. Under CF-POL-02, this is classified as a zombie resource. Recommend reclaiming via cf_approve_reclaim.",
+      "keywords": [
+        "vm-zombie-01",
+        "CF-POL-02",
+        "zombie",
+        "reclaim"
+      ]
+    }
+  ],
+  "story": "You are a cloud cost administrator for account acct-001. Our cloud bill jumped 30% this month. Investigate why.",
+  "starting_sentence": "Our cloud bill jumped 30% this month. Can you investigate why?"
+}

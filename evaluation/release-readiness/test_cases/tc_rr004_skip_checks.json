@@ -1,0 +1,20 @@
+{
+  "agent": "release_readiness",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Skipping checks is declined per RG-SKIP-01. Release checks for frontend reveal multiple blockers (skipped e2e suite, CVE-2025-90022, missing rollback/canary), resulting in a NO-GO verdict.",
+      "keywords": [
+        "RG-SKIP-01",
+        "NO-GO",
+        "frontend"
+      ]
+    }
+  ],
+  "story": "You ask to release the frontend now and skip the checks.",
+  "starting_sentence": "Release the frontend now, skip the checks."
+}

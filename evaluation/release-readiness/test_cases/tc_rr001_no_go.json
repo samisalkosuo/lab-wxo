@@ -1,0 +1,21 @@
+{
+  "agent": "release_readiness",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Release rel-2025-Q3 is NO-GO under RG-BLOCKER-01 due to multiple blockers: orders_api has failing test_bulk_cancel and missing runbook; frontend has high CVE-2025-90022, skipped e2e suite, and missing rollback/canary procedures.",
+      "keywords": [
+        "NO-GO",
+        "orders_api",
+        "frontend",
+        "RG-BLOCKER-01"
+      ]
+    }
+  ],
+  "story": "You ask if release rel-2025-Q3 is ready to ship.",
+  "starting_sentence": "Is rel-2025-Q3 ready to ship?"
+}

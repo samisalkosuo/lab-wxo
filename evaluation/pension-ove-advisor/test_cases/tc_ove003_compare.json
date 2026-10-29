@@ -1,0 +1,64 @@
+{
+  "agent": "pension_ove_advisor",
+  "goals": {
+    "ove_get_member_profile-1": [
+      "ove_get_accrued_pension-1"
+    ],
+    "ove_get_accrued_pension-1": [
+      "ove_calculate_reduction-1"
+    ],
+    "ove_calculate_reduction-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "ove_get_member_profile-1",
+      "tool_name": "ove_get_member_profile",
+      "args": {
+        "member_id": "MEM-103"
+      },
+      "arg_matching": {
+        "member_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "ove_get_accrued_pension-1",
+      "tool_name": "ove_get_accrued_pension",
+      "args": {
+        "member_id": "MEM-103"
+      },
+      "arg_matching": {
+        "member_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "ove_calculate_reduction-1",
+      "tool_name": "ove_calculate_reduction",
+      "args": {
+        "member_id": "MEM-103",
+        "portion_pct": 25
+      },
+      "arg_matching": {
+        "member_id": "strict",
+        "portion_pct": "fuzzy"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Comparison of 25% vs 50% OVE for MEM-103 under OVE-POL-03 with reduced working hours to 80% and €2,800/mo salary shows the difference in initial pension draw, reduction percentage, and combined monthly income.",
+      "keywords": [
+        "MEM-103",
+        "25%",
+        "50%",
+        "OVE-POL-03"
+      ]
+    }
+  ],
+  "story": "You want to compare taking 25% vs 50% OVE (MEM-103) with 80% work hours and 2800 euros per month salary.",
+  "starting_sentence": "I want to compare taking 25% vs 50% OVE. My member ID is MEM-103 and I plan to reduce my work hours to 80% with a salary of 2800 euros per month."
+}

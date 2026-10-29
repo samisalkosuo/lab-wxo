@@ -39,7 +39,7 @@ flows:
 
 evaluation:
   path: evaluation/pension-disability-triage
-  tier: core
+  tier: full
 
 demo:
   script: docs/demo/pension-disability-triage-demo.md

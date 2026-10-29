@@ -1,0 +1,20 @@
+{
+  "agent": "customer_returns",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "A duplicate charge on order ORD-1004 is a billing issue and cannot be handled as a product return. Per RP-ESCALATE-01, this must be escalated to the Billing department.",
+      "keywords": [
+        "billing",
+        "duplicate",
+        "RP-ESCALATE-01"
+      ]
+    }
+  ],
+  "story": "You were charged twice for order ORD-1004 and need a refund for the duplicate charge.",
+  "starting_sentence": "I was charged twice for my order ORD-1004. I need a refund for the duplicate charge."
+}

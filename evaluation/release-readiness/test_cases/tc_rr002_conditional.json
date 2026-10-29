@@ -1,0 +1,21 @@
+{
+  "agent": "release_readiness",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Deploying payments is CONDITIONAL GO under RG-CONDITIONAL-01. The flaky test and dev-only CVE are not blockers, but Operations must run a fresh health check as the last one is 19 days old (limit 7 days).",
+      "keywords": [
+        "CONDITIONAL",
+        "payments",
+        "health check",
+        "RG-CONDITIONAL-01"
+      ]
+    }
+  ],
+  "story": "You ask if we can deploy the payments service.",
+  "starting_sentence": "Can we deploy the payments service?"
+}

@@ -1,0 +1,18 @@
+# Evaluation configuration for the pension_ove_advisor agent.
+# Run with:
+#   python wxodemo.py eval pension-ove-advisor
+# (same as: orchestrate evaluations evaluate --config evaluation/pension-ove-advisor/eval_config.yaml)
+
+test_paths:
+  - evaluation/pension-ove-advisor/test_cases/
+
+output_dir: evaluation/pension-ove-advisor/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly."
+    - "Do not submit final applications unless confirming."

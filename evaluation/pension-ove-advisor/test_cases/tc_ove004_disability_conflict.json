@@ -1,0 +1,33 @@
+{
+  "agent": "pension_ove_advisor",
+  "goals": {
+    "ove_get_member_profile-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "ove_get_member_profile-1",
+      "tool_name": "ove_get_member_profile",
+      "args": {
+        "member_id": "MEM-104"
+      },
+      "arg_matching": {
+        "member_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Member MEM-104 is currently receiving an active disability pension (Kuntoutustuki). Under statutory rules (OVE-POL-02), OVE cannot be granted concurrently with a full disability pension.",
+      "keywords": [
+        "MEM-104",
+        "OVE-POL-02",
+        "disability"
+      ]
+    }
+  ],
+  "story": "Member MEM-104 wants to apply for 50% OVE while receiving a disability pension.",
+  "starting_sentence": "I want to apply for 50% OVE. My member ID is MEM-104."
+}

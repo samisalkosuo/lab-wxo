@@ -1,0 +1,76 @@
+{
+  "agent": "pension_disability_triage",
+  "goals": {
+    "pdis_get_claim_dossier-1": [
+      "pdis_verify_qualifying_months-1"
+    ],
+    "pdis_verify_qualifying_months-1": [
+      "pdis_get_medical_summary-1"
+    ],
+    "pdis_get_medical_summary-1": [
+      "pdis_assess_rehab_eligibility-1"
+    ],
+    "pdis_assess_rehab_eligibility-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "pdis_get_claim_dossier-1",
+      "tool_name": "pdis_get_claim_dossier",
+      "args": {
+        "claimant_id": "CLM-701"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_verify_qualifying_months-1",
+      "tool_name": "pdis_verify_qualifying_months",
+      "args": {
+        "claimant_id": "CLM-701"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_get_medical_summary-1",
+      "tool_name": "pdis_get_medical_summary",
+      "args": {
+        "claimant_id": "CLM-701"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_assess_rehab_eligibility-1",
+      "tool_name": "pdis_assess_rehab_eligibility",
+      "args": {
+        "claimant_id": "CLM-701"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Claimant CLM-701 satisfies the qualifying condition, rehabilitation measures are exhausted, and work capacity is 30%. Under DIS-POL-01 and DIS-POL-02, full disability pension is indicated and referral to the Medical Board is recommended.",
+      "keywords": [
+        "CLM-701",
+        "DIS-POL-01",
+        "DIS-POL-02",
+        "medical_board"
+      ]
+    }
+  ],
+  "story": "Evaluate disability pension claim for CLM-701. Do not call pdis_refer_claim — report disposition and referral recommendation.",
+  "starting_sentence": "Evaluate the disability pension claim for member CLM-701. Use your tools to check the qualifying months, review the medical evidence, and assess rehabilitation eligibility. Do NOT call pdis_refer_claim — just report your triage disposition and which referral type you would recommend."
+}

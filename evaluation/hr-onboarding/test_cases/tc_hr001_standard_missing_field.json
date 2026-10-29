@@ -1,0 +1,48 @@
+{
+  "agent": "hr_onboarding",
+  "goals": {
+    "hr_get_new_hire-1": [
+      "hr_get_role_access-1"
+    ],
+    "hr_get_role_access-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "hr_get_new_hire-1",
+      "tool_name": "hr_get_new_hire",
+      "args": {
+        "hire_id": "H-1001"
+      },
+      "arg_matching": {
+        "hire_id": "fuzzy"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "hr_get_role_access-1",
+      "tool_name": "hr_get_role_access",
+      "args": {
+        "role": "Software Engineer"
+      },
+      "arg_matching": {
+        "role": "fuzzy"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Alex Kim (H-1001) is a Software Engineer starting 2025-06-09. Standard role access includes email, chat, source_code, and vpn per HR-POL-01. Please provide the equipment choice (e.g. developer_laptop) before provisioning.",
+      "keywords": [
+        "Alex Kim",
+        "HR-POL-01",
+        "equipment",
+        "email"
+      ]
+    }
+  ],
+  "story": "You are an HR coordinator. You want to onboard Alex Kim, Software Engineer, who starts 2025-06-09.",
+  "starting_sentence": "Onboard Alex Kim, Software Engineer, starts 2025-06-09."
+}

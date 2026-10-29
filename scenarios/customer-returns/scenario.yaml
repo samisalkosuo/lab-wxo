@@ -41,7 +41,7 @@ flows:
 
 evaluation:
   path: evaluation/customer-returns
-  tier: core
+  tier: full
 
 demo:
   script: docs/demo/customer-returns-demo.md

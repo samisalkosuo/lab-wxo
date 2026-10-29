@@ -1,0 +1,34 @@
+{
+  "agent": "cloud_finops",
+  "goals": {
+    "cf_get_billing_lines-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "cf_get_billing_lines-1",
+      "tool_name": "cf_get_billing_lines",
+      "args": {
+        "service_name": "GPU Compute"
+      },
+      "arg_matching": {
+        "service_name": "fuzzy"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Billing line BL-5001 reports 1000 GPU hours while recorded usage units is 0. Per CF-POL-04, this is a data error in the billing feed. Escalate to finance rather than taking resource actions.",
+      "keywords": [
+        "BL-5001",
+        "CF-POL-04",
+        "billing error",
+        "finance"
+      ]
+    }
+  ],
+  "story": "You want to verify a billing report claim of 1 000 GPU hours.",
+  "starting_sentence": "The billing report shows we used 1 000 GPU hours this month. Can you verify that?"
+}

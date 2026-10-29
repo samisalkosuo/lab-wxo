@@ -1,0 +1,18 @@
+# Evaluation configuration for the hr_onboarding agent.
+# Run with:
+#   python wxodemo.py eval hr-onboarding
+# (same as: orchestrate evaluations evaluate --config evaluation/hr-onboarding/eval_config.yaml)
+
+test_paths:
+  - evaluation/hr-onboarding/test_cases/
+
+output_dir: evaluation/hr-onboarding/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly."
+    - "Provide laptop or equipment choices when asked."

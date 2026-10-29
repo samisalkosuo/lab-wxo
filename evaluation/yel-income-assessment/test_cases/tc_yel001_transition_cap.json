@@ -1,0 +1,62 @@
+{
+  "agent": "yel_income_assessment",
+  "goals": {
+    "yel_get_business_profile-1": [
+      "yel_get_sector_benchmark-1"
+    ],
+    "yel_get_sector_benchmark-1": [
+      "yel_calculate_income_recommendation-1"
+    ],
+    "yel_calculate_income_recommendation-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "yel_get_business_profile-1",
+      "tool_name": "yel_get_business_profile",
+      "args": {
+        "entrepreneur_id": "ENT-801"
+      },
+      "arg_matching": {
+        "entrepreneur_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "yel_get_sector_benchmark-1",
+      "tool_name": "yel_get_sector_benchmark",
+      "args": {
+        "sector_code": "NACE J.62"
+      },
+      "arg_matching": {
+        "sector_code": "fuzzy"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "yel_calculate_income_recommendation-1",
+      "tool_name": "yel_calculate_income_recommendation",
+      "args": {
+        "entrepreneur_id": "ENT-801"
+      },
+      "arg_matching": {
+        "entrepreneur_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "For ENT-801, current YEL income is EUR 18,000/yr. Due to the statutory EUR 4,000 transition cap (YEL-POL-02), the mandatory increase is capped at EUR 22,000/yr despite higher sector median benchmarks.",
+      "keywords": [
+        "ENT-801",
+        "22,000",
+        "transition cap",
+        "YEL-POL-02"
+      ]
+    }
+  ],
+  "story": "Conduct YEL review for IT consultant ENT-801 (EUR 18,000 current income). Do not call yel_issue_decision — report recommended income and reasoning.",
+  "starting_sentence": "Conduct a YEL income review for IT consultant ENT-801 (current income EUR 18,000/yr, turnover EUR 95,000/yr). Use your tools to retrieve the profile, sector benchmark, and calculate the recommended income. Do NOT call yel_issue_decision — just report your diagnosis and the proposed new confirmed income with reasoning."
+}

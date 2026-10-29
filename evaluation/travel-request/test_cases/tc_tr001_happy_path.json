@@ -1,0 +1,61 @@
+{
+  "agent": "travel_request",
+  "goals": {
+    "travel_get_employee_profile-1": [
+      "travel_estimate_reimbursement-1"
+    ],
+    "travel_estimate_reimbursement-1": [
+      "travel_get_budget_status-1"
+    ],
+    "travel_get_budget_status-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "travel_get_employee_profile-1",
+      "tool_name": "travel_get_employee_profile",
+      "args": {
+        "employee_id": "E-1001"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "travel_estimate_reimbursement-1",
+      "tool_name": "travel_estimate_reimbursement",
+      "args": {
+        "destination": "Tampere",
+        "duration_hours": 8
+      },
+      "arg_matching": {
+        "destination": "fuzzy",
+        "duration_hours": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "travel_get_budget_status-1",
+      "tool_name": "travel_get_budget_status",
+      "args": {
+        "cost_center": "CC-100"
+      },
+      "arg_matching": {
+        "cost_center": "optional"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The travel request for Aino Virtanen (E-1001) to Tampere on 14 April 2026 is APPROVED. The estimated reimbursement is 25 EUR partial per diem under sections 10 § and 11 § of Valtion matkustussääntö. No manager approval is required.",
+      "keywords": [
+        "APPROVED",
+        "25",
+        "per diem",
+        "10 §"
+      ]
+    }
+  ],
+  "story": "You are Aino Virtanen (E-1001). You want to hold a customer meeting in Tampere on Tuesday 14 April 2026. You leave home in the morning and return in the evening, about 8 hours in total. Ask if you may go and how much reimbursement you can expect. Do not call travel_submit_request, just give the decision.",
+  "starting_sentence": "I am Aino Virtanen (E-1001). I want to hold a customer meeting in Tampere on Tuesday 14 April 2026. I leave home in the morning and return in the evening, about 8 hours in total. May I go, and how much reimbursement can I expect? Do not call travel_submit_request, just give the decision."
+}

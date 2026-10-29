@@ -1,0 +1,48 @@
+{
+  "agent": "hr_onboarding",
+  "goals": {
+    "hr_get_new_hire-1": [
+      "hr_get_department_config-1"
+    ],
+    "hr_get_department_config-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "hr_get_new_hire-1",
+      "tool_name": "hr_get_new_hire",
+      "args": {
+        "hire_id": "H-1003"
+      },
+      "arg_matching": {
+        "hire_id": "fuzzy"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "hr_get_department_config-1",
+      "tool_name": "hr_get_department_config",
+      "args": {
+        "department": "Finance"
+      },
+      "arg_matching": {
+        "department": "fuzzy"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Sarah Chen (H-1003) is joining Finance. Under HR-POL-03, Finance department access requires compliance-gated provisioning with both HR Manager and Compliance Reviewer approvals.",
+      "keywords": [
+        "Sarah Chen",
+        "Finance",
+        "HR-POL-03",
+        "compliance"
+      ]
+    }
+  ],
+  "story": "You want to add Sarah Chen to the Finance team.",
+  "starting_sentence": "Add Sarah Chen to the Finance team."
+}

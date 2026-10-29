@@ -1,0 +1,33 @@
+{
+  "agent": "customer_returns",
+  "goals": {
+    "returns_lookup_order-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "returns_lookup_order-1",
+      "tool_name": "returns_lookup_order",
+      "args": {
+        "order_id": "ORD-1002"
+      },
+      "arg_matching": {
+        "order_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Order ORD-1002 was purchased 46 days ago, which is outside the 30-day return window per RP-STANDARD-01. The return is denied.",
+      "keywords": [
+        "ORD-1002",
+        "30-day",
+        "RP-STANDARD-01"
+      ]
+    }
+  ],
+  "story": "You bought headphones about six weeks ago (Order ORD-1002). You just don't like them anymore and want a refund.",
+  "starting_sentence": "I bought some headphones about six weeks ago. Order ORD-1002. I just don't like them anymore, I want a refund."
+}

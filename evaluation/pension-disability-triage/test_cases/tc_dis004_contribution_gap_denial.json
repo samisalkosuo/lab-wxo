@@ -1,0 +1,47 @@
+{
+  "agent": "pension_disability_triage",
+  "goals": {
+    "pdis_get_claim_dossier-1": [
+      "pdis_verify_qualifying_months-1"
+    ],
+    "pdis_verify_qualifying_months-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "pdis_get_claim_dossier-1",
+      "tool_name": "pdis_get_claim_dossier",
+      "args": {
+        "claimant_id": "CLM-704"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_verify_qualifying_months-1",
+      "tool_name": "pdis_verify_qualifying_months",
+      "args": {
+        "claimant_id": "CLM-704"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Member CLM-704 has only 8 insured months in the last 60 due to uninsured residency abroad and does not meet the 36/60-month qualifying condition (DIS-POL-04). The TyEL claim must be refused, and claimant should be referred to Kela.",
+      "keywords": [
+        "CLM-704",
+        "DIS-POL-04",
+        "Kela"
+      ]
+    }
+  ],
+  "story": "CLM-704 requests disability pension after several years abroad. Check qualifying condition.",
+  "starting_sentence": "Member CLM-704 is requesting a disability pension after several years of uninsured residency abroad. Use your tools to check the qualifying condition. Do NOT call pdis_refer_claim — just report the eligibility outcome and what the claimant should be advised."
+}

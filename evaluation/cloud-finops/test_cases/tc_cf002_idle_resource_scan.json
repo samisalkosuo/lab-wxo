@@ -1,0 +1,48 @@
+{
+  "agent": "cloud_finops",
+  "goals": {
+    "cf_list_idle_resources-1": [
+      "cf_get_resource_utilization-1"
+    ],
+    "cf_get_resource_utilization-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "cf_list_idle_resources-1",
+      "tool_name": "cf_list_idle_resources",
+      "args": {
+        "account_id": "acct-001"
+      },
+      "arg_matching": {
+        "account_id": "optional"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "cf_get_resource_utilization-1",
+      "tool_name": "cf_get_resource_utilization",
+      "args": {
+        "resource_id": "vm-batch-weekend-01"
+      },
+      "arg_matching": {
+        "resource_id": "fuzzy"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "vm-idle-finance-01 and vm-idle-dev-03 are genuinely idle and candidates for reclamation under CF-POL-01. However, vm-batch-weekend-01 has a scheduled Saturday batch job and should not be reclaimed.",
+      "keywords": [
+        "vm-idle-finance-01",
+        "vm-idle-dev-03",
+        "vm-batch-weekend-01",
+        "CF-POL-01"
+      ]
+    }
+  ],
+  "story": "You want to find idle resources in account acct-001 that can be reclaimed.",
+  "starting_sentence": "Are there any idle resources in account acct-001 we can reclaim?"
+}

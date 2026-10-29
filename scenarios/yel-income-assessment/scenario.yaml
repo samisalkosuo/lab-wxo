@@ -39,7 +39,7 @@ flows:
 
 evaluation:
   path: evaluation/yel-income-assessment
-  tier: core
+  tier: full
 
 demo:
   script: docs/demo/yel-income-assessment-demo.md

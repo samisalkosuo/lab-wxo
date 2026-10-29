@@ -1,0 +1,18 @@
+# Evaluation configuration for the hr_tacit_knowledge scenario.
+# Run with:
+#   python wxodemo.py eval hr-tacit-knowledge
+# (same as: orchestrate evaluations evaluate --config evaluation/hr-tacit-knowledge/eval_config.yaml)
+
+test_paths:
+  - evaluation/hr-tacit-knowledge/test_cases/
+
+output_dir: evaluation/hr-tacit-knowledge/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly."
+    - "Do not start review or routing flows unless confirming."

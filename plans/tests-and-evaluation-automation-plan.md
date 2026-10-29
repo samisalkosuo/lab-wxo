@@ -100,3 +100,22 @@ Establish automated agent test suites across both demo scenarios and standalone 
   - `docs/wxodemo.md`
   - `README.md`
 - **Status**: `[x] done`
+
+---
+
+### Scenario Test Suites Status Summary
+All 10 scenarios upgraded to `evaluation.tier: full` with verified `eval_config.yaml` and ADK DAG `test_cases/*.json`:
+- `incident-triage`: 4 test cases (`tier: full`)
+- `travel-request`: 3 test cases (`tier: full`)
+- `cloud-finops`: 4 test cases (`tier: full`)
+- `customer-returns`: 4 test cases (`tier: full`)
+- `hr-onboarding`: 4 test cases (`tier: full`)
+- `hr-tacit-knowledge`: 3 test cases (`tier: full`)
+- `pension-disability-triage`: 4 test cases (`tier: full`)
+- `pension-ove-advisor`: 4 test cases (`tier: full`)
+- `release-readiness`: 4 test cases (`tier: full`)
+- `yel-income-assessment`: 4 test cases (`tier: full`)
+
+Standalone test suites created:
+- `standalone/hello-world`: 1 test case (`eval_config.yaml`)
+- `standalone/travel-rules-qa`: 2 test cases (`eval_config.yaml`)

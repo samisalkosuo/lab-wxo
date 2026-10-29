@@ -1,0 +1,48 @@
+{
+  "agent": "yel_income_assessment",
+  "goals": {
+    "yel_get_business_profile-1": [
+      "yel_get_sector_benchmark-1"
+    ],
+    "yel_get_sector_benchmark-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "yel_get_business_profile-1",
+      "tool_name": "yel_get_business_profile",
+      "args": {
+        "entrepreneur_id": "ENT-804"
+      },
+      "arg_matching": {
+        "entrepreneur_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "yel_get_sector_benchmark-1",
+      "tool_name": "yel_get_sector_benchmark",
+      "args": {
+        "sector_code": "NACE M.74"
+      },
+      "arg_matching": {
+        "sector_code": "fuzzy"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "For freelancer ENT-804, annual revenue of EUR 5,200 is below the statutory YEL minimum threshold of EUR 9,010/yr (YEL-POL-01). YEL insurance is not mandatory.",
+      "keywords": [
+        "ENT-804",
+        "9,010",
+        "not mandatory",
+        "YEL-POL-01"
+      ]
+    }
+  ],
+  "story": "Freelancer ENT-804 has revenue of EUR 5,200 and wants to know if YEL insurance is mandatory.",
+  "starting_sentence": "Side-hustle freelancer ENT-804 has annual revenue of EUR 5,200 and wants to know if YEL insurance is mandatory. Use your tools to check and report whether YEL is required and what options are available."
+}

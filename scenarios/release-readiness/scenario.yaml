@@ -55,7 +55,7 @@ flows: []
 
 evaluation:
   path: evaluation/release-readiness
-  tier: core
+  tier: full
 
 demo:
   script: docs/demo/release-readiness-demo.md

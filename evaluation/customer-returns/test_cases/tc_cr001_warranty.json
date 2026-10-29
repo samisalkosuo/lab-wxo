@@ -1,0 +1,48 @@
+{
+  "agent": "customer_returns",
+  "goals": {
+    "returns_lookup_order-1": [
+      "returns_check_warranty-1"
+    ],
+    "returns_check_warranty-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "returns_lookup_order-1",
+      "tool_name": "returns_lookup_order",
+      "args": {
+        "order_id": "ORD-1001"
+      },
+      "arg_matching": {
+        "order_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "returns_check_warranty-1",
+      "tool_name": "returns_check_warranty",
+      "args": {
+        "order_id": "ORD-1001"
+      },
+      "arg_matching": {
+        "order_id": "fuzzy"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Order ORD-1001 for ProBlend 500 is within warranty under RP-WARRANTY-01. A replacement or repair can be processed.",
+      "keywords": [
+        "ORD-1001",
+        "warranty",
+        "replacement",
+        "RP-WARRANTY-01"
+      ]
+    }
+  ],
+  "story": "You bought a ProBlend 500 blender last month and it broke after a few uses. Order number is ORD-1001.",
+  "starting_sentence": "I bought a ProBlend 500 blender last month and it broke after a few uses. My order number is ORD-1001."
+}

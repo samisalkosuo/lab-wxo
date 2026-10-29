@@ -1,0 +1,34 @@
+{
+  "agent": "cloud_finops",
+  "goals": {
+    "cf_get_resource_utilization-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "cf_get_resource_utilization-1",
+      "tool_name": "cf_get_resource_utilization",
+      "args": {
+        "resource_id": "db-cluster-prod-01"
+      },
+      "arg_matching": {
+        "resource_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "db-cluster-prod-01 is over-provisioned with 22% CPU and 28% memory utilization. Under CF-POL-03, rightsizing to large-8cpu-64gb-2nodes is recommended with an illustrative saving of ~40%.",
+      "keywords": [
+        "db-cluster-prod-01",
+        "CF-POL-03",
+        "rightsizing",
+        "illustrative"
+      ]
+    }
+  ],
+  "story": "You want to check if database cluster db-cluster-prod-01 is over-provisioned and get rightsizing advice.",
+  "starting_sentence": "The database cluster db-cluster-prod-01 looks over-provisioned. Can you check and recommend a rightsizing?"
+}

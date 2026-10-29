@@ -1,0 +1,20 @@
+{
+  "agent": "hr_tk_guide",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Per article HR-TK-ART-03, employees can obtain an employment certificate through ESS > My Documents > Certificates > Employment Certificate, with a processing time of 3 working days.",
+      "keywords": [
+        "HR-TK-ART-03",
+        "ESS",
+        "3 working days"
+      ]
+    }
+  ],
+  "story": "You are Emilia Saarinen, new HR Coordinator at the Finland desk. You ask how to get an employment certificate for an employee who needs it for a bank.",
+  "starting_sentence": "I'm Emilia Saarinen, new HR Coordinator at the Finland desk. How do I get an employment certificate for an employee who needs it for a bank?"
+}

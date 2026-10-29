@@ -1,0 +1,18 @@
+# Evaluation configuration for the travel_request agent.
+# Run with:
+#   python wxodemo.py eval travel-request
+# (same as: orchestrate evaluations evaluate --config evaluation/travel-request/eval_config.yaml)
+
+test_paths:
+  - evaluation/travel-request/test_cases/
+
+output_dir: evaluation/travel-request/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly."
+    - "Do not ask for request submission to be executed."

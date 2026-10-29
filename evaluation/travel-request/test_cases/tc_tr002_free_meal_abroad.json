@@ -1,0 +1,61 @@
+{
+  "agent": "travel_request",
+  "goals": {
+    "travel_get_employee_profile-1": [
+      "travel_estimate_reimbursement-1"
+    ],
+    "travel_estimate_reimbursement-1": [
+      "travel_get_budget_status-1"
+    ],
+    "travel_get_budget_status-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "travel_get_employee_profile-1",
+      "tool_name": "travel_get_employee_profile",
+      "args": {
+        "employee_id": "E-1002"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "travel_estimate_reimbursement-1",
+      "tool_name": "travel_estimate_reimbursement",
+      "args": {
+        "destination": "Brussels",
+        "duration_hours": 50
+      },
+      "arg_matching": {
+        "destination": "fuzzy",
+        "duration_hours": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "travel_get_budget_status-1",
+      "tool_name": "travel_get_budget_status",
+      "args": {
+        "cost_center": "CC-100"
+      },
+      "arg_matching": {
+        "cost_center": "optional"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The travel request for Jukka Korhonen (E-1002) to Brussels requires manager approval (Mika Laine). Total reimbursement estimate is 361 EUR (81 EUR per diem reduced 50% for free meals + 280 EUR hotel). Note that hotel breakfast does not count as a free meal under 13 §.",
+      "keywords": [
+        "NEEDS APPROVAL",
+        "Mika Laine",
+        "361",
+        "13 §"
+      ]
+    }
+  ],
+  "story": "You are Jukka Korhonen (E-1002). You want to go to Brussels for training on 11-13 May 2026, about 50 hours in total. The organiser provides lunch and dinner every day. The hotel costs 280 EUR in total and breakfast is included in the room price. Ask if you may go and how much reimbursement you will get. Do not call travel_submit_request.",
+  "starting_sentence": "I am Jukka Korhonen (E-1002). I want to go to Brussels for training on 11-13 May 2026, about 50 hours in total. The organiser provides lunch and dinner every day. The hotel costs 280 EUR in total and breakfast is included in the room price. May I go, and how much reimbursement will I get? Do not call travel_submit_request, just give the decision."
+}

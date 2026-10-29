@@ -44,7 +44,7 @@ flows:
 
 evaluation:
   path: evaluation/cloud-finops
-  tier: core
+  tier: full
 
 demo:
   script: docs/demo/cloud-finops-demo.md

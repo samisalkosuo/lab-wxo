@@ -1,0 +1,20 @@
+{
+  "agent": "release_readiness",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "On security for rel-2025-Q3, frontend is blocked by runtime reachable CVE-2025-90022 per RG-BLOCKER-01. Payments has CVE-2025-90011 but it is dev-only and not a blocker.",
+      "keywords": [
+        "CVE-2025-90022",
+        "frontend",
+        "RG-BLOCKER-01"
+      ]
+    }
+  ],
+  "story": "You ask what is blocking rel-2025-Q3 on security.",
+  "starting_sentence": "What's blocking rel-2025-Q3 on security?"
+}

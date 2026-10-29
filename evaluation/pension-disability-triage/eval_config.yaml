@@ -1,0 +1,18 @@
+# Evaluation configuration for the pension_disability_triage agent.
+# Run with:
+#   python wxodemo.py eval pension-disability-triage
+# (same as: orchestrate evaluations evaluate --config evaluation/pension-disability-triage/eval_config.yaml)
+
+test_paths:
+  - evaluation/pension-disability-triage/test_cases/
+
+output_dir: evaluation/pension-disability-triage/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly."
+    - "Do not call pdis_refer_claim — report disposition and recommendations."

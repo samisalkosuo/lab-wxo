@@ -41,7 +41,7 @@ flows:
 
 evaluation:
   path: evaluation/travel-request
-  tier: core
+  tier: full
 
 demo:
   script: docs/demo/travel-request-demo.md

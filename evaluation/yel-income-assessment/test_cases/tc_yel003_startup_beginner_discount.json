@@ -1,0 +1,62 @@
+{
+  "agent": "yel_income_assessment",
+  "goals": {
+    "yel_get_business_profile-1": [
+      "yel_get_sector_benchmark-1"
+    ],
+    "yel_get_sector_benchmark-1": [
+      "yel_calculate_income_recommendation-1"
+    ],
+    "yel_calculate_income_recommendation-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "yel_get_business_profile-1",
+      "tool_name": "yel_get_business_profile",
+      "args": {
+        "entrepreneur_id": "ENT-803"
+      },
+      "arg_matching": {
+        "entrepreneur_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "yel_get_sector_benchmark-1",
+      "tool_name": "yel_get_sector_benchmark",
+      "args": {
+        "sector_code": "NACE J.62"
+      },
+      "arg_matching": {
+        "sector_code": "fuzzy"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "yel_calculate_income_recommendation-1",
+      "tool_name": "yel_calculate_income_recommendation",
+      "args": {
+        "entrepreneur_id": "ENT-803"
+      },
+      "arg_matching": {
+        "entrepreneur_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "For first-time startup founder ENT-803, the transition cap limits the recommended income to EUR 18,000/yr (YEL-POL-02). Per YEL-POL-03, the 22% beginner discount applies to the monthly premium.",
+      "keywords": [
+        "ENT-803",
+        "18,000",
+        "beginner discount",
+        "YEL-POL-03"
+      ]
+    }
+  ],
+  "story": "New startup founder ENT-803 asks about recommended YEL income and beginner discount.",
+  "starting_sentence": "New startup founder ENT-803 wants to know their recommended YEL income and whether they qualify for a beginner discount. Retrieve the profile, sector benchmark, and calculate the recommendation. Do NOT call yel_issue_decision — just report the recommended income, whether the beginner discount applies, and what their monthly premium would be."
+}

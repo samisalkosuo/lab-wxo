@@ -1,0 +1,33 @@
+{
+  "agent": "hr_tk_guide",
+  "goals": {
+    "hr_tk_find_expert-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "hr_tk_find_expert-1",
+      "tool_name": "hr_tk_find_expert",
+      "args": {
+        "topic": "visa"
+      },
+      "arg_matching": {
+        "topic": "fuzzy"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The knowledge base does not cover work permit support letters. Janne Korhonen (X-102), HR Operations Lead, is the expert on visa documentation. Would you like to route this question to Janne Korhonen?",
+      "keywords": [
+        "Janne Korhonen",
+        "X-102",
+        "visa"
+      ]
+    }
+  ],
+  "story": "An employee asks for a work permit support letter. You ask who to contact about this.",
+  "starting_sentence": "An employee is asking for a work permit support letter from HR. I've never handled this before. Who should I ask about this?"
+}

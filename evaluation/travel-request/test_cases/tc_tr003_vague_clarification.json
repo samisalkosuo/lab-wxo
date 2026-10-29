@@ -1,0 +1,20 @@
+{
+  "agent": "travel_request",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Could you please provide more details about your trip, including your employee ID, the start and end dates or duration, and the purpose of the trip to Brussels?",
+      "keywords": [
+        "employee",
+        "dates",
+        "purpose"
+      ]
+    }
+  ],
+  "story": "You want to travel to Brussels next month but provide a vague initial request. When the agent asks for missing details, answer concisely.",
+  "starting_sentence": "I need a trip to Brussels next month."
+}

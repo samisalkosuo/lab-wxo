@@ -1,0 +1,78 @@
+{
+  "agent": "pension_ove_advisor",
+  "goals": {
+    "ove_get_member_profile-1": [
+      "ove_get_accrued_pension-1"
+    ],
+    "ove_get_accrued_pension-1": [
+      "ove_calculate_reduction-1"
+    ],
+    "ove_calculate_reduction-1": [
+      "ove_simulate_combined_income-1"
+    ],
+    "ove_simulate_combined_income-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "ove_get_member_profile-1",
+      "tool_name": "ove_get_member_profile",
+      "args": {
+        "member_id": "MEM-101"
+      },
+      "arg_matching": {
+        "member_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "ove_get_accrued_pension-1",
+      "tool_name": "ove_get_accrued_pension",
+      "args": {
+        "member_id": "MEM-101"
+      },
+      "arg_matching": {
+        "member_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "ove_calculate_reduction-1",
+      "tool_name": "ove_calculate_reduction",
+      "args": {
+        "member_id": "MEM-101",
+        "portion_pct": 50
+      },
+      "arg_matching": {
+        "member_id": "strict",
+        "portion_pct": "fuzzy"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "ove_simulate_combined_income-1",
+      "tool_name": "ove_simulate_combined_income",
+      "args": {
+        "member_id": "MEM-101"
+      },
+      "arg_matching": {
+        "member_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Member MEM-101 is eligible for 50% OVE under OVE-POL-03. Taking 50% OVE with continuing work at €4,200/mo results in simulated combined income with the early retirement reduction applied.",
+      "keywords": [
+        "MEM-101",
+        "OVE-POL-03",
+        "50%",
+        "reduction"
+      ]
+    }
+  ],
+  "story": "You turn 62 next month and want to explore taking 50% OVE while continuing work (member ID MEM-101, salary 4200 euros).",
+  "starting_sentence": "I turn 62 next month and want to explore taking 50% partial early old-age pension (OVE) while continuing my job. My member ID is MEM-101 and my current monthly salary is 4200 euros."
+}

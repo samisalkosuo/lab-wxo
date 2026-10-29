@@ -1,0 +1,33 @@
+{
+  "agent": "customer_returns",
+  "goals": {
+    "returns_lookup_by_serial-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "returns_lookup_by_serial-1",
+      "tool_name": "returns_lookup_by_serial",
+      "args": {
+        "serial_number": "SN-KTCH-780-C103"
+      },
+      "arg_matching": {
+        "serial_number": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The kitchen scale with serial number SN-KTCH-780-C103 is eligible for a gift return for store credit under RP-GIFT-01.",
+      "keywords": [
+        "SN-KTCH-780-C103",
+        "store credit",
+        "RP-GIFT-01"
+      ]
+    }
+  ],
+  "story": "You received a kitchen scale as a gift and would like to return it. You don't have an order number but serial number is SN-KTCH-780-C103.",
+  "starting_sentence": "I received a kitchen scale as a gift and I'd like to return it. I don't have an order number but the serial number on the box is SN-KTCH-780-C103."
+}

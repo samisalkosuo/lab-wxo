@@ -1,0 +1,34 @@
+{
+  "agent": "pension_ove_advisor",
+  "goals": {
+    "ove_get_member_profile-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "ove_get_member_profile-1",
+      "tool_name": "ove_get_member_profile",
+      "args": {
+        "member_id": "MEM-102"
+      },
+      "arg_matching": {
+        "member_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Member MEM-102 is 59 years old. Per OVE-POL-01, the minimum statutory age for cohort 1966 is 62 years. The OVE application cannot be granted at this age.",
+      "keywords": [
+        "MEM-102",
+        "OVE-POL-01",
+        "62",
+        "minimum age"
+      ]
+    }
+  ],
+  "story": "You are a 59-year-old teacher (MEM-102) asking to start 25% OVE next month.",
+  "starting_sentence": "Can I take 25% OVE starting next month? My member ID is MEM-102 and I am a 59-year-old teacher."
+}

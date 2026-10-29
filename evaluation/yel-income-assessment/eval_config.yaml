@@ -1,0 +1,18 @@
+# Evaluation configuration for the yel_income_assessment agent.
+# Run with:
+#   python wxodemo.py eval yel-income-assessment
+# (same as: orchestrate evaluations evaluate --config evaluation/yel-income-assessment/eval_config.yaml)
+
+test_paths:
+  - evaluation/yel-income-assessment/test_cases/
+
+output_dir: evaluation/yel-income-assessment/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly."
+    - "Do not call yel_issue_decision — report recommendation and reasoning."

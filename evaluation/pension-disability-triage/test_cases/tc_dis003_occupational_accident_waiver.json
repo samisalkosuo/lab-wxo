@@ -1,0 +1,76 @@
+{
+  "agent": "pension_disability_triage",
+  "goals": {
+    "pdis_get_claim_dossier-1": [
+      "pdis_verify_qualifying_months-1"
+    ],
+    "pdis_verify_qualifying_months-1": [
+      "pdis_get_medical_summary-1"
+    ],
+    "pdis_get_medical_summary-1": [
+      "pdis_assess_rehab_eligibility-1"
+    ],
+    "pdis_assess_rehab_eligibility-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "pdis_get_claim_dossier-1",
+      "tool_name": "pdis_get_claim_dossier",
+      "args": {
+        "claimant_id": "CLM-703"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_verify_qualifying_months-1",
+      "tool_name": "pdis_verify_qualifying_months",
+      "args": {
+        "claimant_id": "CLM-703"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_get_medical_summary-1",
+      "tool_name": "pdis_get_medical_summary",
+      "args": {
+        "claimant_id": "CLM-703"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "pdis_assess_rehab_eligibility-1",
+      "tool_name": "pdis_assess_rehab_eligibility",
+      "args": {
+        "claimant_id": "CLM-703"
+      },
+      "arg_matching": {
+        "claimant_id": "strict"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Although CLM-703 has only 14 qualifying months, the occupational accident waiver (DIS-POL-04) applies due to a verified factory accident. Work capacity is 25%, and referral to Medical Board is indicated per DIS-POL-01.",
+      "keywords": [
+        "CLM-703",
+        "DIS-POL-04",
+        "tyotapaturma",
+        "DIS-POL-01"
+      ]
+    }
+  ],
+  "story": "Young worker CLM-703 claims incapacity following a factory accident with 14 months work history. Check if waiver applies.",
+  "starting_sentence": "Young worker CLM-703 is claiming incapacity following a factory accident and has only 14 months of work history. Use your tools to evaluate eligibility. Do NOT call pdis_refer_claim — just explain whether and why the standard qualifying condition applies and what disposition you recommend."
+}

@@ -1,0 +1,48 @@
+{
+  "agent": "hr_onboarding",
+  "goals": {
+    "hr_get_new_hire-1": [
+      "hr_get_role_access-1"
+    ],
+    "hr_get_role_access-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "hr_get_new_hire-1",
+      "tool_name": "hr_get_new_hire",
+      "args": {
+        "hire_id": "H-1002"
+      },
+      "arg_matching": {
+        "hire_id": "fuzzy"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "hr_get_role_access-1",
+      "tool_name": "hr_get_role_access",
+      "args": {
+        "role": "contractor"
+      },
+      "arg_matching": {
+        "role": "fuzzy"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Jordan Lee (H-1002) is a contractor. Per HR-POL-02, contractor access is restricted to chat and time-limited vpn. Contractors do not receive corporate email.",
+      "keywords": [
+        "Jordan Lee",
+        "HR-POL-02",
+        "chat",
+        "vpn"
+      ]
+    }
+  ],
+  "story": "You want to set up contractor access for Jordan Lee.",
+  "starting_sentence": "Set up contractor access for Jordan Lee."
+}

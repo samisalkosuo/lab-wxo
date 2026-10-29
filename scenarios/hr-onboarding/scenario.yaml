@@ -48,7 +48,7 @@ flows:
 
 evaluation:
   path: evaluation/hr-onboarding
-  tier: core
+  tier: full
 
 demo:
   script: docs/demo/hr-onboarding-demo.md
