@@ -184,6 +184,16 @@ python wxodemo.py eval incident-triage --dry-run
 
 Logs in, then runs `orchestrate evaluations evaluate --config evaluation/<id>/eval_config.yaml` with the terminal attached. A scenario without an `eval_config.yaml` (currently `travel-request`) exits 2 with an explanation. The evaluation framework is **not** in `requirements.txt`; see [Running the evaluation](../README.md#running-the-evaluation-optional). Results go to `evaluation/<id>/results/<timestamp>/`. The evaluation command itself exits 1 when its output is piped or redirected (a progress-rendering issue), although the result files are still written.
 
+### test-upload
+
+```bash
+python wxodemo.py test-upload travel_rules_qa
+python wxodemo.py test-upload incident-triage --eval
+python wxodemo.py test-upload travel_rules_qa --dry-run
+```
+
+Extracts test prompts from the target's test cases or `ground_truth.json` smoke prompts, formats them as a CSV payload, and uploads them to the agent's **Tests** tab in the watsonx Orchestrate UI via the REST API (`POST /v1/orchestrate/agent/<agent_id>/test_case`). Adding `--eval` also triggers an asynchronous server-side evaluation run in the **Evaluations** tab (`POST /v1/orchestrate/agent/<agent_id>/evaluate`).
+
 ### export-chats
 
 ```bash

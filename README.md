@@ -113,6 +113,7 @@ Removing a knowledge base deletes its ingested documents.
 | `validate [names]` | Manifest and demo-consistency checks |
 | `smoke <scenario>` | Send a scenario's smoke prompts to its deployed agent |
 | `eval <scenario>` | Run the ADK evaluation for a scenario |
+| `test-upload <target>` | Upload test cases to WXO Tests tab (and optionally evaluate) |
 | `export-chats` | Export agent chats and traces |
 | `new-scenario <id>` | Scaffold a new scenario |
 | `logs` | Show the log file path and its last lines |
