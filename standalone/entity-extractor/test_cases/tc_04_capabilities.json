@@ -1,0 +1,27 @@
+{
+  "agent": "entity_extractor",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "JSON listing the supported entities: person, organization, location, product, date, monetary_amount, email_address, phone_number, identifier, url, percentage, job_title, event, and noting that custom entities are supported.",
+      "keywords": [
+        "person",
+        "organization",
+        "location",
+        "product",
+        "date",
+        "monetary_amount",
+        "email_address",
+        "phone_number",
+        "identifier",
+        "custom"
+      ]
+    }
+  ],
+  "story": "The user asks what the agent does and which entities it knows. The agent lists its built-in entities as JSON and does not extract anything or call a tool.",
+  "starting_sentence": "What do you do? Which entities do you know?"
+}

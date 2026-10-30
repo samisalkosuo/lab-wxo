@@ -1,0 +1,18 @@
+# Evaluation configuration for the entity_extractor agent.
+# Upload test cases to WXO with:
+#   python wxodemo.py test-upload entity-extractor
+# or to upload and evaluate:
+#   python wxodemo.py test-upload entity-extractor --eval
+
+test_paths:
+  - standalone/entity-extractor/test_cases/
+
+output_dir: standalone/entity-extractor/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Provide the text and request exactly as given. When the agent asks a clarification question, answer briefly."

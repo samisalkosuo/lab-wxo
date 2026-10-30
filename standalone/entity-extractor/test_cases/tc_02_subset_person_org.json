@@ -1,0 +1,21 @@
+{
+  "agent": "entity_extractor",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "JSON with only person (Anna Virtanen) and organization (Nordbank); no other entity types are returned and no tool is needed.",
+      "keywords": [
+        "person",
+        "organization",
+        "Anna Virtanen",
+        "Nordbank"
+      ]
+    }
+  ],
+  "story": "The user restricts extraction to people and organizations, which are meaning-based entities handled by the model, so no tool call is expected.",
+  "starting_sentence": "Only people and organizations: Anna Virtanen from Nordbank (anna.virtanen@nordbank.fi) approved invoice INV-20931 in Helsinki."
+}

@@ -30,6 +30,7 @@ Deployed with `python wxodemo.py deploy <name>` (see [Standalone Agents](#standa
 | Agent | Name in WXO | Description |
 |---|---|---|
 | [document-classifier](standalone/document-classifier/) | `document_classifier` | Classifies text or documents into user-specified categories with confidence and single-sentence reasoning in strict JSON |
+| [entity-extractor](standalone/entity-extractor/) | `entity_extractor` | Extracts people, organizations, locations, products, dates, amounts, emails, phones, identifiers and user-defined custom entities into JSON; format-based entities come from a regex Python tool |
 | [hello-world](standalone/hello-world/) | `hello_world` | Simple greeting agent with a `greeting` tool -- verifies ADK setup |
 | [information-redactor](standalone/information-redactor/) | `information_redactor` | Detects and masks sensitive information and personal identifiers in pasted text before sharing; typed placeholders, no tools, no knowledge base |
 | [metadata-extractor](standalone/metadata-extractor/) | `metadata_extractor` | Extracts user-specified arbitrary metadata fields from provided text into strict JSON schemas |
@@ -329,6 +330,7 @@ lab-wxo/
 ├── standalone/                       # Ad-hoc standalone agents (no scenario manifest required)
 │   ├── README.md                     # Standalone conventions and wxodemo usage
 │   ├── document-classifier/          # Configurable document classification into candidate categories (strict JSON)
+│   ├── entity-extractor/             # Named-entity extraction to JSON (agent + regex tool, custom entities)
 │   ├── hello-world/                  # ADK setup check (agent + greeting tool)
 │   ├── information-redactor/         # Sensitive information / personal identifier masking agent
 │   ├── metadata-extractor/           # Arbitrary metadata field extraction into strict JSON schemas

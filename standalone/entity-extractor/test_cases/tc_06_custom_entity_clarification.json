@@ -1,0 +1,20 @@
+{
+  "agent": "entity_extractor",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "A short clarification question asking the user to describe or give an example of a fnord; no JSON is returned yet.",
+      "keywords": [
+        "fnord",
+        "describe",
+        "example"
+      ]
+    }
+  ],
+  "story": "The user asks for a custom entity the agent cannot interpret. The agent asks one short question for a description or example instead of guessing.",
+  "starting_sentence": "Extract all the fnords from this text: The fnord level at the Oulu plant was high on Monday."
+}

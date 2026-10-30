@@ -1,0 +1,19 @@
+{
+  "agent": "entity_extractor",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "A short question asking the user to provide the text to extract entities from; no JSON is returned.",
+      "keywords": [
+        "text",
+        "provide"
+      ]
+    }
+  ],
+  "story": "The user asks for entity extraction but gives no source text, so the agent asks for the text.",
+  "starting_sentence": "Extract entities."
+}

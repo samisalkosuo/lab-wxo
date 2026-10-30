@@ -1,0 +1,21 @@
+{
+  "agent": "entity_extractor",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "JSON with a programming_language array containing Java, Go and Python.",
+      "keywords": [
+        "programming_language",
+        "Java",
+        "Go",
+        "Python"
+      ]
+    }
+  ],
+  "story": "The user asks for a custom entity with a clear name. The model extracts it directly and no tool is called.",
+  "starting_sentence": "Extract programming_language entities: We rewrote the backend from Java to Go and kept Python for the scripts."
+}
