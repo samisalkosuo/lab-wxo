@@ -109,6 +109,11 @@ customModes:
       - An agent may reuse knowledge bases and tools that scenarios already deploy. Do not
         duplicate them. The agent README must name every resource that has to be live
         already, with the command to import it.
+      - When an agent requires data processing, structured extraction, or deterministic logic
+        (such as entity extraction or external API calls), implement the capability as a Python tool
+        decorated with `@tool` in `standalone/<agent-name>/<tool_name>.py` instead of relying solely
+        on prompt instructions. `wxodemo` automatically discovers `@tool` definitions in the agent folder,
+        imports them before deploying the agent, and cleans them up on undeploy.
 
       CLI reference (python wxodemo.py <command>):
       - list --kind standalone   Show all discovered standalone agents.
