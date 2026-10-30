@@ -1,0 +1,2 @@
+# watsonx Orchestrate report generator tool dependencies
+# Uses Python standard library only.
