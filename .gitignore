@@ -1,6 +1,7 @@
 ﻿local/
 export/
 evaluation/**/results
+standalone/**/results
 
 
 # Environment & Secrets

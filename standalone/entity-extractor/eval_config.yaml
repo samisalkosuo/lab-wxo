@@ -1,8 +1,8 @@
 # Evaluation configuration for the entity_extractor agent.
-# Upload test cases to WXO with:
-#   python wxodemo.py test-upload entity-extractor
-# or to upload and evaluate:
-#   python wxodemo.py test-upload entity-extractor --eval
+# Run locally (works on SaaS; the Tests-tab upload API is not exposed there):
+#   orchestrate evaluations evaluate --config standalone/entity-extractor/eval_config.yaml
+# Optional, only where the Agent Evaluation upload API exists:
+#   python wxodemo.py test-upload entity-extractor [--eval]
 
 test_paths:
   - standalone/entity-extractor/test_cases/
@@ -15,4 +15,4 @@ enable_verbose_logging: true
 
 llm_user_config:
   user_response_style:
-    - "Be concise. Provide the text and request exactly as given. When the agent asks a clarification question, answer briefly."
+    - "Be concise. Send the starting message exactly as given and nothing else. Never repeat the source text, never say 'done'. If the agent asks a clarification question, answer it in one sentence. As soon as the agent returns JSON, end the conversation without further messages."

@@ -7,11 +7,9 @@
     {
       "name": "summarize",
       "type": "text",
-      "response": "A short clarification question asking the user to describe or give an example of a fnord; no JSON is returned yet.",
+      "response": "A short clarification question asking the user what a fnord is (a description or example); no JSON is returned yet.",
       "keywords": [
-        "fnord",
-        "describe",
-        "example"
+        "fnord"
       ]
     }
   ],

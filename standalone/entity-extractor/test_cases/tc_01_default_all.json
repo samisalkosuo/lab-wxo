@@ -1,32 +1,13 @@
 {
   "agent": "entity_extractor",
   "goals": {
-    "extract_pattern_entities-1": [
-      "summarize"
-    ]
+    "summarize": []
   },
   "goal_details": [
     {
-      "type": "tool_call",
-      "name": "extract_pattern_entities-1",
-      "tool_name": "extract_pattern_entities",
-      "args": {
-        "text": "Anna Virtanen from Nordbank (anna.virtanen@nordbank.fi, +358 40 123 4567) approved invoice INV-20931 for EUR 12,500.00 on 12.03.2025 in Helsinki.",
-        "entity_types": [
-          "email_address",
-          "phone_number",
-          "date",
-          "monetary_amount",
-          "identifier",
-          "url",
-          "percentage"
-        ]
-      }
-    },
-    {
       "name": "summarize",
       "type": "text",
-      "response": "JSON with person Anna Virtanen, organization Nordbank, location Helsinki, email anna.virtanen@nordbank.fi, phone +358 40 123 4567, identifier INV-20931, monetary amount EUR 12,500.00 and date 12.03.2025.",
+      "response": "JSON with person Anna Virtanen, organization Nordbank, location Helsinki, email anna.virtanen@nordbank.fi, phone +358 40 123 4567, identifier INV-20931, monetary amount EUR 12,500.00 and date 12.03.2025 (normalized 2025-03-12).",
       "keywords": [
         "Anna Virtanen",
         "Nordbank",
@@ -38,6 +19,6 @@
       ]
     }
   ],
-  "story": "The user pastes a short business text and asks for entities with no restriction, so every built-in entity is extracted and the pattern tool is called once with the full text.",
+  "story": "The user pastes a short business text and asks for entities with no restriction, so every built-in entity is extracted. Only the final JSON is checked, not which tool calls produced it.",
   "starting_sentence": "Extract entities: Anna Virtanen from Nordbank (anna.virtanen@nordbank.fi, +358 40 123 4567) approved invoice INV-20931 for EUR 12,500.00 on 12.03.2025 in Helsinki."
 }

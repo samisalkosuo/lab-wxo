@@ -197,7 +197,7 @@ def extract_pattern_entities(text: str, entity_types: Optional[List[str]] = None
             empty list to extract all of them.
 
     Returns:
-        dict: {"entities": {<entity_type>: [{"text", "start", "end", ...}]}, "scanned_types": [...]}.
+        dict: {"entities": {<entity_type>: [{"text", ...}]}, "scanned_types": [...]}.
             Every scanned type is present, with an empty list when nothing was found. "date" hits
             may carry "normalized" (ISO date or null), "monetary_amount" hits carry "normalized"
             ({"amount", "currency"}), and "identifier" hits carry "id_kind".
@@ -207,6 +207,6 @@ def extract_pattern_entities(text: str, entity_types: Optional[List[str]] = None
     hits = _collect(text or "", wanted)
     result = {t: [] for t in PATTERN_ENTITY_TYPES if t in wanted}
     for h in sorted(hits, key=lambda x: x["start"]):
-        item = {k: v for k, v in h.items() if k != "type" and v is not None}
+        item = {k: v for k, v in h.items() if k not in ("type", "start", "end") and v is not None}
         result[h["type"]].append(item)
     return {"entities": result, "scanned_types": sorted(wanted)}

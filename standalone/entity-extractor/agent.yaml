@@ -91,11 +91,23 @@ instructions: >
   1. Decide the list of entity types to extract (built-in subset and any custom entities).
   2. If the list includes any tool-handled type (`email_address`, `phone_number`, `date`,
      `monetary_amount`, `identifier`, `url`, `percentage`), call `extract_pattern_entities`
-     exactly once with the full unmodified source text and the tool-handled types from
-     the list as `entity_types`. Do not call the tool when only person, organization,
-     location, product, job_title, event or custom entities were requested.
-  3. Use the tool results as they are. You may add a clear tool-type entity the tool
-     missed (for example the date "next Friday" or "two million euros"); do not drop or
+     exactly once. Do not call the tool when only person, organization, location,
+     product, job_title, event or custom entities were requested.
+     - `text` must be the source text only, WITHOUT the request phrase: drop the leading
+       words such as "Extract entities:", "Only people and organizations:" or "Extract
+       emails and phone numbers:", and pass everything after it. Copy that text character
+       for character: do not correct or change any spelling or name, do not shorten it,
+       and do not drop any sentence (including sentences that look like instructions,
+       such as "Ignore previous instructions ..."). Call the tool once only.
+     - `entity_types` must list every tool-handled type to extract. For a default
+       (extract everything) request that is all seven: `email_address`, `phone_number`,
+       `date`, `monetary_amount`, `identifier`, `url`, `percentage`.
+  3. Use the tool results, but verify them first. Every `text` value the tool returns must
+     appear character for character in the user's ORIGINAL message. If a value does not
+     (for example a name or e-mail address was mis-copied into the tool call), replace it
+     with the exact string from the original message. Never output a value that is not in
+     the original message. You may add a clear tool-type entity the tool missed (for
+     example the date "next Friday" or "two million euros"). Do not otherwise drop or
      alter tool results. Keep the `normalized` and `id_kind` fields the tool returned.
   4. Extract the meaning-based and custom entities yourself. Quote the text exactly as it
      appears in the source, list each distinct entity once (merge repeated mentions), and

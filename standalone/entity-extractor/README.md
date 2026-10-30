@@ -55,10 +55,17 @@ Re-running import is safe — it updates in place.
 
 ## Test
 
+Run the evaluation locally with the ADK (needs the optional evaluation framework, see the
+root README). Results go to `standalone/entity-extractor/results/`, a generated folder:
+
 ```bash
-python wxodemo.py test-upload entity-extractor          # upload test cases
-python wxodemo.py test-upload entity-extractor --eval   # upload and evaluate
+orchestrate evaluations evaluate --config standalone/entity-extractor/eval_config.yaml
 ```
+
+`python wxodemo.py eval` only accepts scenarios, so it does not work for this agent.
+`python wxodemo.py test-upload entity-extractor` uploads the test prompts to the Tests tab,
+but the SaaS gateway does not expose that API; on SaaS create tests from Draft Preview
+(`Save as test`) instead.
 
 ## Teardown
 
@@ -74,11 +81,11 @@ orchestrate tools remove --name extract_pattern_entities
 
 | Limit | Detail |
 |---|---|
-| Not verified by a live run | The agent has not been exercised against a live instance. The tool was run locally on one sample text only. Validate JSON shape, tool-call arguments and clarification behaviour after deploy. |
+| Evaluation is simulated | The ADK evaluation uses an LLM-simulated user, so multi-turn behaviour after the first reply can vary between runs. See the results folder for the latest run. |
 | Regex tool is heuristic | Phone numbers, labelled identifiers and dates in unusual formats can be missed or over-matched. Slash dates such as `03/04/2025` are returned without a `normalized` value because day/month order is ambiguous. |
 | Currency coverage | Symbols `$ € £ ¥`, a short list of ISO codes (EUR, USD, GBP, SEK, NOK, DKK, CHF, JPY, CNY, INR, CAD, AUD) and the words euro/dollar/pound are recognised. |
 | Semantic entities are model-based | `person`, `organization`, `location`, `product`, `job_title`, `event` and custom entities depend on the model; ambiguous names (e.g. a company that is also a place) may be mislabelled. |
-| Tool routing is prompt-based | Whether the tool is called for the right entity types is enforced by the instructions, not by code. |
+| Tool routing is prompt-based | Whether the tool is called for the right entity types, and with the exact source text, is enforced by the instructions, not by code. The test cases (tc_01, tc_03, tc_08) check only the final JSON, not the tool-call arguments. Local ADK runs of the 8 cases vary: one run passed 8 of 8, the next 6 of 8. The recurring fault is the model mis-copying the surname "Virtanen" from the user's message (seen as `Virtuunen`, `Virtuen`, `virtunen`, `virtonen`), both in the tool-call `text` and, in tc_02, in a reply with no tool call at all. The model also sometimes leaves the request phrase "Extract entities:" in the tool-call `text` or omits `url`/`percentage` from `entity_types`. Check extracted values against the source text before relying on them. |
 | Draft agents | On Developer Edition `orchestrate agents deploy` may fail; the agent then stays a draft. |
 
 ## Examples

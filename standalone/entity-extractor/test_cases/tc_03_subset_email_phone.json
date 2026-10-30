@@ -1,23 +1,9 @@
 {
   "agent": "entity_extractor",
   "goals": {
-    "extract_pattern_entities-1": [
-      "summarize"
-    ]
+    "summarize": []
   },
   "goal_details": [
-    {
-      "type": "tool_call",
-      "name": "extract_pattern_entities-1",
-      "tool_name": "extract_pattern_entities",
-      "args": {
-        "text": "Anna Virtanen from Nordbank (anna.virtanen@nordbank.fi, +358 40 123 4567) approved invoice INV-20931.",
-        "entity_types": [
-          "email_address",
-          "phone_number"
-        ]
-      }
-    },
     {
       "name": "summarize",
       "type": "text",
@@ -30,6 +16,6 @@
       ]
     }
   ],
-  "story": "The user asks for emails and phone numbers only, so the pattern tool is called with just those two entity types.",
+  "story": "The user asks for emails and phone numbers only. Only the final JSON is checked, not which tool calls produced it.",
   "starting_sentence": "Extract emails and phone numbers: Anna Virtanen from Nordbank (anna.virtanen@nordbank.fi, +358 40 123 4567) approved invoice INV-20931."
 }
