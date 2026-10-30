@@ -313,6 +313,18 @@ def test_eval_dry_run(repo, capsys):
     assert code == 0 and "evaluations evaluate --config evaluation/alpha/eval_config.yaml" in out
 
 
+def test_eval_dry_run_standalone_agent(repo, capsys):
+    write(repo / "standalone/hello-world/eval_config.yaml", "n_runs: 1\n")
+    code, out = run(capsys, "eval", "hello_world", "--dry-run")
+    assert code == 0
+    assert "evaluations evaluate --config standalone/hello-world/eval_config.yaml" in out
+
+
+def test_eval_standalone_agent_without_eval_config_exits_2(repo, capsys):
+    code, out = run(capsys, "eval", "hello_world", "--dry-run")
+    assert code == 2 and "eval_config.yaml not found" in out
+
+
 def test_export_chats_dry_run_and_bad_window(repo, capsys):
     code, out = run(capsys, "export-chats", "--dry-run", "--last", "2d", "--agent", "translator")
     assert code == 0 and "would export chats of agent 'translator' (last 2d)" in out

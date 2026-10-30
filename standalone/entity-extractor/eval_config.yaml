@@ -1,6 +1,7 @@
 # Evaluation configuration for the entity_extractor agent.
 # Run locally (works on SaaS; the Tests-tab upload API is not exposed there):
-#   orchestrate evaluations evaluate --config standalone/entity-extractor/eval_config.yaml
+#   python wxodemo.py eval entity-extractor
+# (same as: orchestrate evaluations evaluate --config standalone/entity-extractor/eval_config.yaml)
 # Optional, only where the Agent Evaluation upload API exists:
 #   python wxodemo.py test-upload entity-extractor [--eval]
 

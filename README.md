@@ -221,6 +221,8 @@ python wxodemo.py eval incident-triage
 
 The command exits with code 1 when its output is piped or redirected (a progress-rendering issue); the result files are still written to `evaluation/<scenario>/results/<timestamp>/`.
 
+Standalone agents that ship an `eval_config.yaml` work the same way, for example `python wxodemo.py eval entity-extractor` (results go to `standalone/<agent>/results/<timestamp>/`).
+
 To send a scenario's diagnosis-only prompts to the deployed agent, use `python wxodemo.py smoke <id>` (`--dry-run` prints the prompts without calling the instance). It does not grade the answers.
 
 

@@ -1,4 +1,4 @@
-"""Run the ADK evaluation framework for a scenario: `orchestrate evaluations evaluate`.
+"""Run the ADK evaluation framework for a scenario or standalone agent: `orchestrate evaluations evaluate`.
 
 The evaluation extras (ibm-watsonx-orchestrate-evaluation-framework) are optional and are not in
 requirements.txt; on Python 3.14 its pandas pin cannot be installed. See docs/wxodemo.md.
@@ -12,14 +12,25 @@ from pathlib import Path
 
 from wxodemo.adk import AdkError, AdkNotFoundError, find_orchestrate, login
 from wxodemo.config import Config, UsageError
+from wxodemo.discovery import Target
 from wxodemo.logging_setup import fail, get_logger, mask, ok, plain
-from wxodemo.manifest import ManifestError, Scenario, rel
+from wxodemo.manifest import ManifestError, rel
 
 CONFIG_NAME = "eval_config.yaml"
 
 
-def eval_config_path(root: Path, scenario: Scenario) -> Path:
-    """evaluation/<id>/eval_config.yaml for a scenario, checked for existence."""
+def eval_config_path(root: Path, target: Target) -> Path:
+    """The eval_config.yaml of a scenario (evaluation/<id>/) or standalone agent (its folder)."""
+    if target.agent is not None:
+        config = target.agent.dir / CONFIG_NAME
+        if not config.is_file():
+            raise UsageError(
+                f"{rel(root, config)} not found. Standalone agent '{target.name}' has no "
+                f"automated evaluation configured."
+            )
+        return config
+
+    scenario = target.scenario
     evaluation = (scenario.get("evaluation") or {}).get("path")
     if not evaluation:
         raise ManifestError(f"scenario '{scenario.id}' has no evaluation.path in its manifest")
@@ -32,11 +43,11 @@ def eval_config_path(root: Path, scenario: Scenario) -> Path:
     return config
 
 
-def run_eval(root: Path, scenario: Scenario, cfg: Config | None, dry_run: bool) -> int:
+def run_eval(root: Path, target: Target, cfg: Config | None, dry_run: bool) -> int:
     """Log in, then run the evaluation attached to the terminal. Exit code is the CLI's."""
-    config = eval_config_path(root, scenario)
+    config = eval_config_path(root, target)
     args = ["evaluations", "evaluate", "--config", rel(root, config)]
-    plain(f"Evaluating '{scenario.id}' with {rel(root, config)}")
+    plain(f"Evaluating '{target.name}' with {rel(root, config)}")
     if dry_run:
         plain(f"[dry-run] would run: orchestrate {' '.join(args)}")
         return 0

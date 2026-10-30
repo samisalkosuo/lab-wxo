@@ -6,10 +6,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from helpers import make_scenario, write
+from helpers import make_scenario, make_standalone, write
 from wxodemo import evaluate, smoke
 from wxodemo.adk import AdkError
 from wxodemo.config import Config, UsageError
+from wxodemo.discovery import all_targets
 from wxodemo.logging_setup import setup_logging
 from wxodemo.manifest import ManifestError, load_scenarios
 
@@ -25,6 +26,11 @@ def repo(tmp_path: Path, capsys) -> Path:
 
 def scenario_of(repo: Path):
     return load_scenarios(repo)["alpha"]
+
+
+def target_of(repo: Path, name: str = "alpha"):
+    targets, _ = all_targets(repo)
+    return next(t for t in targets if t.matches(name))
 
 
 # ---------------------------------------------------------------------------
@@ -188,12 +194,12 @@ def test_run_case_timeout():
 
 def test_eval_requires_config_file(repo: Path):
     with pytest.raises(UsageError, match="eval_config.yaml not found"):
-        evaluate.run_eval(repo, scenario_of(repo), CFG, dry_run=True)
+        evaluate.run_eval(repo, target_of(repo), CFG, dry_run=True)
 
 
 def test_eval_dry_run_shows_command(repo: Path, capsys):
     write(repo / "evaluation/alpha/eval_config.yaml", "n_runs: 1\n")
-    assert evaluate.run_eval(repo, scenario_of(repo), None, dry_run=True) == 0
+    assert evaluate.run_eval(repo, target_of(repo), None, dry_run=True) == 0
     out = capsys.readouterr().out
     assert "orchestrate evaluations evaluate --config evaluation/alpha/eval_config.yaml" in out
 
@@ -210,7 +216,7 @@ def test_eval_runs_attached_to_terminal_and_reports_failure(repo: Path, monkeypa
 
     monkeypatch.setattr(evaluate.subprocess, "run", fake_run)
 
-    assert evaluate.run_eval(repo, scenario_of(repo), CFG, dry_run=False) == 0
+    assert evaluate.run_eval(repo, target_of(repo), CFG, dry_run=False) == 0
     assert seen["login"] is CFG
     assert seen["command"][1:] == [
         "evaluations",
@@ -223,7 +229,7 @@ def test_eval_runs_attached_to_terminal_and_reports_failure(repo: Path, monkeypa
 
     seen["rc"] = 3
     with pytest.raises(AdkError) as info:
-        evaluate.run_eval(repo, scenario_of(repo), CFG, dry_run=False)
+        evaluate.run_eval(repo, target_of(repo), CFG, dry_run=False)
     assert info.value.returncode == 3
 
 
@@ -231,4 +237,18 @@ def test_eval_without_cli(repo: Path, monkeypatch):
     write(repo / "evaluation/alpha/eval_config.yaml", "n_runs: 1\n")
     monkeypatch.setattr(evaluate, "find_orchestrate", lambda: None)
     with pytest.raises(AdkError, match="not found"):
-        evaluate.run_eval(repo, scenario_of(repo), CFG, dry_run=False)
+        evaluate.run_eval(repo, target_of(repo), CFG, dry_run=False)
+
+def test_eval_standalone_agent_dry_run(repo: Path, capsys):
+    make_standalone(repo, "echo-agent", "echo_agent")
+    write(repo / "standalone/echo-agent/eval_config.yaml", "n_runs: 1\n")
+    assert evaluate.run_eval(repo, target_of(repo, "echo_agent"), None, dry_run=True) == 0
+    out = capsys.readouterr().out
+    assert "Evaluating 'echo_agent'" in out
+    assert "orchestrate evaluations evaluate --config standalone/echo-agent/eval_config.yaml" in out
+
+
+def test_eval_standalone_agent_requires_config_file(repo: Path):
+    make_standalone(repo, "echo-agent", "echo_agent")
+    with pytest.raises(UsageError, match="standalone/echo-agent/eval_config.yaml not found"):
+        evaluate.run_eval(repo, target_of(repo, "echo_agent"), None, dry_run=True)

@@ -76,7 +76,10 @@ python wxodemo.py list --kind standalone
 # Deploy one agent
 python wxodemo.py deploy travel_rules_qa
 
-# Upload test cases to WXO Tests tab (and optionally evaluate)
+# Run the local ADK evaluation (needs eval_config.yaml; works on SaaS)
+python wxodemo.py eval travel_rules_qa
+
+# Upload test cases to WXO Tests tab (and optionally evaluate; not available on SaaS)
 python wxodemo.py test-upload travel_rules_qa
 python wxodemo.py test-upload travel_rules_qa --eval
 

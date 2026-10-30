@@ -165,8 +165,12 @@ def cmd_smoke(args: argparse.Namespace) -> int:
 
 
 def cmd_eval(args: argparse.Namespace) -> int:
-    root, target = _one_scenario(args.scenario)
-    return run_eval(root, target.scenario, _config_for(args), args.dry_run)
+    root = repo_root()
+    targets, problems = all_targets(root)
+    for problem in problems:
+        warn(problem)
+    chosen = resolve_targets(targets, [args.target], kind=args.kind)
+    return run_eval(root, chosen[0], _config_for(args), args.dry_run)
 
 
 def cmd_test_upload(args: argparse.Namespace) -> int:
@@ -276,8 +280,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--dry-run", action="store_true", help="show the prompts; send nothing")
     p.set_defaults(func=cmd_smoke)
 
-    p = sub.add_parser("eval", help="run the ADK evaluation for a scenario")
-    p.add_argument("scenario", help="scenario id")
+    p = sub.add_parser("eval", help="run the ADK evaluation for a scenario or standalone agent")
+    p.add_argument("target", help="scenario id or standalone agent name")
+    p.add_argument("--kind", choices=("scenario", "standalone"), help="target kind")
     p.add_argument("--dry-run", action="store_true", help="show the command; run nothing")
     p.set_defaults(func=cmd_eval)
 

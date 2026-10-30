@@ -79,7 +79,7 @@ Commands that need no credentials: `list`, `validate`, `new-scenario`, `logs`, `
 | `undeploy [names...] [--all] [--kind K] [--dry-run] [-y]` | Removes in reverse order. Asks `[y/N]` unless `--yes`. |
 | `validate [names...] [--kind K]` | Manifest checks plus demo-consistency checks. Default: all scenarios. |
 | `smoke <scenario> [--only ID]... [--dry-run]` | Sends the scenario's smoke prompts to its deployed agent. |
-| `eval <scenario> [--dry-run]` | Runs the ADK evaluation for a scenario. |
+| `eval <target> [--kind K] [--dry-run]` | Runs the ADK evaluation for a scenario or a standalone agent. |
 | `test-upload <target> [--eval] [--dry-run]` | Uploads test cases to WXO Tests tab (and optionally evaluates). |
 | `export-chats [options]` | Exports agent chats and traces. |
 | `new-scenario <id> --name N --description D [--agent-name A] [--dry-run]` | Scaffolds a new scenario. |
@@ -180,9 +180,10 @@ Finds the deployed agent by name, sends each prompt from `smoke_prompts` in `eva
 ```bash
 python wxodemo.py eval incident-triage
 python wxodemo.py eval incident-triage --dry-run
+python wxodemo.py eval entity-extractor            # a standalone agent
 ```
 
-Logs in, then runs `orchestrate evaluations evaluate --config evaluation/<id>/eval_config.yaml` with the terminal attached. A scenario without an `eval_config.yaml` (currently `travel-request`) exits 2 with an explanation. The evaluation framework is **not** in `requirements.txt`; see [Running the evaluation](../README.md#running-the-evaluation-optional). Results go to `evaluation/<id>/results/<timestamp>/`. The evaluation command itself exits 1 when its output is piped or redirected (a progress-rendering issue), although the result files are still written.
+Logs in, then runs `orchestrate evaluations evaluate --config <eval_config.yaml>` with the terminal attached. The target is a scenario id or a standalone agent name (or its directory name); add `--kind scenario|standalone` if a name matches both. For a scenario the config is `evaluation/<id>/eval_config.yaml`; for a standalone agent it is `standalone/<agent-dir>/eval_config.yaml`. A target without an `eval_config.yaml` (currently the scenario `travel-request`, and standalone agents that have none) exits 2 with an explanation. The evaluation framework is **not** in `requirements.txt`; see [Running the evaluation](../README.md#running-the-evaluation-optional). Results go to the `output_dir` named in the config, typically `evaluation/<id>/results/<timestamp>/` or `standalone/<agent-dir>/results/<timestamp>/`. The evaluation command itself exits 1 when its output is piped or redirected (a progress-rendering issue), although the result files are still written.
 
 ### test-upload
 
@@ -331,7 +332,7 @@ Every `orchestrate` call runs with `PYTHONUTF8=1` and `PYTHONIOENCODING=utf-8` (
 | `standalone/manage.py list` | `python wxodemo.py list --kind standalone` |
 | `standalone/manage.py deploy [--agent A]` | `python wxodemo.py deploy A` or `deploy --all --kind standalone` |
 | `standalone/manage.py undeploy [--agent A]` | `python wxodemo.py undeploy A` or `undeploy --all --kind standalone` |
-| `orchestrate evaluations evaluate --config evaluation/X/eval_config.yaml` | `python wxodemo.py eval X` |
+| `orchestrate evaluations evaluate --config evaluation/X/eval_config.yaml` | `python wxodemo.py eval X` (also works for standalone agents) |
 
 What changed in behaviour:
 

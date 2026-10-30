@@ -59,13 +59,14 @@ Run the evaluation locally with the ADK (needs the optional evaluation framework
 root README). Results go to `standalone/entity-extractor/results/`, a generated folder:
 
 ```bash
-orchestrate evaluations evaluate --config standalone/entity-extractor/eval_config.yaml
+python wxodemo.py eval entity-extractor
+
+# Same as: orchestrate evaluations evaluate --config standalone/entity-extractor/eval_config.yaml
 ```
 
-`python wxodemo.py eval` only accepts scenarios, so it does not work for this agent.
 `python wxodemo.py test-upload entity-extractor` uploads the test prompts to the Tests tab,
-but the SaaS gateway does not expose that API; on SaaS create tests from Draft Preview
-(`Save as test`) instead.
+but the SaaS gateway does not expose that API; on SaaS use `eval` above, or create tests
+from Draft Preview (`Save as test`).
 
 ## Teardown
 

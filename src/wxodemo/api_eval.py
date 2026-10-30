@@ -138,7 +138,7 @@ def upload_test_cases_to_agent(
                 raise ExportError(
                     "The remote SaaS gateway does not expose the Agent Evaluation upload API.\n"
                     "On SaaS, create tests interactively in the web console using Draft Preview ('Save as test'),\n"
-                    "or run automated evaluations locally using: python wxodemo.py eval <scenario>"
+                    "or run automated evaluations locally using: python wxodemo.py eval <target>"
                 ) from exc
             raise ExportError(f"HTTP {exc.code} uploading test cases: {detail}") from exc
         except (urllib.error.URLError, OSError, ValueError) as exc:
