@@ -58,6 +58,15 @@ def make_standalone(root: Path, folder: str, name: str, tool: str | None = None)
         write(root / "standalone" / folder / "tools.py", TOOL_SRC.replace("do_it", tool))
 
 
+def make_tool_pkg(root: Path, name: str, tools: list[str] = ("tool_func",), reqs: bool = True) -> None:
+    src_lines = ["from x import tool\n"]
+    for t in tools:
+        src_lines.append(f"@tool\ndef {t}():\n    pass\n")
+    write(root / "tools" / name / f"{name}.py", "\n".join(src_lines))
+    if reqs:
+        write(root / "tools" / name / "requirements.txt", "# deps\n")
+
+
 class FakeOrchestrate:
     """Stands in for run_orchestrate. Records calls; `existing` is what `... list --verbose`
     reports; any call whose text contains an entry of `fail_on` raises AdkError."""

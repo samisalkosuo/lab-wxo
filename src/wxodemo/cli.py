@@ -13,7 +13,7 @@ from wxodemo.api_eval import run_test_upload
 from wxodemo.chats import ExportError, run_export_chats
 from wxodemo.config import UsageError, load_config, log_path, repo_root
 from wxodemo.deploy import run_deploy, run_status, run_undeploy
-from wxodemo.discovery import Target, all_targets, resolve_targets
+from wxodemo.discovery import KINDS, Target, all_targets, resolve_targets
 from wxodemo.doctor import in_virtualenv, run_doctor
 from wxodemo.evaluate import run_eval
 from wxodemo.logging_setup import fail, get_logger, ok, plain, register_secret, setup_logging, warn
@@ -242,8 +242,8 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--all", action="store_true", help=f"{verb} everything (see --kind)")
         p.add_argument(
             "--kind",
-            choices=("scenario", "standalone"),
-            help="limit --all to one kind, or pick one when a name matches both",
+            choices=KINDS,
+            help="limit --all to one kind, or pick one when a name matches multiple",
         )
 
     p = sub.add_parser("deploy", help="deploy scenarios and/or standalone agents")
@@ -262,14 +262,14 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_status)
 
     p = sub.add_parser("list", help="list scenarios and standalone agents")
-    p.add_argument("--kind", choices=("scenario", "standalone"), help="show only one kind")
+    p.add_argument("--kind", choices=KINDS, help="show only one kind")
     p.set_defaults(func=cmd_list)
 
     p = sub.add_parser(
         "validate", help="check scenario manifests and demo scripts (all, or the named ones)"
     )
     p.add_argument("targets", nargs="*", metavar="name", help="scenario ids (default: all)")
-    p.add_argument("--kind", choices=("scenario", "standalone"), help="limit to one kind")
+    p.add_argument("--kind", choices=KINDS, help="limit to one kind")
     p.set_defaults(func=cmd_validate)
 
     p = sub.add_parser("smoke", help="send a scenario's smoke prompts to its deployed agent")
@@ -282,7 +282,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("eval", help="run the ADK evaluation for a scenario or standalone agent")
     p.add_argument("target", help="scenario id or standalone agent name")
-    p.add_argument("--kind", choices=("scenario", "standalone"), help="target kind")
+    p.add_argument("--kind", choices=KINDS, help="target kind")
     p.add_argument("--dry-run", action="store_true", help="show the command; run nothing")
     p.set_defaults(func=cmd_eval)
 
@@ -291,7 +291,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="upload test cases to WXO Tests tab and optionally trigger evaluation in UI",
     )
     p.add_argument("target", help="scenario or agent name")
-    p.add_argument("--kind", choices=("scenario", "standalone"), help="target kind")
+    p.add_argument("--kind", choices=KINDS, help="target kind")
     p.add_argument(
         "--eval", action="store_true", help="also trigger evaluation in WXO Evaluations tab"
     )

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from helpers import TOOL_SRC, make_scenario, make_standalone, write
+from helpers import TOOL_SRC, make_scenario, make_standalone, make_tool_pkg, write
 from wxodemo.config import UsageError, repo_root
 from wxodemo.discovery import all_targets, resolve_targets
 from wxodemo.manifest import (
@@ -129,3 +129,31 @@ def test_real_repo_scenarios_validate_clean():
     for scenario in scenarios.values():
         assert validate_scenario(scenario) == []
     assert name_clashes(scenarios) == []
+
+
+def test_discover_standalone_tool_package(repo):
+    make_tool_pkg(repo, "custom_calc", tools=["add_numbers", "subtract_numbers"])
+    targets, _ = all_targets(repo)
+    tool_targets = [t for t in targets if t.kind == "tool"]
+    assert len(tool_targets) == 1
+    assert tool_targets[0].name == "custom_calc"
+    assert tool_targets[0].tool.names == ["add_numbers", "subtract_numbers"]
+    assert tool_targets[0].tool.is_package is True
+    assert tool_targets[0].tool.requirements is not None
+
+
+def test_resolve_tool_by_name_and_kind(repo):
+    make_tool_pkg(repo, "report_generator", tools=["gen_report"])
+    targets, _ = all_targets(repo)
+    chosen = resolve_targets(targets, ["report_generator"])
+    assert len(chosen) == 1
+    assert chosen[0].kind == "tool"
+    assert chosen[0].name == "report_generator"
+
+    # Hyphen-to-underscore alias
+    chosen_hyphen = resolve_targets(targets, ["report-generator"])
+    assert chosen_hyphen[0].name == "report_generator"
+
+    # Kind filter
+    chosen_kind = resolve_targets(targets, [], select_all=True, kind="tool")
+    assert [t.name for t in chosen_kind] == ["report_generator"]

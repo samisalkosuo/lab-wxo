@@ -11,7 +11,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from helpers import FakeOrchestrate, make_scenario, make_standalone, write
+from helpers import FakeOrchestrate, make_scenario, make_standalone, make_tool_pkg, write
 from wxodemo import cli, config, deploy, scaffold
 
 ENV_OK = "WXO_API_KEY=k-secret-1234\nWXO_URL=https://x/instances/1\nWXO_ENV_NAME=demo\n"
@@ -81,10 +81,13 @@ def test_unknown_command_and_bad_flag_exit_2_via_argparse():
 
 
 def test_list_shows_all_and_filters_by_kind(repo, capsys):
+    make_tool_pkg(repo, "report_generator", tools=["gen_rep"])
     code, out = run(capsys, "list")
-    assert code == 0 and "alpha" in out and "hello_world" in out
-    _, only = run(capsys, "list", "--kind", "standalone")
-    assert "hello_world" in only and "alpha" not in only
+    assert code == 0 and "alpha" in out and "hello_world" in out and "report_generator" in out
+    _, only_standalone = run(capsys, "list", "--kind", "standalone")
+    assert "hello_world" in only_standalone and "alpha" not in only_standalone and "report_generator" not in only_standalone
+    _, only_tools = run(capsys, "list", "--kind", "tool")
+    assert "report_generator" in only_tools and "hello_world" not in only_tools and "alpha" not in only_tools
 
 
 def test_list_empty_repo(tmp_path, monkeypatch, capsys):
@@ -216,6 +219,19 @@ def test_kind_flag_disambiguates_a_name_used_by_both_kinds(repo, fake, capsys):
     assert code == 2 and "--kind" in out
     code, out = run(capsys, "deploy", "alpha", "--kind", "scenario", "--dry-run")
     assert code == 0 and "(scenario)" in out
+
+
+def test_deploy_and_undeploy_tool_cli(repo, fake, capsys):
+    make_tool_pkg(repo, "report_generator", tools=["gen_rep"])
+    code, out = run(capsys, "deploy", "report_generator", "--dry-run")
+    assert code == 0
+    assert "Deploying report_generator (tool)" in out
+    assert "tools import -k python -p" in out
+
+    code, out = run(capsys, "undeploy", "report_generator", "--dry-run")
+    assert code == 0
+    assert "Would undeploy report_generator (tool)" in out
+    assert "tools remove --name gen_rep" in out
 
 
 # ---------------------------------------------------------------------------

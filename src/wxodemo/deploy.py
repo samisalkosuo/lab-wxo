@@ -18,7 +18,7 @@ from typing import Any
 
 from wxodemo.adk import AdkError, login, run_orchestrate
 from wxodemo.config import Config, UsageError
-from wxodemo.discovery import StandaloneAgent, Target
+from wxodemo.discovery import StandaloneAgent, Target, ToolTarget
 from wxodemo.logging_setup import info, ok, plain, warn
 from wxodemo.manifest import DeployStep, Scenario, deploy_plan, load_scenarios, teardown_plan
 
@@ -98,6 +98,26 @@ def scenario_deploy_actions(scenario: Scenario, everything: dict[str, Scenario])
     return actions
 
 
+def tool_deploy_actions(tool: ToolTarget) -> list[Action]:
+    """Import a tool package or single-file tool."""
+    if tool.is_package:
+        args = ["tools", "import", "-k", "python", "-p", str(tool.path), "-f", str(tool.entry)]
+        if tool.requirements:
+            args += ["-r", str(tool.requirements)]
+        return [Action(f"Tool package {tool.name}", args)]
+    return [Action(f"Tool {tool.name}", ["tools", "import", "-k", "python", "-f", str(tool.path)])]
+
+
+def tool_remove_actions(tool: ToolTarget) -> list[Action]:
+    """Remove all @tool functions owned by a tool target."""
+    actions: list[Action] = []
+    for name in tool.names:
+        actions.append(
+            Action(f"Tool {name}", ["tools", "remove", "--name", name], resource=("tool", name))
+        )
+    return actions
+
+
 def standalone_deploy_actions(agent: StandaloneAgent) -> list[Action]:
     """Tools first (the agent references them), then the agent. KBs are not managed here."""
     actions = [
@@ -148,8 +168,12 @@ def expected_resources(target: Target) -> Expected:
             + [f["name"] for f in s.get("flows") or []],
             kbs=[k["name"] for k in s.get("knowledge_bases") or []],
         )
-    agent = target.agent
-    return Expected(agents=[agent.name], tools=[n for t in agent.tools for n in t.names], kbs=[])
+    if target.agent is not None:
+        agent = target.agent
+        return Expected(agents=[agent.name], tools=[n for t in agent.tools for n in t.names], kbs=[])
+    if target.tool is not None:
+        return Expected(agents=[], tools=list(target.tool.names), kbs=[])
+    return Expected(agents=[], tools=[], kbs=[])
 
 
 def target_test_cases(root: Path, target: Target) -> list[Path]:
@@ -168,8 +192,9 @@ def target_test_cases(root: Path, target: Target) -> list[Path]:
 
 
 def _scenarios_first(targets: list[Target]) -> list[Target]:
-    """Scenarios own the knowledge bases standalone agents use, so they go first."""
-    return sorted(targets, key=lambda t: t.kind != "scenario")
+    """Tools first, then scenarios (own KBs), then standalone agents."""
+    kind_order = {"tool": 0, "scenario": 1, "standalone": 2}
+    return sorted(targets, key=lambda t: kind_order.get(t.kind, 99))
 
 
 # ---------------------------------------------------------------------------
@@ -240,8 +265,12 @@ def run_deploy(targets: list[Target], cfg: Config | None, root: Path, dry_run: b
     for t in ordered:
         if t.scenario is not None:
             actions = scenario_deploy_actions(t.scenario, everything)
-        else:
+        elif t.agent is not None:
             actions = standalone_deploy_actions(t.agent)
+        elif t.tool is not None:
+            actions = tool_deploy_actions(t.tool)
+        else:
+            actions = []
         groups.append((f"{t.name} ({t.kind})", actions, t))
 
     if not dry_run:
@@ -297,11 +326,14 @@ def run_undeploy(
     ordered = list(reversed(_scenarios_first(targets)))
     groups: list[tuple[Target, list[Action]]] = []
     for t in ordered:
-        actions = (
-            scenario_remove_actions(t.scenario)
-            if t.scenario is not None
-            else standalone_remove_actions(t.agent)
-        )
+        if t.scenario is not None:
+            actions = scenario_remove_actions(t.scenario)
+        elif t.agent is not None:
+            actions = standalone_remove_actions(t.agent)
+        elif t.tool is not None:
+            actions = tool_remove_actions(t.tool)
+        else:
+            actions = []
         groups.append((t, actions))
 
     if dry_run:

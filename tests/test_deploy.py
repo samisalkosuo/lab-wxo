@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from helpers import FakeOrchestrate, make_scenario, make_standalone
+from helpers import FakeOrchestrate, make_scenario, make_standalone, make_tool_pkg
 from wxodemo import deploy
 from wxodemo.adk import AdkError
 from wxodemo.config import Config, UsageError
@@ -191,6 +191,39 @@ def test_json_parser_accepts_raw_newlines_in_strings():
 def test_json_parser_reports_garbage():
     with pytest.raises(AdkError):
         deploy._json_from("not json at all", "kb")
+
+
+def test_tool_deploy_package_actions(repo, fake):
+    make_tool_pkg(repo, "report_generator", tools=["gen_rep_1", "gen_rep_2"], reqs=True)
+    deploy.run_deploy(targets_of(repo, "report_generator"), CFG, repo, dry_run=False)
+    cmds = fake.commands()
+    assert len(cmds) == 1
+    assert "tools import -k python -p" in cmds[0]
+    assert "report_generator" in cmds[0]
+    assert "-r" in cmds[0]
+
+
+def test_tool_undeploy_actions(repo, fake):
+    make_tool_pkg(repo, "report_generator", tools=["gen_rep_1", "gen_rep_2"], reqs=True)
+    fake.existing = {"agents": [], "tools": ["gen_rep_1", "gen_rep_2"], "knowledge-bases": []}
+    deploy.run_undeploy(targets_of(repo, "report_generator"), CFG, repo, dry_run=False, assume_yes=True)
+    cmds = fake.commands()
+    assert "tools remove --name gen_rep_1" in cmds
+    assert "tools remove --name gen_rep_2" in cmds
+
+
+def test_tool_status_deployed_and_missing(repo, fake, capsys):
+    make_tool_pkg(repo, "report_generator", tools=["gen_rep_1", "gen_rep_2"])
+    fake.existing = {"agents": [], "tools": ["gen_rep_1", "gen_rep_2"], "knowledge-bases": []}
+    deploy.run_status(targets_of(repo, "report_generator"), CFG)
+    out = capsys.readouterr().out
+    assert "deployed" in out
+
+    fake.existing = {"agents": [], "tools": ["gen_rep_1"], "knowledge-bases": []}
+    deploy.run_status(targets_of(repo, "report_generator"), CFG)
+    out = capsys.readouterr().out
+    assert "partial" in out
+    assert "missing: tool gen_rep_2" in out
 
 
 def test_every_scenario_action_is_an_orchestrate_call(repo):

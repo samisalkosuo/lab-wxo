@@ -8,13 +8,23 @@ from pathlib import Path
 from wxodemo.config import UsageError
 from wxodemo.manifest import TOOL_RE, Scenario, load_scenarios, load_yaml
 
-KINDS = ("scenario", "standalone")
+KINDS = ("scenario", "standalone", "tool")
 
 
 @dataclass(frozen=True)
 class ToolFile:
     path: Path
     names: list[str]  # @tool functions defined in the file
+
+
+@dataclass(frozen=True)
+class ToolTarget:
+    name: str
+    path: Path
+    entry: Path
+    is_package: bool
+    names: list[str]
+    requirements: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -32,18 +42,26 @@ class StandaloneAgent:
 class Target:
     """Something `deploy` / `undeploy` / `validate` can act on."""
 
-    kind: str  # "scenario" | "standalone"
-    name: str  # scenario id, or standalone agent name
-    status: str  # "live" | "soon" for scenarios; "-" for standalone agents
+    kind: str  # "scenario" | "standalone" | "tool"
+    name: str  # scenario id, standalone agent name, or tool name
+    status: str  # "live" | "soon" for scenarios; "-" for standalone/tool
     summary: str
     scenario: Scenario | None = None
     agent: StandaloneAgent | None = None
+    tool: ToolTarget | None = None
 
     def matches(self, name: str) -> bool:
         if self.name == name:
             return True
         # standalone agents are also addressable by directory name (hello-world)
-        return self.agent is not None and self.agent.dir.name == name
+        if self.agent is not None and self.agent.dir.name == name:
+            return True
+        if self.tool is not None:
+            if self.tool.path.name == name:
+                return True
+            if self.name.replace("_", "-") == name.replace("_", "-"):
+                return True
+        return False
 
 
 def discover_standalone(root: Path) -> tuple[list[StandaloneAgent], list[str]]:
@@ -80,15 +98,93 @@ def discover_standalone(root: Path) -> tuple[list[StandaloneAgent], list[str]]:
     return agents, problems
 
 
+def _scenario_tool_paths(root: Path) -> set[Path]:
+    """Resolved file and folder paths of tools owned by scenario manifests."""
+    paths: set[Path] = set()
+    for s in load_scenarios(root).values():
+        for t in s.get("tools") or []:
+            p_str = t.get("path")
+            if p_str:
+                paths.add((root / p_str).resolve())
+    return paths
+
+
+def discover_tools(root: Path) -> tuple[list[ToolTarget], list[str]]:
+    """Every standalone tool package and tool file under tools/ not owned by a scenario."""
+    tools: list[ToolTarget] = []
+    problems: list[str] = []
+    base = root / "tools"
+    if not base.is_dir():
+        return tools, problems
+
+    scenario_tools = _scenario_tool_paths(root)
+
+    for folder in sorted(p for p in base.iterdir() if p.is_dir() and not p.name.startswith(".")):
+        if folder.resolve() in scenario_tools:
+            continue
+        entry = folder / f"{folder.name}.py"
+        if not entry.is_file():
+            candidates = [py for py in sorted(folder.glob("*.py")) if TOOL_RE.findall(py.read_text(encoding="utf-8-sig"))]
+            if candidates:
+                entry = candidates[0]
+            else:
+                continue
+
+        names = TOOL_RE.findall(entry.read_text(encoding="utf-8-sig"))
+        if not names:
+            continue
+
+        req = folder / "requirements.txt"
+        tools.append(
+            ToolTarget(
+                name=folder.name,
+                path=folder,
+                entry=entry,
+                is_package=True,
+                names=names,
+                requirements=req if req.is_file() else None,
+            )
+        )
+
+    for py in sorted(p for p in base.iterdir() if p.is_file() and p.suffix == ".py"):
+        if py.resolve() in scenario_tools:
+            continue
+        names = TOOL_RE.findall(py.read_text(encoding="utf-8-sig"))
+        if names:
+            tools.append(
+                ToolTarget(
+                    name=py.stem,
+                    path=py,
+                    entry=py,
+                    is_package=False,
+                    names=names,
+                    requirements=None,
+                )
+            )
+
+    return tools, problems
+
+
 def all_targets(root: Path) -> tuple[list[Target], list[str]]:
-    """Scenarios (sorted by id) then standalone agents. Second item: discovery problems."""
+    """Scenarios (sorted by id), standalone agents, and tools. Second item: discovery problems."""
     targets = [
         Target("scenario", s.id, str(s.get("status") or "?"), str(s.get("name") or ""), scenario=s)
         for s in load_scenarios(root).values()
     ]
-    agents, problems = discover_standalone(root)
+    agents, agent_problems = discover_standalone(root)
     targets += [Target("standalone", a.name, "-", a.description, agent=a) for a in agents]
-    return targets, problems
+    tool_targets, tool_problems = discover_tools(root)
+    targets += [
+        Target(
+            "tool",
+            t.name,
+            "-",
+            f"Tools: {', '.join(t.names)}",
+            tool=t,
+        )
+        for t in tool_targets
+    ]
+    return targets, agent_problems + tool_problems
 
 
 def resolve_targets(
@@ -128,7 +224,8 @@ def resolve_targets(
             raise UsageError(f"Unknown target '{name}'. Known: {known}")
         if len(hits) > 1:
             kinds = " and ".join(t.kind for t in hits)
-            raise UsageError(f"'{name}' matches both a {kinds}. Add --kind scenario|standalone.")
+            choices_str = "|".join(KINDS)
+            raise UsageError(f"'{name}' matches both a {kinds}. Add --kind {choices_str}.")
         if hits[0] not in chosen:
             chosen.append(hits[0])
     return chosen
