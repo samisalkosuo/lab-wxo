@@ -1,0 +1,21 @@
+{
+  "agent": "report_generator",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The agent calls generate_doctor_visit_report with location Helsinki, patient_age 45, patient_gender male, severity 3 and produces a complete Doctor Visit Summary including Chief Complaint, HPI, Physical Exam, Assessment, Plan and Follow-up sections.",
+      "keywords": [
+        "Helsinki",
+        "Chief Complaint",
+        "Assessment",
+        "Plan"
+      ]
+    }
+  ],
+  "story": "The user requests a doctor visit report with specific parameters.",
+  "starting_sentence": "Generate a doctor visit report for a 45-year-old male patient in Helsinki with severity 3."
+}

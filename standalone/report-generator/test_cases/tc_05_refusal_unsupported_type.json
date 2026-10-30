@@ -1,0 +1,22 @@
+{
+  "agent": "report_generator",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The agent refuses to generate a financial audit report and explains it only supports five report types: doctor_visit, traffic_incident, building_inspection, project_update, and social_services_visit. No generation tool is called.",
+      "keywords": [
+        "only",
+        "support",
+        "five",
+        "doctor_visit",
+        "traffic_incident"
+      ]
+    }
+  ],
+  "story": "The user requests an unsupported report type; the agent should refuse and explain its scope.",
+  "starting_sentence": "Write me a financial audit report."
+}

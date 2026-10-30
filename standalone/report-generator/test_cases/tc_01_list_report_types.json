@@ -1,0 +1,22 @@
+{
+  "agent": "report_generator",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The agent calls list_supported_report_types and returns a table showing at least five report types: doctor_visit, traffic_incident, building_inspection, project_update, and social_services_visit with their descriptions and parameters.",
+      "keywords": [
+        "doctor_visit",
+        "traffic_incident",
+        "building_inspection",
+        "project_update",
+        "social_services_visit"
+      ]
+    }
+  ],
+  "story": "The user asks what report types the agent can generate.",
+  "starting_sentence": "What reports can you generate?"
+}

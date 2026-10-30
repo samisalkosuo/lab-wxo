@@ -1,0 +1,21 @@
+{
+  "agent": "report_generator",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The agent calls generate_project_update_report with industry Healthcare and quarter Q3 2025 and produces a complete Quarterly Project Update Report including Executive Summary, Key Milestones, Risks and Blockers, Next Quarter Objectives, and Resource Budget Overview sections.",
+      "keywords": [
+        "Healthcare",
+        "Q3 2025",
+        "Executive Summary",
+        "Milestones"
+      ]
+    }
+  ],
+  "story": "The user requests a project update report with industry and quarter specified.",
+  "starting_sentence": "Generate a quarterly project update report for a healthcare IT project in Q3 2025."
+}

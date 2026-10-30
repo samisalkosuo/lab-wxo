@@ -1,0 +1,14 @@
+# Evaluation configuration for report_generator agent.
+
+test_paths:
+  - standalone/report-generator/test_cases/
+
+output_dir: standalone/report-generator/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise."

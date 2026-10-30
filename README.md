@@ -37,6 +37,7 @@ Deployed with `python wxodemo.py deploy <name>` (see [Standalone Agents](#standa
 | [priority-assessor](standalone/priority-assessor/) | `priority_assessor` | Assigns structured priority levels (Critical, High, Medium, Low) to incoming items using configured rules or common-sense defaults |
 | [language-detector](standalone/language-detector/) | `language_detector` | Detects language or mixed languages in any text; returns structured JSON with full name, ISO 639-1, ISO 639-2, BCP 47 tag, script, confidence, and proportion per language |
 | [translator](standalone/translator/) | `translator` | Translates user text into a named target language from a fixed supported list, with an optional tone or style; no tools, no knowledge base |
+| [report-generator](standalone/report-generator/) | `report_generator` | Generates realistic synthetic reports for five predefined types: Doctor Visit Summary, Traffic Incident, Building Inspection, Quarterly Project Update, and Social Services Visit; refuses requests outside those five types |
 | [travel-rules-qa](standalone/travel-rules-qa/) | `travel_rules_qa` | Answers English questions about the Finnish state travel regulation (Valtion matkustussääntö 2026) from a PDF knowledge base, citing Finnish sections |
 
 ## Quick start
@@ -269,6 +270,7 @@ lab-wxo/
 │   ├── pension_ove/                  # Member profile, pension accrual, reduction & simulation tools
 │   ├── release_readiness/            # Test summaries, CVE exposure, runbook check, health check tools
 │   ├── travel_request/               # Employee, budget, rates, reimbursement & request ID tools
+│   ├── report_generator/             # Synthetic report prompt builder tools (5 report types, synthetic defaults)
 │   └── yel_income/                   # Business profile, sector benchmarks, benefit estimate & decision tools
 ├── knowledge/                        # Knowledge base source documents and manifests
 │   ├── cloud-finops/                 # FinOps policies, tagging rules, rightsizing guidelines (.txt)
@@ -338,6 +340,7 @@ lab-wxo/
 │   ├── metadata-extractor/           # Arbitrary metadata field extraction into strict JSON schemas
 │   ├── priority-assessor/            # Cross-industry priority assessment (Critical/High/Med/Low, strict JSON)
 │   ├── translator/                   # Translation agent (fixed language list, optional tone)
+│   ├── report-generator/             # Synthetic report generation agent (five report types)
 │   └── travel-rules-qa/              # Finnish travel regulation PDF Q&A agent
 ├── traffic-gen/                      # Periodic background traffic generator for WXO instances
 ├── connections/                      # Connection templates (empty for mock demo)

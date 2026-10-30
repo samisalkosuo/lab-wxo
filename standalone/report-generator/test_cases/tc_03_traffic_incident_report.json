@@ -1,0 +1,20 @@
+{
+  "agent": "report_generator",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "The agent calls generate_traffic_incident_report and produces a complete Traffic Incident Report including timeline of events, driver or witness names, road conditions, and vehicle damage sections.",
+      "keywords": [
+        "traffic",
+        "incident",
+        "vehicle"
+      ]
+    }
+  ],
+  "story": "The user requests a traffic incident report with all defaults.",
+  "starting_sentence": "Create a traffic incident report."
+}
