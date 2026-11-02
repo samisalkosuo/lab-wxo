@@ -37,8 +37,12 @@ Start with a standalone agent if this is your first time. It is the quickest way
 1. **Describe** what you want in a prompt (see the samples below). Name the agent or scenario id, say what it must do, what it must refuse, and which tools or knowledge it needs.
 2. **Plan.** The Scenario Builder writes a plan file in `plans/<id>-plan.md` first (purpose, target fit, whether it really needs an agent, mock data, tools, knowledge, flow). Read it and correct it before the build. This is the same plan-first workflow you can see in the existing [`plans/`](../plans/) folder.
 3. **Build.** Bob creates the files in the order set by the skills: mock data and tools, knowledge base, flow, agent YAML, manifest and evaluation files, demo documents.
-4. **Check.** Bob runs the checks listed below and reports what it verified and what it could not (anything that needs a live instance or a browser click).
-5. **Deploy and try.** You review the result, deploy it, and chat with it in your WXO instance.
+4. **Check.** Bob runs the offline checks listed below and reports what it verified and what it could not (anything that needs a live instance or a browser click). The scenario stays `status: soon` and the README is not touched.
+5. **Deploy.** Bob deploys to your WXO instance (`python wxodemo.py login`, then `deploy <id>`) and drafts the demo script and slides with every verification row marked "not verified".
+6. **Test scene by scene in WXO.** Bob cannot see the WXO chat, so you are the tester. Bob gives you the exact prompt of one scene and what to look for. Run it in the WXO browser chat and tell Bob what happened, in your own words. If something is wrong, Bob fixes the files, redeploys, and asks you to retest the same scene. Only when that scene works do you move to the next. Expect many fix-and-retest rounds; that is normal, not a sign the build failed. Bob records each outcome in the **Live verification log** in `plans/<id>-plan.md`.
+7. **Confirm and go live.** After the last scene, Bob asks whether all scenes work as defined. Only after you say yes does Bob fill the demo script from the log, set `status: live` in the manifest and the slide file, rebuild the demo-scripts bundle, run `validate`, and add the row to the README.
+
+A standalone agent follows the same idea in a lighter form: Bob deploys it, you try the prompts from `examples.md` in WXO (normal path first, then the refusal or clarification paths), Bob fixes and redeploys on problems, and only after you confirm does Bob update the slides and the README tables.
 
 Bob may stop and ask a question, for example if a name clashes with an existing scenario. Answer it rather than letting it guess.
 
@@ -124,6 +128,7 @@ Explain how the `release-readiness` supervisor agent calls its collaborator agen
 
 ## Tips for good prompts
 
+- **Test one scene at a time.** Report what you saw in the WXO chat before moving on, including what was wrong. "The agent asked for the incident id although I gave it" is more useful than "it does not work".
 - **Name things.** Give the id (`kebab-case`) and, for tools, the names you want. Prefix tool and knowledge-base names with the scenario (for example `lr_`). They are shared across the whole WXO instance, so clashes overwrite each other.
 - **Say what it must refuse.** Out-of-scope requests and prompt injection are the cases that go wrong first.
 - **Put calculations in tools.** If a number must be exact, ask for a Python tool. The repo's samples do this on purpose.
@@ -132,7 +137,7 @@ Explain how the `release-readiness` supervisor agent calls its collaborator agen
 
 ## What to check afterwards
 
-Bob runs these itself. Run them again before you deploy, and read any problem they report.
+Bob runs these itself before it deploys. Run them again if you changed files by hand, and read any problem they report.
 
 **Standalone agent**
 
@@ -150,7 +155,7 @@ python wxodemo.py smoke <id> --dry-run            # are the smoke prompts presen
 python wxodemo.py eval <id> --dry-run             # is the evaluation config valid?
 ```
 
-Then deploy and try it:
+Then deploy it and test it in WXO (Bob runs these for you; you can also run them by hand):
 
 ```bash
 python wxodemo.py login
@@ -158,17 +163,17 @@ python wxodemo.py deploy <name or id>
 python wxodemo.py status <name or id>             # confirm what is live
 ```
 
-A new scenario starts with `status: soon` in its manifest, and `deploy --all` skips `soon` scenarios. Name the scenario to deploy it (`python wxodemo.py deploy <id>`), and change the status to `live` once you are happy with it. Full command reference: [`wxodemo.md`](wxodemo.md).
+A new scenario starts with `status: soon` in its manifest, and `deploy --all` skips `soon` scenarios. Name the scenario to deploy it (`python wxodemo.py deploy <id>`). The status changes to `live` only after you have confirmed every scene in WXO (step 7 above). Full command reference: [`wxodemo.md`](wxodemo.md).
 
 ## Review what Bob produces
 
-Bob can be wrong, and a generated agent is only a draft until you have tried it.
+Bob can be wrong, and a generated agent is only a draft until you have tried it in WXO. Passing the offline checks does not mean it behaves as intended.
 
 - Read the agent instructions and the tool code. Check that the agent does only what you asked.
 - Chat with the deployed agent. Try the normal path, a refusal and a vague request.
 - For flows, test **Approve** and **Reject** in the WXO browser chat. The evaluation cannot press those buttons.
-- Do not put results in READMEs or demo scripts unless you saw them in a real run. The modes are instructed not to claim that something "passes" or "works" without a recorded run, so hold the generated text to that rule.
-- Add the new agent to the tables under [What is included](../README.md#what-is-included) in the README.
+- Do not put results in READMEs or demo scripts unless you saw them in a real run. The modes are instructed not to claim that something "passes" or "works" without a recorded run, so hold the generated text to that rule. The Live verification log in `plans/<id>-plan.md` is the record of what you confirmed.
+- Bob adds the new agent to the tables under [What is included](../README.md#what-is-included) in the README after you confirm. If you build by hand, add the row yourself.
 
 ## Without Bob
 

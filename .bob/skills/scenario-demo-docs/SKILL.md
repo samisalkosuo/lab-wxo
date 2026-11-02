@@ -18,7 +18,7 @@ Load `wxo-scenario-authoring` first for what the scenario itself must contain. T
 
 ## Rules that matter most
 
-1. **Write the demo script after you have run the scenario**, not before. "Expected behaviour (observed)", "what was and was not verified", "if it goes wrong" and "things not to say" can only contain what you saw. State how many runs, and what was not driven (for example an approval form that only a browser can answer).
+1. **Write the demo script after you have run the scenario**, not before. "Expected behaviour (observed)", "what was and was not verified", "if it goes wrong" and "things not to say" can only contain what was observed: for a scenario built with the Scenario Builder mode, that is what the user reported from the real WXO chat, recorded in the Live verification log in `plans/<id>-plan.md`. State how many runs, and what was not driven (for example an approval form that only a browser can answer). While live testing is in progress, a draft with every verification row "not verified" is expected; fill the rows scene by scene as the user confirms them.
 2. **No invented numbers.** Do not put minutes saved, % reductions, latency figures or run counts on a slide or in the script unless a recorded run supports them. Illustrative figures must say "illustrative". (The existing Incident Triage benefits slide has an unmeasured MTTR claim; do not copy that pattern.)
 3. **Be honest about the agent-vs-script question** in the benefits slide and the closing talking points. Do not claim the agent beats a script or passes an evaluation unless the repo holds the run that shows it.
 4. **Same prompts everywhere.** Each "Prompt (type exactly)" block in the markdown must equal the matching `prompt-box` text on the Live Demo Prompts slide, character for character, in the same order.
@@ -36,7 +36,7 @@ Load `wxo-scenario-authoring` first for what the scenario itself must contain. T
 3. **Slides.** Copy `templates/scenario.template.js` over the placeholder `docs/demo/scenarios/<id>.js` and fill it in:
    - Keep the six slides in order: Overview, Why and How the Agent is Used, How and Why the Agent Works, Real-Life Backend Services Mapping, Business and Operational Benefits, Live Demo Prompts. Add or remove cards inside a slide as needed; do not change the slide order.
    - Slide 1 (Overview) must include the `.fit-card` directly below `.callout-banner` with Industry (explicitly "Cross-Industry" or specific vertical), Function, and Target Roles pills.
-   - Set `status: "live"` only when the scenario is deployed and the demo script exists; otherwise keep `"soon"` and the short placeholder slide.
+   - Set `status: "live"` only when the scenario is deployed, the demo script exists, **and the user has confirmed every scene works in the real WXO instance**; otherwise keep `"soon"` (the draft slides can stay in the file). Set the manifest `status: live` in the same step.
    - `tag` text "Scenario N • ..." uses N = the scenario's position in the `<script src>` order in `presentation.html`. The tags are static text; if you reorder scripts, update every tag.
    - Make sure `presentation.html` has `<script src="scenarios/<id>.js"></script>` (new scenarios need one line there; this is the only edit to the shell).
    - Escape `${`, backticks and `</script` inside the template literals; avoid them in text.
@@ -46,7 +46,9 @@ Load `wxo-scenario-authoring` first for what the scenario itself must contain. T
    ```
    It checks the manifest and prints the demo checks as `demo: ...` lines. The demo checks verify the script tag, slide-tag numbers, leftover `{{...}}` / `AUTHOR NOTE`, prompt equality between md and slides, copy-button ids, and tool chips against the manifest. Fix every PROBLEM. It does not check facts, tone or claims: re-read rule 1-3 yourself.
 5. **Rebuild the full-script bundle, then look at it.** Run `python docs/demo/build-demo-scripts-bundle.py` (it turns every `docs/demo/<id>-demo.md` into `docs/demo/demo-scripts-bundle.js`, which feeds the grey **Show full script** button on each prompt card of slide 6; re-run it whenever a demo md changes, and `validate` reports a stale bundle). Then open `docs/demo/presentation.html` in a browser (it works from `file://`), go to the new scenario, click through all six slides, press **Copy Prompt** once and **Show full script** once. State to the user what you did and did not check; a headless check cannot test clicks.
-6. **Update the plan and README** pointers for the scenario if they exist, and tell the user what is still unverified.
+6. **Update the plan and README** pointers for the scenario if they exist, and tell the user what is still unverified. Add the README row only after the user's confirmation.
+
+If a prompt changes during live testing, change it in the demo markdown, the slide `prompt-box`, and `ground_truth.json` together, then rebuild the bundle and run `validate`.
 
 `python wxodemo.py new-scenario <id> --name "..." --description "..."` already copies the demo-script template to `docs/demo/<id>-demo.md` (with `{{ID}}`, `{{NAME}}`, `{{AGENT_NAME}}` filled in), so in step 2 you edit that file instead of copying the template. For slides it only creates a short "soon" placeholder `docs/demo/scenarios/<id>.js` and adds the `<script>` tag; step 3 still means copying `templates/scenario.template.js` over that placeholder. Use the step 2 copy command only for a scenario that was created without the scaffold.
 

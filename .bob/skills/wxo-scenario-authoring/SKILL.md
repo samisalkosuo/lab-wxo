@@ -69,14 +69,15 @@ Every scenario ships with a complete evaluation suite (`evaluation.tier: full` i
 
 ## 7. Build order
 
-1. Scenario plan file in `plans/<id>-plan.md` (sub-task format of `plans/incident-triage-plan.md`): purpose, target fit (industry, function, key roles), agent-washing check, mock world table (case, symptom, planted cause, what it teaches), tool list, KB documents, flow, open items.
+1. Scenario plan file in `plans/<id>-plan.md` (sub-task format of `plans/incident-triage-plan.md`): purpose, target fit (industry, function, key roles), agent-washing check, mock world table (case, symptom, planted cause, what it teaches), tool list, KB documents, flow, open items. Add a **Live verification log** section (table: scene, prompt, result reported by user, changes made); it is filled in step 8.
 2. Mock data and read-only tools; test them directly with Python.
 3. Knowledge base documents.
 4. Write tool and flow (if any).
 5. Agent YAML and README.
 6. Manifest, `ground_truth.json`, `eval_config.yaml`, and test cases (run `python wxodemo.py new-scenario` first: it scaffolds all evaluation files and stubs). `validate` must print `OK`.
-7. Deploy (`python wxodemo.py deploy <id>`; a scenario stays `status: soon` until it is ready, and `soon` scenarios are skipped by `deploy --all`), then run smoke and evaluation (`python wxodemo.py smoke <id>` and `python wxodemo.py eval <id> --dry-run`).
-8. Demo markdown and presentation slides from the `scenario-demo-docs` templates (including the Slide 1 Target Fit card for industry, function, and roles). Fill "what was and was not verified" only from real runs.
+7. Deploy (`python wxodemo.py deploy <id>`; a scenario stays `status: soon` until it is confirmed, and `soon` scenarios are skipped by `deploy --all`), then run smoke and evaluation (`python wxodemo.py smoke <id>` and `python wxodemo.py eval <id> --dry-run`). Draft the demo markdown and slides from the `scenario-demo-docs` templates (including the Slide 1 Target Fit card for industry, function, and roles) with every verification row "not verified".
+8. **Live verification with the user, one scene at a time.** The user runs each scene prompt in the real WXO chat UI and reports the result; the agent cannot see it. For each scene: give the exact prompt and expected behaviour, wait for the report, fix and redeploy on any problem, have the user retest the same scene, then log it in the plan's Live verification log and move on. Expect many fix rounds. Approve and Reject on an approval form are always tested by the user in the browser. Keep prompts identical in the demo markdown, slides and `ground_truth.json` whenever one changes.
+9. **Go live, only after the user confirms every scene works as defined.** Finalise the demo markdown from the log (only what the user reported), set `status: live` in `scenario.yaml` and in the slide `.js`, rebuild the demo-scripts bundle, run `validate`, then add the README row.
 
 ## 8. Verify, do not assume
 
@@ -106,4 +107,6 @@ Treat these as open until you have checked them for the new scenario (they were 
 - [ ] Demo markdown and the slide prompts contain the **same** prompts word for word.
 - [ ] Presentation file registered; slide tags match sidebar position; page opens from `file://`.
 - [ ] README / plan updated with an honest "not tested" list.
-- [ ] Row added to the "Scenario agents" table under "What is included" in the root `README.md`.
+- [ ] User confirmed every scene in the real WXO instance; outcomes recorded in the plan's Live verification log.
+- [ ] `status: live` set in `scenario.yaml` and the slide `.js` only after that confirmation.
+- [ ] Row added to the "Scenario agents" table under "What is included" in the root `README.md` (after the confirmation, not before).

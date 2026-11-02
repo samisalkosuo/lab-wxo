@@ -18,7 +18,11 @@ customModes:
       Always follow the build order from wxo-scenario-authoring section 7:
       plan (identifying Industry, Function, and Target Roles) -> mock data and tools ->
       knowledge base -> flow (if needed) -> agent YAML -> manifest, ground_truth.json, eval_config.yaml and test_cases ->
-      deploy and smoke/eval test -> demo markdown and slides (including the Slide 1 .fit-card).
+      dry-run checks -> deploy -> live scene-by-scene testing with the user (iterate) ->
+      user confirms every scene works -> demo markdown and slides finalised (including the
+      Slide 1 .fit-card), status live, README row.
+      The user is the tester: you cannot see the WXO chat UI. Expect several fix, redeploy and
+      retest rounds before a scenario is done.
 
       CLI reference (python wxodemo.py <command>):
       - new-scenario <id> --name "..." --description "..."
@@ -44,23 +48,55 @@ customModes:
         or in the demo script unless a recorded run in this repo supports it.
       - Never claim a scenario "passes" evaluation or "was tested" without a run artifact.
       - Never edit another scenario's files; if a name clash exists, stop and ask.
+      - Never set status: live (manifest or slide .js) and never add the README row before the
+        user has confirmed that every scene works as defined in the real WXO instance.
+      - Never mark a scene as verified from your own reasoning or dry-runs. Only the user's
+        report of a live run counts. Test one scene at a time.
       - Keep tool, KB, and flow names unique across all scenarios (check every
         scenarios/*/scenario.yaml before choosing a name).
 
-      Finish every scenario task in this order:
+      Finish every scenario task in three parts. Status stays `soon` until Part C.
+
+      Part A - build is done (offline checks, then deploy):
       1. python wxodemo.py validate <id>
          Fix every PROBLEM before continuing.
       2. python wxodemo.py smoke <id> --dry-run
          Confirm all smoke_prompts are present and well-formed.
       3. python wxodemo.py eval <id> --dry-run
          Confirm evaluation config and test cases are present and well-formed.
+      4. python wxodemo.py login, then python wxodemo.py deploy <id> (requires a live WXO
+         instance). Do NOT touch README.md and do NOT set status: live.
+      5. Draft the demo script and slides with every "What was and was not verified" row set
+         to "not verified". Add a "Live verification log" section to plans/<id>-plan.md with
+         the table columns: scene, prompt, result reported by user, changes made.
+      6. Tell the user the scenario is deployed and ask them to test scene 1 (Part B).
+
+      Part B - live verification loop, one scene at a time:
+      1. Give the user the exact prompt of the scene (the same text that is in the demo
+         script and slide), the expected behaviour, and what to check. Say which parts are
+         browser-only (for example the approval form: Approve and Reject must be tested by
+         the user in the WXO chat).
+      2. Wait for the user's result. Do not continue to the next scene on your own.
+      3. If the user reports a problem, fix the files (agent instructions, tools, KB, flow,
+         prompts), run `python wxodemo.py validate <id>`, run `python wxodemo.py deploy <id>`
+         again, and ask the user to retest the same scene. Keep demo script, slides and
+         ground_truth.json prompts identical whenever a prompt changes.
+      4. When the user says the scene works, append the outcome to the Live verification log
+         in plans/<id>-plan.md and ask the user to test the next scene.
+      5. After the last scene, ask: "Do all scenes work as defined?"
+
+      Part C - only after the user confirms all scenes work as defined:
+      1. Finalise the demo script from the Live verification log: fill "What was and was not
+         verified" and "Expected behaviour (observed)" only with what the user reported;
+         state what was not driven.
+      2. Set status: live in scenarios/<id>/scenario.yaml and status: "live" in
+         docs/demo/scenarios/<id>.js.
+      3. python docs/demo/build-demo-scripts-bundle.py, then python wxodemo.py validate <id>.
       4. Update README.md: add a row for the new scenario to the "Scenario agents" table
          under "What is included" (agent link, name in WXO, scenario id, one-line
          description), in alphabetical order. Do not touch any other README section.
-      For real smoke / deploy / eval, run `python wxodemo.py login` first
-      and note that these require a live WXO instance.
-      Report what was and was not verified
-      (especially anything that needs a live instance or a real browser click).
+      5. Report what was and was not verified, citing the Live verification log.
+      If login or deploy fails for environmental reasons, run `python wxodemo.py doctor`.
     whenToUse: >-
       Use when creating, scaffolding, or reviewing a new watsonx Orchestrate demo scenario
       in this repo (customer returns, release readiness, HR onboarding, cloud FinOps, etc.).
@@ -141,8 +177,12 @@ customModes:
       - Never attach a write tool directly to an agent; write actions go behind a flow gate.
       - Never make wxodemo or an agent README remove a knowledge base shared with a scenario.
       - Never claim the agent "works" or "retrieves correctly" without a recorded run.
+      - Never update docs/demo/standalone-agents.js or the README tables before the user has
+        confirmed in the real WXO instance that the agent behaves as defined in examples.md.
+        Only the user's report of a live run counts; you cannot see the WXO chat UI.
 
-      Finish every task in this order:
+      Finish every task in this order (steps 1-5 are offline checks, steps 6-9 are deploy and
+      the live verification loop, steps 10-11 happen only after the user confirms):
       1. Confirm standalone/<name>/examples.md exists, follows the format above, and is
          linked from the agent README.
       2. Confirm standalone/<name>/test_cases/ and eval_config.yaml exist.
@@ -152,14 +192,22 @@ customModes:
          Verify test cases and prompts are discovered.
       5. python wxodemo.py deploy <name> --dry-run
          Confirm the deploy commands look correct.
-      6. Update docs/demo/standalone-agents.js to include the agent overview and
-         interactive example slides in docs/demo/presentation.html.
-      7. Update README.md: add a row for the new agent to the "Standalone agents" table
-         under "What is included" (agent link, name in WXO, one-line description), in
-         alphabetical order. If the agent shows a build pattern worth copying, add it to
-         the "Learn by example" table too.
-      For real deploy / undeploy, run `python wxodemo.py login` first, then
-      `python wxodemo.py status <name>` after to confirm the agent is live.
+      6. python wxodemo.py login, then python wxodemo.py deploy <name>, then
+         python wxodemo.py status <name> to confirm the agent is live (requires a live WXO
+         instance).
+      7. Ask the user to try the examples.md prompts in the WXO chat one at a time: the
+         normal path first, then each refusal or clarification path. Give the exact prompt
+         and the expected behaviour from examples.md.
+      8. Wait for the user's result for each prompt. If the user reports a problem, fix the
+         agent (instructions, tools), keep examples.md and test_cases/ in sync, redeploy
+         with python wxodemo.py deploy <name>, and ask the user to retest that prompt.
+      9. After the last prompt, ask: "Does the agent behave as defined in examples.md?"
+      10. Only after the user confirms: update docs/demo/standalone-agents.js to include the
+          agent overview and interactive example slides in docs/demo/presentation.html.
+      11. Update README.md: add a row for the new agent to the "Standalone agents" table
+          under "What is included" (agent link, name in WXO, one-line description), in
+          alphabetical order. If the agent shows a build pattern worth copying, add it to
+          the "Learn by example" table too.
       Run `python wxodemo.py doctor` if any command fails for environmental reasons.
       Fix every failure before reporting done. Report what was and was not verified
       (especially anything that needs a live instance).
