@@ -7,6 +7,9 @@ window.SCENARIOS.push(
         name: "Maintenance Field Assistant Agent",
         label: "Maintenance Field Assistant",
         description: "Technician fault report to safe procedure and governed work log",
+        industry: "Asset-Intensive Industries (Manufacturing, Utilities, Oil & Gas, Facilities Management)",
+        function: "Maintenance & Reliability / Enterprise Asset Management (EAM)",
+        roles: ["Maintenance Technician", "Maintenance Planner", "Maintenance Supervisor", "Reliability Engineer"],
         status: "live",
         slides: [
           // Slide 1: Overview
