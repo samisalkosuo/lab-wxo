@@ -2,7 +2,7 @@
 
 `wxodemo` is the one command-line tool for this repo. It sets up the Python environment, logs in to watsonx Orchestrate (WXO), deploys and removes scenarios and standalone agents, runs smoke tests and evaluations, exports chats and scaffolds new scenarios.
 
-For a short walk-through see the [Quick start in the README](../README.md#quick-start). This page is the full reference.
+For a short walk-through see the [Deploy section in the README](../README.md#deploy-to-your-instance). This page is the full reference.
 
 ## Contents
 
@@ -14,7 +14,6 @@ For a short walk-through see the [Quick start in the README](../README.md#quick-
 - [Output, log file and debugging](#output-log-file-and-debugging)
 - [Exit codes](#exit-codes)
 - [Troubleshooting](#troubleshooting)
-- [Migrating from the old scripts](#migrating-from-the-old-scripts)
 - [Development](#development)
 
 ## Running it
@@ -310,43 +309,14 @@ Every `orchestrate` call runs with `PYTHONUTF8=1` and `PYTHONIOENCODING=utf-8` (
 | `UnicodeEncodeError ... charmap` from a command you ran yourself | Windows console encoding. Run it through `wxodemo`, or set `$env:PYTHONUTF8 = "1"`. |
 | `orchestrate chat ask` hangs | It hangs in non-interactive shells. Use `wxodemo smoke`, or the browser chat. |
 | `eval` exits 1 but the result folder exists | The evaluation framework exits 1 when its output is piped. Run it in a normal terminal. |
-| `eval` cannot import the evaluation package | It is optional and not in `requirements.txt`. See the README. |
+| `eval` cannot import the evaluation package | It is optional and not in `requirements.txt`. See [Running the evaluation](../README.md#running-the-evaluation-optional). |
 | A message ends with `Details: .../local/wxodemo.log` | Open that file or run `python wxodemo.py logs -n 80`. |
-
-## Migrating from the old scripts
-
-| Old | New |
-|---|---|
-| `.\activate-lab-wxo.ps1`, `source activate-lab-wxo.sh` | Create the venv yourself (optional), then `python wxodemo.py setup` and `python wxodemo.py login` |
-| `.\activate-wxo.ps1`, `activate-wxo.sh` | `python wxodemo.py login` |
-| `scripts/deploy-all.ps1`, `deploy-all.sh` | `python wxodemo.py deploy --all` |
-| `deploy-all ... -Scenario X` / `--scenario X` | `python wxodemo.py deploy X` |
-| `scripts/teardown.ps1`, `teardown.sh` | `python wxodemo.py undeploy --all` (asks for confirmation) |
-| `teardown ... -DryRun` / `--dry-run` | `python wxodemo.py undeploy ... --dry-run` |
-| `scripts/scenario_manifest.py list` | `python wxodemo.py list` |
-| `scripts/scenario_manifest.py validate --scenario X` | `python wxodemo.py validate X` |
-| `.bob/skills/scenario-demo-docs/check_demo_consistency.py X` | `python wxodemo.py validate X` (runs both checks) |
-| `scripts/smoke_test.py --scenario X` | `python wxodemo.py smoke X` |
-| `scripts/export_agent_chats.py` | `python wxodemo.py export-chats` (same options; `--env-file` is gone, there is one `env.cfg`) |
-| `scripts/new-scenario.py X ...` | `python wxodemo.py new-scenario X ...` |
-| `standalone/manage.py list` | `python wxodemo.py list --kind standalone` |
-| `standalone/manage.py deploy [--agent A]` | `python wxodemo.py deploy A` or `deploy --all --kind standalone` |
-| `standalone/manage.py undeploy [--agent A]` | `python wxodemo.py undeploy A` or `undeploy --all --kind standalone` |
-| `orchestrate evaluations evaluate --config evaluation/X/eval_config.yaml` | `python wxodemo.py eval X` (also works for standalone agents) |
-
-What changed in behaviour:
-
-- `env.cfg` is mandatory and nothing prompts for credentials.
-- `deploy` and `undeploy` stop at the first error (the old scripts could carry on).
-- A failed promotion to live is an error for every target (the old scripts only warned).
-- `undeploy` asks for confirmation and skips resources that do not exist.
-- The tool never creates or activates a virtual environment.
 
 ## Development
 
 ```bash
 pip install -e .                 # adds the `wxodemo` command
-python -m pytest -q              # about 250 tests, a few seconds, no network, no ADK login, no env.cfg
+python -m pytest -q              # a few hundred tests, a few seconds, no network, no ADK login, no env.cfg
 python -m ruff check src tests wxodemo.py
 python -m ruff format --check src tests wxodemo.py
 ```

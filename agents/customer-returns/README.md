@@ -50,9 +50,7 @@ policy knowledge base, and routing approved refunds through a governed approval 
 
 ## Limitations
 
-- Not tested with a live WXO instance. All data is mock and static.
+- All data is mock and static.
 - The approval form in `returns_process_return` can only be driven by a human in the
   browser chat UI. The CLI smoke test sends diagnosis-only prompts.
-- The flow's Decisions node eligibility logic has not been verified in a live browser run.
-  Item to re-test: ineligible path (CR-002) does not show the approval form.
 - KB indexing delay: after import, wait before the first demo query.

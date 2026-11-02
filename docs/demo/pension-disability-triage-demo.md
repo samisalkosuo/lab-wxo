@@ -252,7 +252,7 @@ Not seen, so not covered here: KB indexing failures, multi-turn conversation dri
 
 **When an agent might be worth it** (arguments, not yet measured here): When dossiers arrive as unstructured text — free-form B-statements, handwritten employer reports, incomplete submissions — and a handler must decide which statutory check to prioritise. The agent can extract the salient facts, apply the statutory priority order, and surface the policy citation without the handler navigating multiple systems manually.
 
-**Open items (still open at the time of writing; see `plans/pension-disability-triage-plan.md`)**
+**Open items**
 
 1. LLM reliability across multiple runs has not been measured (1 smoke run per case). Rehearse before a live demo.
 2. No ADK test_cases/ or eval_config.yaml have been added (evaluation tier is `core`).

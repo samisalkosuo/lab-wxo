@@ -279,7 +279,7 @@ Not seen live: KB indexing delays after first deploy (wait ~60 s before the firs
 
 **When an agent might be worth it** (arguments, not measured here): multi-step dispute handling in natural language, generating the written justification for the formal determination, and classifying ambiguous split-role cases that would require extensive branching in a rules engine.
 
-**Open items (still open at the time of writing; see `plans/yel-income-assessment-plan.md`)**
+**Open items**
 
 1. Scenes 2, 3, and 4 have not been run live against the deployed agent. Data layer is verified; agent behaviour is untested for those cases.
 2. Only 3 NACE sector benchmarks are loaded. Production requires the full ETK/Statistics Finland sector table.

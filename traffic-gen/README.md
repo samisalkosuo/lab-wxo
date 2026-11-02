@@ -3,6 +3,39 @@
 Standalone containerised Python application that periodically calls deployed watsonx Orchestrate
 agents via the REST API to generate realistic usage data on a WXO instance.
 
+**What it is for.** A freshly deployed instance has an empty Home dashboard and empty
+Observability and Analytics pages. Run the generator for a while before a demo and those pages
+show realistic traffic: messages, adoption, tool calls and run durations.
+
+**What it does not do.** It does not deploy anything and it does not answer approval forms.
+Agents that start an approval flow are sent a prompt and left waiting (see "How it works").
+
+## Quick start
+
+1. Deploy the agents you want traffic for (see the root [`README.md`](../README.md#deploy-to-your-instance)).
+   Only deployed (`live`) agents receive traffic; others are skipped with a warning.
+2. Build the image from the **repository root**:
+
+   ```bash
+   docker build -f traffic-gen/Dockerfile -t wxo-traffic-gen .
+   ```
+
+3. Run it with your WXO API key and instance URL:
+
+   ```bash
+   docker run --rm \
+     -e WXO_API_KEY=your-api-key-here \
+     -e WXO_URL=https://api.<region>.watson-orchestrate.cloud.ibm.com/instances/<instance-id> \
+     wxo-traffic-gen
+   ```
+
+4. Watch the log. It prints the agent pool first, then one line per call. It runs until you
+   stop it (Ctrl+C in that terminal, or `docker stop`). One call per minute by default; see
+   `CALL_INTERVAL_MINUTES` below.
+
+The API key and URL are the same values you use in `env.cfg`. Do not paste a real key into a
+file you commit; pass it on the command line or from your shell environment.
+
 ---
 
 ## How it works
@@ -30,9 +63,13 @@ All other agents are polled until the run reaches a terminal status or a 3-minut
 
 ## Prerequisites
 
-- Docker (or compatible container runtime)
-- A WXO instance with agents deployed
-- An IBM Cloud API key (IAM) or MCSP API key
+- Docker or Podman. The commands below use `docker`; with Podman, replace `docker` with
+  `podman`. With Podman 6.1.4 the image builds, and the container starts and stops with the
+  message `WXO_API_KEY is not set` when no key is given. A full container run against a real
+  instance has not been verified.
+- A WXO instance with agents deployed (see the quick start).
+- A WXO API key and instance URL (IBM Cloud IAM or MCSP; see `WXO_ENV_TYPE` below).
+- No Python install is needed on your machine. Python runs inside the container.
 
 ---
 
@@ -169,5 +206,5 @@ Warnings about skipped agents (not deployed, missing prompts) are also printed t
 
 ## No external dependencies
 
-The application uses Python 3.11 stdlib only (`urllib`, `json`, `random`, `time`,
+Inside the container, the application uses Python 3.11 stdlib only (`urllib`, `json`, `random`, `time`,
 `pathlib`, `dataclasses`). No `pip install` step is needed.

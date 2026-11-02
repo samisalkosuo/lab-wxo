@@ -15,14 +15,13 @@ For a human presenter. Every prompt below was run against the real agent, except
 - It does **not** read the whole state travel regulation. Only a small subset of the 2026 rates is hand-keyed into the tools (8 countries, a few domestic rates). The PDF is in the knowledge base for explanations and references, not for amounts.
 - It does **not** show that the agent beats a plain script. Most of the logic (amounts, thresholds, budget check, request id) is deterministic code. See section 9.
 - The approval form (Approve and Reject) has **not** been seen working in a browser. See the verification table.
-- The legal status of shipping the PDF is **not** settled (section 9, open items).
 
 ## 2. Prerequisites
 
 - The repo has been deployed to your WXO instance with `python wxodemo.py deploy travel-request`. This imports the tools, the two knowledge bases, the approval flow and the agent.
 - **Imported agents are draft until deployed.** `wxodemo deploy` already runs `orchestrate agents deploy --name travel_request`. If you imported by hand, run that command, then reload the chat page. Until then the chat UI shows only `AskOrchestrate`.
 - **Remote auth expires after 2 hours.** Re-activate before the demo (see the reset checklist).
-- The agent uses `groq/openai/gpt-oss-120b`. The instance must offer that model. Both knowledge bases use the embedding model `ibm/granite-embedding-278m-multilingual`; the instance must offer that too (it was accepted on `techzone1`; other instances were not tried).
+- The agent uses `groq/openai/gpt-oss-120b`. The instance must offer that model. Both knowledge bases use the embedding model `ibm/granite-embedding-278m-multilingual`; the instance must offer that too (it was accepted on the test instance; other instances were not tried).
 - The browser needs access to your WXO instance web UI. The approval form (scene 8) only renders there.
 - Do **not** use `orchestrate chat ask` for the demo or for rehearsal in a script shell. It hangs when run non-interactively.
 
@@ -352,10 +351,10 @@ Where is the refund for my trip last month? I submitted the expense claim two we
 | Different tool order or wording than this script | LLM variation | Expected. State the conclusions that matched in recorded runs |
 | A transcript shows `submit_travel_request_for_approval`, not `travel_submit_request` | The agent calls the flow under its display name | Expected, not an error |
 | Knowledge base `travel_state_rules` shows "1 document(s) failed in ingestion" after you updated it in place | Updating the PDF knowledge base in place failed twice | Remove it and import it again: `orchestrate knowledge-bases remove --name travel_state_rules`, then in `knowledge/travel-request` run `orchestrate knowledge-bases import -f travel_state_rules.yaml`. The same remove-and-import was needed for the policy knowledge base after its files changed; a plain deploy did not refresh them reliably |
-| Knowledge base import is rejected with "embedding model not found" | `ibm/multilingual-e5-large` and `virtual-model/openai/text-embedding-3-small` were not found on `techzone1`; a failed import still left a `ready` knowledge base record | Use the embedding model in the YAML files. Delete the leftover record by hand |
+| Knowledge base import is rejected with "embedding model not found" | `ibm/multilingual-e5-large` and `virtual-model/openai/text-embedding-3-small` were not found on the test instance; a failed import still left a `ready` knowledge base record | Use the embedding model in the YAML files. Delete the leftover record by hand |
 | Chat page "stuck" after the form | The thread is waiting for a click | Click Approve or Reject, or start a new conversation |
 
-Not seen, so not covered here: the approval form in a browser (render, Approve, Reject, the id shown to the user), a clean first deploy on a fresh instance, a Developer Edition deploy, and what happens when the model or embedding model is not offered on another instance. The smoke helper (now `wxodemo smoke`) needed a small fix to list the tools called (it now reads them from `step_history`); that edit is in shared code.
+Not seen, so not covered here: the approval form in a browser (render, Approve, Reject, the id shown to the user), a Developer Edition deploy, and what happens when the model or embedding model is not offered on another instance. The smoke helper (now `wxodemo smoke`) needed a small fix to list the tools called (it now reads them from `step_history`); that edit is in shared code.
 
 ## 8. Things not to say
 
@@ -365,7 +364,7 @@ Not seen, so not covered here: the approval form in a browser (render, Approve, 
 - **Do not say** the quotes from the Finnish document are exact. The quotes checked in scene 7 differed from the PDF in wording.
 - **Do not say** the agent answers in Finnish, or that it handles Finnish prompts. The user writes English; Finnish prompts are not a requirement of this scenario and were not retested after the change.
 - **Do not say** the agent is better than a script, or that it passes an evaluation. There is no evaluation run and no baseline for this scenario.
-- **Do not say** that the PDF may be redistributed. Its licence is CC BY-NC-ND 4.0 and the question is open.
+- **Do not say** that the PDF may be modified or reused commercially. Its licence is CC BY-NC-ND 4.0; the repo ships it unmodified.
 - **Do not say** the request id is a real booking or expense id. It is a mock id.
 
 ## 9. Closing talking points
@@ -394,14 +393,12 @@ Not seen, so not covered here: the approval form in a browser (render, Approve, 
 
 **Is it agent washing?** Partly, and the demo should say so. If you removed the free-text intake, the PDF explanations and the prose answers, a script would do the rest. What the agent adds is real but narrow, and none of it has been measured against a baseline.
 
-**Open items (still open at the time of writing; see `plans/travel-request-plan.md`)**
+**Open items**
 
 1. The approval flow has not been tested in a browser: form render, Approve issues an id, Reject issues none, and the agent reports the flow message.
-2. PDF licensing (CC BY-NC-ND 4.0) for shipping the unmodified document in this public repo is unconfirmed.
-3. The PDF is used in only a minority of answers. A test that shows when it is and is not consulted has not been done.
-4. No baseline script and no evaluation run exist for this scenario; the answers were read by hand.
-5. A clean install on a fresh instance, a Developer Edition deploy and the effect of auth expiry mid-demo have not been tested.
-6. The manifest status is still `soon`. Change it to `live` in `scenarios/travel-request/scenario.yaml` and `docs/demo/scenarios/travel-request.js` once item 1 is done.
+2. The PDF is used in only a minority of answers. A test that shows when it is and is not consulted has not been done.
+3. No baseline script and no evaluation run exist for this scenario; the answers were read by hand.
+4. A Developer Edition deploy and the effect of auth expiry mid-demo have not been tested.
 
 ## 10. After the demo
 

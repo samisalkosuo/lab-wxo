@@ -82,7 +82,7 @@ Every scenario ships with a complete evaluation suite (`evaluation.tier: full` i
 
 Treat these as open until you have checked them for the new scenario (they were open or only partly verified in Phase A):
 
-- Re-importing tools, KBs, flows, agents over existing resources is safe; clean first install on a fresh instance is **untested**.
+- Re-importing tools, KBs, flows, agents over existing resources is safe.
 - The agent LLM and the KB embedding model (default `ibm/slate-125m-english-rtrvr-v2`) exist in the target instance.
 - Imported agents are drafts; `orchestrate agents deploy --name <name>` is needed for the chat UI (fails on the Developer Edition; warn and continue).
 - `orchestrate env activate` auth expires after about two hours.
@@ -106,3 +106,4 @@ Treat these as open until you have checked them for the new scenario (they were 
 - [ ] Demo markdown and the slide prompts contain the **same** prompts word for word.
 - [ ] Presentation file registered; slide tags match sidebar position; page opens from `file://`.
 - [ ] README / plan updated with an honest "not tested" list.
+- [ ] Row added to the "Scenario agents" table under "What is included" in the root `README.md`.

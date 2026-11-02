@@ -218,7 +218,7 @@ Not seen, so not covered here: an empty or failed collaborator call, a request f
 
 **When an agent might be worth it** (arguments, not measured here): findings come in conflicting combinations that a fixed flowchart would not list in advance, and the explanation matters as much as the verdict.
 
-**Open items (see `plans/release-readiness-plan.md`)**
+**Open items**
 
 1. Export the real transcripts after the fix (`python wxodemo.py export-chats`) and check which specialists were called in scenes 3 and 4.
 2. Run each prompt several times and record the results. The post-fix runs are only reported, not recorded.

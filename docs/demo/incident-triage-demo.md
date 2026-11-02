@@ -58,7 +58,7 @@ Each scene has: **Prompt**, **Expected behaviour**, **Point out**, **Fallback**.
 | 1 Vague opening | 3 evaluation runs (before the instruction fix) and 6 SDK dry-runs (after the fix). Approval form **not** driven. |
 | 2 INC-1001 diagnosis | 3 evaluation runs and 1 SDK dry-run (after the fix). |
 | 3 INC-1002 red herring | 3 evaluation runs and 1 SDK dry-run (after the fix). |
-| 4 Approval, Approve and Reject | Approval prompt reached the form in 3 of 3 SDK dry-runs. **The form, Approve and Reject were verified only by the user's browser test (Sub-Task 4).** I could not drive the form. |
+| 4 Approval, Approve and Reject | Approval prompt reached the form in 3 of 3 SDK dry-runs. **The form, Approve and Reject were verified only by a manual browser test.** I could not drive the form. |
 | 5 INC-1004 non-incident | 3 evaluation runs and 1 SDK dry-run (after the fix). |
 | 6 Evaluation | Evaluation numbers are from the stored results of the one evaluation run; not re-run. |
 | Trace pointer (scene 2) | `orchestrate observability traces search --last 30m` listed `incident_triage` traces. **Trace details in the web UI were not checked** by me. |
@@ -266,8 +266,6 @@ This scene is mostly talking. Do not run the evaluation live: it is slow, and in
 | Chat page "stuck" after the form | The thread is waiting for a click | Click Approve or Reject, or start a new conversation |
 | Evaluation run exits with code 1 | Non-TTY progress rendering | Result files are still written; read them |
 
-Not seen, so not covered here: clean first deploy on a fresh instance. The deploy was only re-run over the existing `techzone1` instance (exit 0, all resources updated).
-
 **Note:** `python wxodemo.py smoke incident-triage` sends the four diagnosis-only prompts in `evaluation/incident-triage/ground_truth.json` (`smoke_prompts`) to the deployed agent and prints the tools called and the start of each answer. It looks the agent up by name, so no UUID is needed. It does not grade the answers, and its live path has not yet been run against an instance (only `--dry-run` was).
 
 ## 8. Things not to say
@@ -303,16 +301,15 @@ Not seen, so not covered here: clean first deploy on a fresh instance. The deplo
 
 **When an agent might be worth it** (arguments, not yet measured here): inputs that vary or are vague, the next step depends on what the previous step found, new incident types appear faster than rules can be written, and an explanation in prose is part of the deliverable.
 
-**Open items (still open at the time of writing; see `incident-triage-plan.md`)**
+**Open items**
 
 1. The evaluation's final-answer check passes 0 of 15 (non-breaking hyphens, one-liner expectations).
 2. The INC-1004 test case is too strict (it expects a `get_metrics` call the agent can legitimately skip; the plan text says `query_logs`, but the test case file lists `get_metrics`).
 3. The evaluation has not been re-run since the `p99_latency_ms` -> `latency` fix.
-4. Evaluation dependencies were installed by hand into the global Python 3.14; see the README for the documented workaround. A clean install was not tested.
+4. Evaluation dependencies were installed by hand into the global Python 3.14; see the README for the documented workaround.
 
 ## 10. After the demo
 
 - The SDK dry-runs behind this script started approval-flow instances (the form cannot be answered from the API) that were never answered. They only touch mock data, and they may show up in traces or conversation lists. I did not check how the instance treats them.
-- Sub-Task 8 complete. Sub-Task 9 (README update, teardown scripts) is next.
 
 

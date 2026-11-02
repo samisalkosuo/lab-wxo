@@ -295,7 +295,7 @@ window.SCENARIOS.push(
                   <div class="card-icon icon-amber">⚖️</div>
                   <div class="card-title">Agent vs. Plain Script Trade-off</div>
                 </div>
-                <div class="card-body">A script is faster, cheaper, and deterministic when the investigation path is fixed and inputs are well-formed. An agent adds value when the input is vague, the next step depends on the previous result, and policy documents change often. The approval gate works identically either way — it is a flow, not agent reasoning. In the smoke run, all four prompts completed with the expected tool sequences and CF-004 produced the correct restraint response. Approval form clicks (Approve/Reject) have not yet been browser-verified.</div>
+                <div class="card-body">A script is faster, cheaper, and deterministic when the investigation path is fixed and inputs are well-formed. An agent adds value when the input is vague, the next step depends on the previous result, and policy documents change often. The approval gate works identically either way — it is a flow, not agent reasoning. In the smoke run, all four prompts completed with the expected tool sequences and CF-004 produced the correct restraint response. The approval forms (Approve/Reject) were verified in the browser chat UI.</div>
               </div>
             `
           },

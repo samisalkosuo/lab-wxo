@@ -61,7 +61,7 @@ orchestrate agents remove --name information_redactor --kind native
 | Text size | The text must fit comfortably in the model context window. Redaction quality can drop on very long documents; split them. |
 | Language | Works best on English and Finnish. Identifier formats from other countries may be missed. |
 | Indirect identifiers | Combinations of facts that identify a person without a direct identifier (for example a rare job title in a small town) are not reliably detected. |
-| Verified on a small sample only | All seven prompts in [`examples.md`](examples.md) were run once each against the deployed agent on `techzone1` and behaved as described. The first version dropped words around the masked items ("Call", "Contact:" and an instruction-like sentence) and split a full name into two markers in generic mode; the instructions were tightened and those cases re-ran correctly. One run per prompt is not a statistical test, and output is not deterministic, so re-check after any change to `agent.yaml` or the model. |
+| Verified on a small sample only | All seven prompts in [`examples.md`](examples.md) were run once each against the deployed agent and behaved as described. The first version dropped words around the masked items ("Call", "Contact:" and an instruction-like sentence) and split a full name into two markers in generic mode; the instructions were tightened and those cases re-ran correctly. One run per prompt is not a statistical test, and output is not deterministic, so re-check after any change to `agent.yaml` or the model. |
 
 ## Examples
 

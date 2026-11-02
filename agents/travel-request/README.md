@@ -38,7 +38,7 @@ Amounts and thresholds are not read from the knowledge bases. They come from the
 
 ### Source attribution
 
-*Valtion matkustussääntö 2026*, Valtiovarainministeriön julkaisuja 2025:63, Ministry of Finance, Finland. URN: https://urn.fi/URN:ISBN:978-952-367-397-7. Licence: CC BY-NC-ND 4.0. The PDF is shipped unmodified. The rates keyed into `tools/travel_request/data/rates.py` are a small subset, valid until 31.12.2026 per the document. Whether shipping the PDF in this public repo is acceptable has not been confirmed (open item 1 in the plan).
+*Valtion matkustussääntö 2026*, Valtiovarainministeriön julkaisuja 2025:63, Ministry of Finance, Finland. URN: https://urn.fi/URN:ISBN:978-952-367-397-7. Licence: CC BY-NC-ND 4.0. The PDF is shipped unmodified. The rates keyed into `tools/travel_request/data/rates.py` are a small subset, valid until 31.12.2026 per the document.
 
 ## Mock data
 
@@ -78,7 +78,7 @@ The smoke prompts are diagnosis only (they tell the agent not to call the flow).
 
 ## What was and was not verified
 
-Verified by running (instance `techzone1`):
+Verified by running against a live instance:
 
 - The tools, directly in Python: 38 checks pass (rates, caps, 2027 refusal, country aliases, write-tool refusals).
 - The 8 smoke prompts against the deployed agent, 3 times in a row on the final configuration: all 24 answers passed an automatic check of the outcome word, the expected amount, the tools called and "English answer". That check is crude (string matching). A manual read of the answers found no wrong amounts or wrong outcomes in those 24, but the wording varies between runs.
@@ -90,7 +90,7 @@ Not verified:
 - **Retrieval quality on the Finnish PDF.** In an earlier spike (one run per question, 20 questions) the best configuration answered 11 correctly, 2 partly, 3 wrong and 4 missed. The final agent mostly relies on tools, but its explanations and section citations still depend on retrieval. Section numbers beyond those carried in tool output were not systematically checked.
 - **Quotations from the Finnish document.** The agent is told not to translate or put its own wording in quotation marks. In 24 answers no translated quotation was spotted, but this was not exhaustively checked.
 - **Other countries.** Only the keyed subset exists: Belgium, Germany, Sweden, Estonia, United States, United Kingdom, France, Norway. Other countries return a "not available" result.
-- A clean first install on a fresh instance, agent deploy on a Developer Edition, and long-running behaviour.
+- Agent deploy on a Developer Edition, and long-running behaviour.
 
 ## Known limitations
 

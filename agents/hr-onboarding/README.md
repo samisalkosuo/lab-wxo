@@ -63,14 +63,14 @@ Dates are explicit ISO dates; the data never depends on today's date.
 
 ## Limitations
 
-- **Not deployed and not tested against a live WXO instance.** The tools were exercised directly in
-  Python; the flows were built and serialized offline; the agent instructions have not been run.
 - The approval forms can only be answered by a human in the browser chat UI. The CLI smoke test sends
   diagnosis-only prompts and cannot approve or reject.
-- Both flows are untested in a browser. The two-step compliance flow is new in this repo.
+- The four demo scenes were run in the browser chat UI (see
+  [`docs/demo/hr-onboarding-demo.md`](../../docs/demo/hr-onboarding-demo.md)). That record shows the
+  approval forms being displayed; it does not record Approve and Reject outcomes for each form. The
+  two-step compliance flow is new in this repo.
 - Approvers are fixed role labels ("HR Manager", "Compliance Reviewer"); the forms do not capture who
   approved.
 - The hire record is never updated: a value the coordinator supplies (for example the equipment
   choice) is passed into the flow only.
 - KB indexing takes time after import; retrieval quality for these documents has not been checked.
-- Status stays `soon` until both flows are verified in a browser (Approve and Reject each).

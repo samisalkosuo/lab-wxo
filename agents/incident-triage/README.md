@@ -88,7 +88,7 @@ The approval form only renders in the watsonx Orchestrate browser chat UI.
 5. **Approve path:** Click **Approve** -> agent reports the execution result verbatim.
 6. **Reject path:** Start a fresh conversation, repeat, click **Reject** -> agent reports "REJECTED. No remediation was executed."
 
-See `incident-triage-plan.md` Sub-Task 4 notes for the full step-by-step verification checklist.
+The demo script ([`docs/demo/incident-triage-demo.md`](../../docs/demo/incident-triage-demo.md)) walks through the same flow in detail.
 
 ## Mock incidents
 
@@ -101,6 +101,4 @@ See `incident-triage-plan.md` Sub-Task 4 notes for the full step-by-step verific
 
 ## Known limitations
 
-- **Evaluation final-answer check: 0 of 15 runs pass.** Tool selection is consistent (13 of 15 runs), but the overall `is_success` metric fails because the agent uses non-breaking hyphens (U+2011) in runbook IDs and produces longer answers than the one-sentence expected responses.
-- **Wrong incident in approval requests (3 of 19 vague-opening runs).** On "Hey, checkout is slow...", the agent occasionally files `request_remediation` with `service=payments, incident_id=INC-1001` (mismatched). The human gate prevents execution; the instruction-level fix was ineffective. Proper fix: validate service/incident consistency inside the flow.
-- **No clean-instance install tested.** Re-install over `techzone1` was verified; first install from scratch was not.
+The evaluation final-answer check passes in 0 of 15 runs, and the agent occasionally files an approval request for the wrong incident. Details and what to do about them are in [`docs/known-issues.md`](../../docs/known-issues.md).

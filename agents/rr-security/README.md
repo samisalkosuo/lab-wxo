@@ -8,4 +8,4 @@ Collaborator of `release_readiness`. Reports vulnerability evidence only; never 
 | `rr_get_cve_exposure` | Whether a CVE is dev-only or runtime, shipped, reachable, fixable |
 
 Does not handle: tests, runbooks, rollback, health checks, the release decision.
-Limitations: mock static data with invented CVE ids; not run on a live instance.
+Limitations: mock static data with invented CVE ids.

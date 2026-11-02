@@ -23,7 +23,7 @@ standalone/
 └── <agent-name>/
     ├── agent.yaml          # ADK native-agent definition
     ├── README.md           # purpose, dependencies, deploy commands, known limits
-    ├── examples.md         # example prompts (mandatory; consumed by future tools)
+    ├── examples.md         # example prompts (mandatory)
     ├── eval_config.yaml    # ADK evaluation configuration
     ├── test_cases/         # automated test cases (JSON)
     └── <tool>.py           # optional: Python tool(s) the agent needs
@@ -45,8 +45,7 @@ and enforces the conventions below.
 2. Create `standalone/<your-agent-name>/README.md` — document the purpose,
    dependencies (KBs or tools that must already be deployed), deploy commands, and
    known limits.
-3. Create `standalone/<your-agent-name>/examples.md` — **mandatory**. Future tools read
-   it. Format: a `# <agent_name> — Examples` heading, one intro sentence, then a numbered
+3. Create `standalone/<your-agent-name>/examples.md` — **mandatory**. Format: a `# <agent_name> — Examples` heading, one intro sentence, then a numbered
    list of `N. *"prompt"* — expected behaviour` items (see
    [`translator/examples.md`](translator/examples.md)). Include at least 3 examples,
    covering the normal path and any refusal or clarification path. The agent `README.md`
@@ -55,8 +54,9 @@ and enforces the conventions below.
    derived from the examples and expected behaviors.
 5. Add the agent and its interactive examples to `docs/demo/standalone-agents.js`
    so it appears in `docs/demo/presentation.html`.
-5. Update [`README.md`](../README.md) (the Standalone agents table and Repository Structure) with the new agent.
-6. Deploy with `wxodemo` (see below).
+6. Add a row for the agent to the "Standalone agents" table under "What is included" in
+   [`README.md`](../README.md#what-is-included).
+7. Deploy with `wxodemo` (see below).
 
 No manifest, no scenario.yaml and no CLI change required.
 

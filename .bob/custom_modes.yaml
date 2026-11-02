@@ -54,6 +54,9 @@ customModes:
          Confirm all smoke_prompts are present and well-formed.
       3. python wxodemo.py eval <id> --dry-run
          Confirm evaluation config and test cases are present and well-formed.
+      4. Update README.md: add a row for the new scenario to the "Scenario agents" table
+         under "What is included" (agent link, name in WXO, scenario id, one-line
+         description), in alphabetical order. Do not touch any other README section.
       For real smoke / deploy / eval, run `python wxodemo.py login` first
       and note that these require a live WXO instance.
       Report what was and was not verified
@@ -151,8 +154,10 @@ customModes:
          Confirm the deploy commands look correct.
       6. Update docs/demo/standalone-agents.js to include the agent overview and
          interactive example slides in docs/demo/presentation.html.
-      7. Update README.md (the Standalone agents table and Repository Structure) with
-         the new standalone agent.
+      7. Update README.md: add a row for the new agent to the "Standalone agents" table
+         under "What is included" (agent link, name in WXO, one-line description), in
+         alphabetical order. If the agent shows a build pattern worth copying, add it to
+         the "Learn by example" table too.
       For real deploy / undeploy, run `python wxodemo.py login` first, then
       `python wxodemo.py status <name>` after to confirm the agent is live.
       Run `python wxodemo.py doctor` if any command fails for environmental reasons.

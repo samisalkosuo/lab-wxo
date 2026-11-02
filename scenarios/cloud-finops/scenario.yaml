@@ -1,6 +1,5 @@
 # scenario.yaml - manifest for the Cloud FinOps scenario.
 # Field reference and a complete example: scenarios/incident-triage/scenario.yaml
-# Deployed to techzone1. Both approval flows must still be browser-verified (Approve + Reject each form).
 
 id: cloud-finops
 name: Cloud FinOps

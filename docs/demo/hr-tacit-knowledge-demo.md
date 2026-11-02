@@ -1,6 +1,6 @@
 # HR Tacit Knowledge Agent - Demo Script
 
-For a human presenter. All six scenes were verified in the browser chat UI during Sub-Task 8 of `plans/hr-tacit-knowledge-plan.md`. "Expected behaviour (observed)" rows describe what actually happened across multiple browser runs, not predictions. Where the agent varied between runs, both behaviours are noted.
+For a human presenter. All six scenes were verified in the browser chat UI. "Expected behaviour (observed)" rows describe what actually happened across multiple browser runs, not predictions. Where the agent varied between runs, both behaviours are noted.
 
 ## 1. Audience and goal
 

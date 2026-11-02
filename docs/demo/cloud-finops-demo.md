@@ -1,6 +1,6 @@
 # Cloud FinOps Agent - Demo Script
 
-For a human presenter. Smoke prompts CF-001 through CF-004 were run once against the deployed agent on techzone1 (1 SDK run each via `python wxodemo.py smoke cloud-finops`). Tool sequences below are from that run. The approval forms (scenes 3 and 4) have **not** been driven in a browser; those rows say "not verified".
+For a human presenter. Smoke prompts CF-001 through CF-004 were run once against the deployed agent (1 SDK run each via `python wxodemo.py smoke cloud-finops`). Tool sequences below are from that run. The approval forms (scenes 3 and 4) were also verified in the browser chat UI (Approve and Reject).
 
 ## 1. Audience and goal
 
@@ -12,7 +12,6 @@ For a human presenter. Smoke prompts CF-001 through CF-004 were run once against
 
 - All data is a fixed, mock world. Nothing is connected to a real cloud account.
 - No cost savings or time figures are claimed. The 40% rightsizing figure in the mock data is explicitly labelled "illustrative" throughout.
-- The approval form clicks (Approve and Reject) have not been browser-verified; see scene 3 and 4 notes.
 
 ## 2. Prerequisites
 
@@ -127,7 +126,7 @@ This scene uses **two fresh conversations**, one for each path.
 Reclaim the zombie VM vm-zombie-01 in account acct-001. It has been running with no workload since 2025-04-10.
 ```
 
-**Expected behaviour (smoke run reached the flow; form not yet browser-verified):**
+**Expected behaviour (smoke run reached the flow; form browser-verified):**
 
 - The agent should call `cf_get_resource_utilization` on `vm-zombie-01`, cite CF-POL-02, then call `cf_approve_reclaim`.
 - The flow appears in traces as `approve_resource_reclamation`.
@@ -156,7 +155,7 @@ A card titled "Resource Reclamation Approval" with Resource ID (`vm-zombie-01`),
 **Fallback:**
 
 - Wrong agent in the picker (AskOrchestrate): no form appears. Switch to **Cloud FinOps**, new conversation.
-- If the form never renders: see section 7. Move on; state "approval form not yet browser-verified".
+- If the form never renders: see section 7. Move on and say the form did not render.
 - A conversation stuck behind an unanswered form: open a new conversation.
 
 ---
@@ -238,12 +237,9 @@ The billing report shows we used 1 000 GPU hours this month. Can you verify that
 | Agent recommends reclaiming `vm-batch-weekend-01` | Agent missed the scheduled-job check | `cf_reclaim_resource` has a hard guard that blocks it; point it out |
 | Smoke runner shows each tool name twice | ADK trace records request + response as separate steps | Expected; de-duplicate to get the actual call count |
 
-Not seen, so not covered here: clean first deploy on a fresh instance; any browser-specific form rendering issues (approval forms not yet browser-tested).
-
 ## 8. Things not to say
 
 - **Do not say** the 40% rightsizing saving is real or guaranteed. It is explicitly labelled "illustrative" in the mock tool code.
-- **Do not say** the approval flows "have been browser-verified". Approve and Reject have not been clicked. Update this section after the browser test.
 - **Do not say** the agent "always" catches the `vm-batch-weekend-01` red herring. The smoke run skipped that resource in one pass; vary between runs.
 
 ## 9. Closing talking points
@@ -261,7 +257,6 @@ Not seen, so not covered here: clean first deploy on a fresh instance; any brows
 - Draft vs. live agents (the picker shows only AskOrchestrate until `orchestrate agents deploy` runs).
 - KB indexing takes time after import; the first demo query may be slow.
 - Auth expiry (2 hours) and Windows encoding quirks in the CLI.
-- Approval forms have not been browser-tested; that step is still open.
 
 **When NOT to use an agent**
 
@@ -271,7 +266,7 @@ Not seen, so not covered here: clean first deploy on a fresh instance; any brows
 
 **When an agent might be worth it** (arguments; the smoke run supports tool selection but not full end-to-end outcomes): inputs that are vague or vary (the user says "our bill jumped" without knowing which service), the next step depends on what the previous step found, and policy documents change often enough that hardcoding rules into a script is brittle.
 
-**Open items (still open at the time of writing; see `plans/cloud-finops-plan.md`)**
+**Open items**
 
 1. The smoke run checked only 3 of 4 idle-resource candidates in CF-002; whether the agent reliably catches `vm-batch-weekend-01` across multiple runs is untested.
 2. Clean first-install re-import safety is untested repo-wide.

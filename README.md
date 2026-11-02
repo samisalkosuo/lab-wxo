@@ -1,14 +1,129 @@
 # watsonx Orchestrate Lab
 
-A development environment for building and deploying IBM watsonx Orchestrate agents using the ADK (Agent Development Kit).
+Sample agents, tools, knowledge bases and approval flows for **IBM watsonx Orchestrate (WXO)**, plus the tooling to deploy them into your own WXO instance with one command.
 
-Agents, tools, knowledge bases, and flows in this repo are version-controlled and distributable. Run `python wxodemo.py deploy --all` to import everything into an existing WXO instance (see the [Quick start](#quick-start)). Re-running the deploy over existing resources is safe — re-import updates in place. A clean first install on a fresh instance has not been tested. All commands are documented in [`docs/wxodemo.md`](docs/wxodemo.md).
+The repo is built for two purposes:
 
-## Agents
+1. **Use the samples.** Deploy ready-made agents (business scenarios and small single-purpose agents) into your WXO instance and try them in the chat.
+2. **Learn by example.** Read how each agent is put together and build your own. The repo is designed to be developed with [Bob](#build-your-own-agents), which has custom modes and skills for creating scenarios and standalone agents, but you can also work by hand with the ADK.
 
-### Demo scenario agents
+All business data in this repo is mock or synthetic. Nothing connects to an external system.
 
-Deployed with `python wxodemo.py deploy` from the scenario manifests in `scenarios/`.
+> Provided as-is for demonstration and learning, with no support.
+
+## Prerequisites
+
+| Requirement | Details |
+|---|---|
+| Python | 3.11 or later. Developed and used on Python 3.14. |
+| watsonx Orchestrate instance | A SaaS instance you can import agents into, plus its **API key** and **instance URL**. Consult the watsonx Orchestrate documentation to create the key and find the URL. <!-- TODO: add step-by-step instructions for finding the API key and URL --> |
+| LLM `groq/openai/gpt-oss-120b` | Every agent uses this model, so your instance must offer it. Check with `orchestrate models list` once the ADK is installed (step 2 below). |
+| Embedding model `ibm/granite-embedding-278m-multilingual` | Only the `travel-request` scenario needs it, for its two knowledge bases. |
+| Git | To clone the repo. |
+| Docker or Podman | Optional. Only for the [traffic generator](#traffic-generator). |
+| Bob | Optional, but recommended if you want to create your own agents (see [Build your own agents](#build-your-own-agents)). |
+
+The ADK (`ibm-watsonx-orchestrate`) is installed by the `setup` command below; you do not install it separately.
+
+## Deploy to your instance
+
+Run everything from the repo root.
+
+**1. Clone and create a virtual environment** (optional but recommended; `wxodemo` never creates or activates one for you).
+
+```bash
+git clone https://github.com/samisalkosuo/lab-wxo.git
+cd lab-wxo
+```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1     # Windows PowerShell
+```
+```bash
+python -m venv .venv
+source .venv/bin/activate        # Linux / macOS
+```
+
+**2. Install the dependencies.**
+
+```bash
+python wxodemo.py setup          # installs requirements.txt (the ADK), then runs the checks
+```
+
+**3. Create `env.cfg`** from the template and fill in your values. The file is required; `wxodemo` never prompts for credentials.
+
+```powershell
+Copy-Item env.cfg.example env.cfg   # Windows
+```
+```bash
+cp env.cfg.example env.cfg          # Linux / macOS
+```
+
+```ini
+WXO_API_KEY=your-api-key-here
+WXO_URL=https://api.<region>.watson-orchestrate.cloud.ibm.com/instances/<instance-id>
+WXO_ENV_NAME=my-env
+WXO_ENV_TYPE=ibm_iam      # optional: ibm_iam (default) or mcsp (AWS-hosted)
+```
+
+> **`env.cfg` contains a secret. Never commit it.** It is git-ignored, and `wxodemo` never prints or logs the key.
+
+**4. Check your setup and log in.**
+
+```bash
+python wxodemo.py doctor         # Python, ADK, orchestrate CLI and env.cfg all OK?
+python wxodemo.py login          # registers and activates your WXO environment
+```
+
+The login token lasts about 2 hours; run `login` again if you get authentication errors.
+
+**5. Deploy a first agent and test it.**
+
+```bash
+python wxodemo.py deploy hello-world
+```
+
+Open the chat in your WXO instance, select **hello_world** and type `Hello`. The agent calls its Python tool and replies `Hello World!`. If that works, your setup is ready.
+
+**6. Deploy the rest.**
+
+```bash
+python wxodemo.py deploy --all --dry-run     # preview what would be imported
+python wxodemo.py deploy --all               # every live scenario and every standalone agent
+```
+
+Deploying is repeatable: existing resources are updated in place. A run stops at the first failing step, names it, and writes details to `local/wxodemo.log`. If `deploy --all` stops, for example because a model or embedding model is not available on your instance, deploy the scenarios and agents you need by name instead: `python wxodemo.py deploy incident-triage translator`.
+
+**7. Remove everything again** when you are done.
+
+```bash
+python wxodemo.py undeploy --all --dry-run   # preview
+python wxodemo.py undeploy --all             # shows the plan and asks [y/N]
+```
+
+Removing a knowledge base deletes its ingested documents.
+
+## Try it
+
+Open the chat in your WXO instance, select an agent and paste a prompt. Each agent also has a full demo script in [`docs/demo/`](docs/demo/) with exact prompts, expected behaviour and talking points; open [`docs/demo/presentation.html`](docs/demo/presentation.html) in a browser for the slide decks.
+
+| Agent | First prompt to try | What to look for |
+|---|---|---|
+| `incident_triage` | `Investigate incident INC-1001 on the checkout service. Use your tools to find the root cause and propose a fix.` | The agent checks health, logs, metrics and deployments, cites a runbook, then asks for human approval before any remediation. |
+| `cloud_finops` | `Our cloud bill jumped 30% this month. Can you investigate why?` | Spend analysis from tools, with approval forms before resources are reclaimed or resized. |
+| `customer_returns` | `I bought a ProBlend 500 blender last month and it broke after a few uses. My order number is ORD-1001.` | Warranty and return policy checks, then a governed refund. |
+| `release_readiness` | `Is rel-2025-Q3 ready to ship?` | A supervisor agent calls three specialist agents and combines their findings. |
+| `translator` | `Translate 'Our quarterly results are in' to German, but make it sound enthusiastic.` | A tool-free agent with a clarification and refusal path. |
+
+> The approval cards (Approve / Reject) only render in the WXO **browser** chat, not through the API or `wxodemo smoke`.
+
+## What is included
+
+Keep these tables up to date when you add an agent.
+
+### Scenario agents
+
+Business scenarios with mock data, tools, knowledge bases, approval flows, evaluation test cases and a demo script. Deploy by scenario name, for example `python wxodemo.py deploy incident-triage`.
 
 | Agent | Name in WXO | Scenario | Description |
 |---|---|---|---|
@@ -25,7 +140,7 @@ Deployed with `python wxodemo.py deploy` from the scenario manifests in `scenari
 
 ### Standalone agents
 
-Deployed with `python wxodemo.py deploy <name>` (see [Standalone Agents](#standalone-agents)); not part of any scenario.
+Small single-purpose agents with no scenario around them. Deploy by name, for example `python wxodemo.py deploy translator`.
 
 | Agent | Name in WXO | Description |
 |---|---|---|
@@ -33,76 +148,48 @@ Deployed with `python wxodemo.py deploy <name>` (see [Standalone Agents](#standa
 | [entity-extractor](standalone/entity-extractor/) | `entity_extractor` | Extracts people, organizations, locations, products, dates, amounts, emails, phones, identifiers and user-defined custom entities into JSON; format-based entities come from a regex Python tool |
 | [hello-world](standalone/hello-world/) | `hello_world` | Simple greeting agent with a `greeting` tool -- verifies ADK setup |
 | [information-redactor](standalone/information-redactor/) | `information_redactor` | Detects and masks sensitive information and personal identifiers in pasted text before sharing; typed placeholders, no tools, no knowledge base |
+| [language-detector](standalone/language-detector/) | `language_detector` | Detects language or mixed languages in any text; returns structured JSON with full name, ISO 639-1, ISO 639-2, BCP 47 tag, script, confidence, and proportion per language |
 | [metadata-extractor](standalone/metadata-extractor/) | `metadata_extractor` | Extracts user-specified arbitrary metadata fields from provided text into strict JSON schemas |
 | [priority-assessor](standalone/priority-assessor/) | `priority_assessor` | Assigns structured priority levels (Critical, High, Medium, Low) to incoming items using configured rules or common-sense defaults |
-| [language-detector](standalone/language-detector/) | `language_detector` | Detects language or mixed languages in any text; returns structured JSON with full name, ISO 639-1, ISO 639-2, BCP 47 tag, script, confidence, and proportion per language |
-| [translator](standalone/translator/) | `translator` | Translates user text into a named target language from a fixed supported list, with an optional tone or style; no tools, no knowledge base |
 | [report-generator](standalone/report-generator/) | `report_generator` | Generates realistic synthetic reports for five predefined types: Doctor Visit Summary, Traffic Incident, Building Inspection, Quarterly Project Update, and Social Services Visit; refuses requests outside those five types |
+| [translator](standalone/translator/) | `translator` | Translates user text into a named target language from a fixed supported list, with an optional tone or style; no tools, no knowledge base |
 | [travel-rules-qa](standalone/travel-rules-qa/) | `travel_rules_qa` | Answers English questions about the Finnish state travel regulation (Valtion matkustussääntö 2026) from a PDF knowledge base, citing Finnish sections |
 
-## Quick start
+## Learn by example
 
-**Prerequisites:** Python 3.11 or later and a watsonx Orchestrate (WXO) instance with an API key. Everything else, including the ADK (`ibm-watsonx-orchestrate`), is installed by step 2. The project was developed and deployed on Python 3.14. On 3.14 the optional evaluation framework could not be installed normally (see [Running the evaluation](#running-the-evaluation-optional)); other versions were not tested.
+Each pattern below has a sample you can read, deploy and copy.
 
-**1. Create a virtual environment (optional, recommended).** `wxodemo` never creates or activates one; it uses the Python that starts it.
+| To learn how to build... | Read this sample |
+|---|---|
+| An agent with instructions only (no tools, no knowledge base) | [`standalone/translator`](standalone/translator/) |
+| An agent with strict JSON output | [`standalone/document-classifier`](standalone/document-classifier/) |
+| An agent that calls a Python tool | [`standalone/hello-world`](standalone/hello-world/), [`standalone/entity-extractor`](standalone/entity-extractor/) |
+| An agent that answers from a knowledge base (PDF) | [`standalone/travel-rules-qa`](standalone/travel-rules-qa/) |
+| Tools + knowledge base + human-approval flow | [`agents/incident-triage`](agents/incident-triage/) (the reference scenario) |
+| A supervisor agent with collaborator agents | [`agents/release-readiness`](agents/release-readiness/) |
+| Governed write actions (flow-only tools) | [`agents/customer-returns`](agents/customer-returns/), [`agents/hr-tacit-knowledge`](agents/hr-tacit-knowledge/) |
+| Evaluation test cases and ground truth | [`evaluation/incident-triage`](evaluation/incident-triage/) |
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1     # Windows PowerShell
-```
-```bash
-python -m venv .venv
-source .venv/bin/activate        # Linux / macOS
-```
+## Build your own agents
 
-**2. Install the dependencies.**
+**With Bob (recommended).** This repo ships custom Bob modes and skills (in [`.bob/`](.bob/)) that know the repo's conventions, the ADK CLI and the ADK documentation. Open the repo as a Bob workspace and pick a mode:
 
-```bash
-python wxodemo.py setup          # pip install -r requirements.txt, then runs doctor
-```
+- **Scenario Builder** creates a complete demo scenario: mock-data tools, knowledge base, approval flow, agent, manifest, evaluation cases, demo script and slides.
+- **Standalone Builder** creates a small one-off agent under `standalone/`.
 
-Optional: `pip install -e .` adds a `wxodemo` command, so you can type `wxodemo deploy --all` instead of `python wxodemo.py deploy --all`.
+Sample prompts and what to check afterwards: [`docs/building-with-bob.md`](docs/building-with-bob.md).
 
-**3. Fill in `env.cfg`.** Copy the template and edit it. The file is mandatory; `wxodemo` never prompts for credentials.
+**By hand.** Copy the closest sample from [Learn by example](#learn-by-example), then:
 
-```powershell
-Copy-Item env.cfg.example env.cfg   # Windows
-```
-```bash
-cp env.cfg.example env.cfg          # Linux / macOS
-```
+- Standalone agent: follow [`standalone/README.md`](standalone/README.md). `wxodemo` discovers any folder under `standalone/` that contains an `agent.yaml`.
+- Scenario: scaffold it with `python wxodemo.py new-scenario <id> --name "..." --description "..."`, build the tools, knowledge base, flow and agent, list them in `scenarios/<id>/scenario.yaml`, and check with `python wxodemo.py validate <id>`. `scenarios/incident-triage/scenario.yaml` documents every field.
+- `wxodemo deploy` only deploys what a scenario manifest lists or what lives under `standalone/`. An agent in `agents/` that no manifest lists is not picked up.
 
-```ini
-WXO_API_KEY=your-api-key-here
-WXO_URL=https://api.<region>.watson-orchestrate.cloud.ibm.com/instances/<instance-id>
-WXO_ENV_NAME=my-env
-WXO_ENV_TYPE=ibm_iam      # optional: ibm_iam (default) or mcsp (AWS-hosted)
-```
+## Development
 
-> **`env.cfg` contains secrets -- do not commit it.** It is git-ignored, and `wxodemo` never prints or logs the key.
+### `wxodemo` commands
 
-**4. Check, log in, deploy.**
-
-```bash
-python wxodemo.py doctor                    # is everything ready?
-python wxodemo.py login                     # register and activate the WXO environment
-python wxodemo.py deploy --all --dry-run    # preview
-python wxodemo.py deploy --all              # every live scenario + every standalone agent
-python wxodemo.py smoke incident-triage     # send the smoke prompts to the deployed agent
-```
-
-Deploying is repeatable: existing resources are updated in place. The run stops at the first failing step, names it, and writes the details to `local/wxodemo.log`. The remote token lasts about 2 hours, so run `python wxodemo.py login` shortly before a demo.
-
-**5. Clean up when you are done.**
-
-```bash
-python wxodemo.py undeploy --all --dry-run  # preview
-python wxodemo.py undeploy --all            # shows the plan, asks [y/N]
-```
-
-Removing a knowledge base deletes its ingested documents.
-
-### Commands
+`wxodemo` is the one CLI for this repo. Run it as `python wxodemo.py <command>`, or as `wxodemo <command>` after `pip install -e .`.
 
 | Command | Purpose |
 |---|---|
@@ -115,240 +202,94 @@ Removing a knowledge base deletes its ingested documents.
 | `undeploy [names] [--all] [--kind K]` | Remove in reverse order, with `[y/N]` unless `--yes` |
 | `validate [names]` | Manifest and demo-consistency checks |
 | `smoke <scenario>` | Send a scenario's smoke prompts to its deployed agent |
-| `eval <scenario>` | Run the ADK evaluation for a scenario |
-| `test-upload <target>` | Upload test cases to WXO Tests tab (and optionally evaluate) |
+| `eval <target>` | Run the ADK evaluation for a scenario or standalone agent |
+| `test-upload <target>` | Upload test cases to the WXO Tests tab (and optionally evaluate) |
 | `export-chats` | Export agent chats and traces |
 | `new-scenario <id>` | Scaffold a new scenario |
 | `logs` | Show the log file path and its last lines |
 
-Names are scenario ids or standalone agent names (see `list`). `--kind scenario|standalone` narrows `--all`. Commands that change something take `--dry-run`. Exit codes: 0 ok, 1 command failed, 2 configuration or usage error.
+Names are scenario ids or standalone agent names (see `list`). `--kind scenario|standalone` narrows `--all`. Commands that change something take `--dry-run`. Exit codes: 0 ok, 1 command failed, 2 configuration or usage error. Every option, the `env.cfg` keys, the log file and troubleshooting are in [`docs/wxodemo.md`](docs/wxodemo.md).
 
-**Full reference** (every option, `env.cfg` keys, log file, exit codes, troubleshooting, and a table from the old scripts to the new commands): [`docs/wxodemo.md`](docs/wxodemo.md).
+### Where things live
 
-## Demo
+Scenario agents are defined in `agents/`, their Python tools in `tools/`, knowledge-base sources in `knowledge/`, approval flows in `flows/`, and the manifest that ties them together in `scenarios/<id>/scenario.yaml`. Evaluation test cases are in `evaluation/`, standalone agents in `standalone/`, and demo scripts and slides in `docs/demo/`. The CLI is in `src/wxodemo/` with its tests in `tests/`. The `plans/` folder holds the plan Bob and the author wrote before building each scenario or feature, with the decisions and test notes recorded as work progressed. Read them to see how a plan-first workflow with Bob unfolds; they are working notes, not user documentation.
 
-See [`docs/demo/`](docs/demo/) for the human-readable demo scripts: exact prompts, expected agent behaviour, fallback notes, and closing talking points.
-Interactive demo slide decks are available in [`docs/demo/presentation.html`](docs/demo/presentation.html) (with scenario slide definitions in [`docs/demo/scenarios/`](docs/demo/scenarios/)).
-
-## Adding a New Scenario
-
-Every scenario is a folder of resources described by a manifest, plus a demo script and a section in the presentation.
-
-**Recommended:** open the **Scenario Builder** mode in Bob. It loads the three relevant skills in the right order and enforces the design rules and final consistency checks automatically.
-
-Scaffold the folder skeleton first:
+### Smoke tests
 
 ```bash
-python wxodemo.py new-scenario customer-returns --name "Customer Returns" --description "One line for the sidebar"
+python wxodemo.py smoke incident-triage --dry-run   # print the prompts, send nothing
+python wxodemo.py smoke incident-triage             # send them to the deployed agent
 ```
 
-This creates `scenarios/<id>/scenario.yaml` (status `soon`), an agent stub, a `ground_truth.json` stub, the demo script from the template, and registers `docs/demo/scenarios/<id>.js` in `presentation.html`. Then build the tools, knowledge base and flow, list them in the manifest, and check:
+`smoke` sends diagnosis-only prompts through the ADK run API and prints the tools called and the start of each answer. It does not grade the answers.
+
+### Running the evaluation (optional)
+
+The ADK evaluation framework is not installed by `setup`. Install it first:
 
 ```bash
-python wxodemo.py validate <id>
+pip install ibm-watsonx-orchestrate-evaluation-framework==1.5.2
 ```
 
-The skills `wxo-scenario-authoring` (what a scenario must contain and how to build it) and `scenario-demo-docs` (demo script and slides, with templates; their consistency checks run in `wxodemo validate`) in `.bob/skills/` describe the full procedure. Incident Triage is the reference scenario; its manifest header documents every field. Follow-on plans for each upcoming scenario are in `plans/<id>-plan.md`.
-
-## Adding a Plain Agent
-
-1. Create a directory under `agents/<your-agent-name>/`
-2. Add `agent.yaml` -- see [`agents/incident-triage/agent.yaml`](agents/incident-triage/agent.yaml) as a template
-3. Add tools to `tools/` (single `.py` file) or `tools/<package_name>/` (multi-file package with `requirements.txt`)
-4. Add `scenarios/<id>/scenario.yaml` listing the agent and its tools (see [`scenarios/travel-request/scenario.yaml`](scenarios/travel-request/scenario.yaml)). **`wxodemo deploy` only deploys what a manifest lists**, so an agent without a manifest is not picked up.
-5. Run `python wxodemo.py deploy <id>`
-
-## Standalone Agents
-
-**Standalone agents** are ad-hoc agents that a developer builds and deploys directly,
-without creating a scenario manifest, demo script, or evaluation ground truth. They live
-in `standalone/<agent-name>/` and are deployed with `python wxodemo.py deploy <name>`
-(or `--kind standalone`); they have no scenario manifest.
-
-Use `standalone/` when an agent answers a focused question (a document, an API, a quick
-tool test) rather than driving a structured demo. For a scenario-quality agent with
-evaluation and demo requirements, use `scenarios/` + `agents/` instead.
-
-**Recommended:** open the **Standalone Builder** mode in Bob to author a new standalone agent.
-
-See [`standalone/README.md`](standalone/README.md) for conventions, the directory layout,
-and full deploy/undeploy instructions.
-
-**Quick reference:**
+On Python 3.14 pip cannot satisfy its `pandas~=2.2.3` pin. Work around it with:
 
 ```bash
-python wxodemo.py list --kind standalone                   # show all standalone agents
-python wxodemo.py deploy --all --kind standalone           # deploy all
-python wxodemo.py deploy travel_rules_qa                   # deploy one
-python wxodemo.py deploy travel_rules_qa --dry-run         # preview
-python wxodemo.py undeploy travel_rules_qa
+pip install --no-deps ibm-watsonx-orchestrate-evaluation-framework==1.5.2
+pip install pandas
 ```
 
-## Backing Up Agent Chats
-
-To back up and archive all agent conversation histories and interactive chats from your WXO instance:
-
-```bash
-# Zero-config default: reads env.cfg and exports all agent chats into export/YYYYMMDDHHMMSS/
-python wxodemo.py export-chats
-
-# Optional: filter by agent or time window
-python wxodemo.py export-chats --agent translator
-python wxodemo.py export-chats --last 30d
-```
-
-## Running the evaluation (optional)
-
-> **Dependency warning:** the evaluation framework `ibm-watsonx-orchestrate-evaluation-framework==1.5.2` and its transitive dependencies (`agentops`, `langchain`, `fuzzywuzzy`, `portkey-ai`, `openinference-*`, `jsonargparse`) are **not** installed automatically. On Python 3.14 the `pandas~=2.2.3` pin cannot be satisfied. On other Python versions you can try (untested here):
->
-> ```bash
-> pip install ibm-watsonx-orchestrate-evaluation-framework==1.5.2
-> ```
->
-> If pip fails on the pandas pin, use `--no-deps` and install pandas separately:
->
-> ```bash
-> pip install --no-deps ibm-watsonx-orchestrate-evaluation-framework==1.5.2
-> pip install pandas
-> ```
->
-> A clean-instance install of the evaluation framework was not tested. The dependency issue was resolved manually on the development machine.
-
-Once the dependencies are installed (e.g. for Incident Triage):
+Its other dependencies (`agentops`, `langchain`, `fuzzywuzzy`, `portkey-ai`, `openinference-*`, `jsonargparse`) may need installing by hand too. Then:
 
 ```bash
 python wxodemo.py eval incident-triage
+python wxodemo.py eval entity-extractor      # a standalone agent with an eval_config.yaml
 ```
 
-The command exits with code 1 when its output is piped or redirected (a progress-rendering issue); the result files are still written to `evaluation/<scenario>/results/<timestamp>/`.
+The command exits 1 when its output is piped or redirected (a progress-rendering issue); the result files are still written to `evaluation/<scenario>/results/<timestamp>/` or `standalone/<agent>/results/<timestamp>/`. Both locations are git-ignored.
 
-Standalone agents that ship an `eval_config.yaml` work the same way, for example `python wxodemo.py eval entity-extractor` (results go to `standalone/<agent>/results/<timestamp>/`).
+### Repo tests
 
-To send a scenario's diagnosis-only prompts to the deployed agent, use `python wxodemo.py smoke <id>` (`--dry-run` prints the prompts without calling the instance). It does not grade the answers.
-
-
-## Status and Known Limitations
-
-This is a demo / lab repo. The following items are open as of the current state:
-
-- **No clean-instance install tested.** The only tested deploy was a re-install over an existing environment (`techzone1`). First-import on a fresh WXO instance was not verified.
-- **Evaluation final-answer check: 0 of 15 runs pass.** Tool-selection metrics are good (recall 1.0 in 13 of 15 runs, `tool_match_success` true in 13 of 15), but `is_success` requires the text check to also pass. The text check fails because the agent writes IDs with non-breaking hyphens (U+2011, e.g. `RB-DEPLOY-01`) which break exact keyword matches, and produces long answers compared with the one-sentence expected responses. The overall score is not a useful signal in its current form.
-- **Wrong incident reference in approval requests (3 of 19 vague-opening runs).** On "Hey, checkout is slow...", the agent sometimes investigates the payments service while working INC-1001 and then calls `request_remediation` with `service=payments, incident_id=INC-1001` (mismatched). The instruction change in `agent.yaml` gave no measurable improvement. The human approval gate catches this before any execution; a proper fix is to validate service/incident consistency inside the flow.
-- **Evaluation dependencies installed by hand.** `ibm-watsonx-orchestrate-evaluation-framework==1.5.2` and its transitive dependencies are not installed automatically. On Python 3.14 the `pandas~=2.2.3` pin cannot be satisfied. See [Running the evaluation](#running-the-evaluation-optional) for the workaround.
-- **`wxodemo` has been run on Windows only.** The automated tests (about 257, with `orchestrate` replaced by a fake) do not need a platform-specific tool, but runs on native Linux and macOS were not done.
-- **`orchestrate chat ask` hangs** in non-interactive shells. Use the ADK run API instead (see `src/wxodemo/smoke.py`).
-- **Scenario `undeploy` (tools, flows, knowledge bases) has only been run with `--dry-run`** against the live instance. Standalone agent `undeploy` and `deploy` were run for real.
-- **`wxodemo smoke` was not run live against an instance in this form.** Its logic is covered by tests with a faked ADK client; a live run of the command itself has not been recorded.
-- **Promotion to live is required.** If `orchestrate agents deploy` is refused (for example on the Developer Edition), `wxodemo deploy` stops with exit code 1 and leaves the agent as a draft. This change has not been run against a Developer Edition instance.
-
-## Repository Structure
-
+```bash
+pip install pytest ruff
+python -m pytest -q                              # no network, no ADK login, no env.cfg needed
+python -m ruff check src tests wxodemo.py
 ```
-lab-wxo/
-├── agents/                           # Scenario agent definitions (agent.yaml)
-│   ├── cloud-finops/
-│   ├── customer-returns/
-│   ├── hr-onboarding/
-│   ├── hr-tacit-knowledge/           # HR tacit knowledge: curator agent
-│   ├── hr-tacit-knowledge-guide/     # HR tacit knowledge: guide agent
-│   ├── incident-triage/
-│   ├── pension-disability-triage/
-│   ├── pension-ove-advisor/
-│   ├── release-readiness/            # Supervisor agent
-│   ├── rr-ops/                       # Release readiness specialist: Operations
-│   ├── rr-qa/                        # Release readiness specialist: QA
-│   ├── rr-security/                  # Release readiness specialist: Security
-│   ├── travel-request/
-│   └── yel-income-assessment/
-├── tools/                            # Multi-file Python tool packages with static mock data
-│   ├── cloud_finops/                 # Spend, utilization, idle resources, reclaim & resize tools
-│   ├── customer_returns/             # Order lookup, warranty check, return history, refund tools
-│   ├── hr_onboarding/                # Pending hires, role access, department config, provisioning tools
-│   ├── hr_tk/                        # Artifact triage, PII scan, related articles, expert matching & publishing tools
-│   ├── incident_triage/              # Incident lookup, service health, logs, metrics, remediation tools
-│   ├── pension_disability/           # Claim dossier, qualifying months, medical summary, rehab & referral tools
-│   ├── pension_ove/                  # Member profile, pension accrual, reduction & simulation tools
-│   ├── release_readiness/            # Test summaries, CVE exposure, runbook check, health check tools
-│   ├── travel_request/               # Employee, budget, rates, reimbursement & request ID tools
-│   ├── report_generator/             # Synthetic report prompt builder tools (5 report types, synthetic defaults)
-│   └── yel_income/                   # Business profile, sector benchmarks, benefit estimate & decision tools
-├── knowledge/                        # Knowledge base source documents and manifests
-│   ├── cloud-finops/                 # FinOps policies, tagging rules, rightsizing guidelines (.txt)
-│   ├── customer-returns/             # Return windows, warranty exceptions, refund conditions (.txt)
-│   ├── hr-onboarding/                # Role access matrix, compliance training requirements (.txt)
-│   ├── hr-tacit-knowledge/           # HR process knowledge base articles (.txt)
-│   ├── incident-triage/              # Runbooks for deployments, databases, auth, certificates (.txt)
-│   ├── pension-disability-triage/    # TyEL disability incapacity criteria, rehab priority, kuntoutustuki, qualifying months (.txt)
-│   ├── pension-ove-advisor/          # Finnish OVE pension legislation rules, age limits, reduction rules (.txt)
-│   ├── release-readiness/            # Release gating criteria, CVE severity policies (.txt)
-│   ├── travel-request/               # Finnish state travel regulation (PDF) and agency policy (.txt)
-│   └── yel-income-assessment/        # Statutory Finnish YEL entrepreneurial income calculation criteria (.txt)
-├── flows/                            # Governed approval workflow definitions
-│   ├── cf_approve_reclaim/           # Cloud FinOps: human approval before resource reclamation
-│   ├── cf_approve_resize/            # Cloud FinOps: human approval before instance rightsizing
-│   ├── customer_returns/             # Customer Returns: human approval before issuing refund
-│   ├── hr_onboarding/                # HR Onboarding: standard and compliance provisioning flows
-│   ├── hr_tk/                        # HR Tacit Knowledge: expert review for draft articles and knowledge gap flows
-│   ├── incident_triage/              # Incident Triage: human approval before automated remediation
-│   ├── pension_disability/           # Disability Triage: claims handler approval before medical board referral
-│   ├── pension_ove/                  # Pension Advisor: formal OVE application submission flow
-│   ├── travel_request/               # Travel Request: human approval before booking/reimbursement
-│   └── yel_income/                   # YEL Assessment: human underwriter approval for confirmed income
-├── evaluation/                       # ADK evaluation test cases and ground truth
-│   ├── cloud-finops/
-│   ├── customer-returns/
-│   ├── hr-onboarding/
-│   ├── hr-tacit-knowledge/
-│   ├── incident-triage/
-│   ├── pension-disability-triage/
-│   ├── pension-ove-advisor/
-│   ├── release-readiness/
-│   ├── travel-request/
-│   └── yel-income-assessment/
-├── scenarios/                        # Scenario manifests defining resources owned by each scenario
-│   ├── cloud-finops/scenario.yaml
-│   ├── customer-returns/scenario.yaml
-│   ├── hr-onboarding/scenario.yaml
-│   ├── hr-tacit-knowledge/scenario.yaml
-│   ├── incident-triage/scenario.yaml
-│   ├── pension-disability-triage/scenario.yaml
-│   ├── pension-ove-advisor/scenario.yaml
-│   ├── release-readiness/scenario.yaml
-│   ├── travel-request/scenario.yaml
-│   └── yel-income-assessment/scenario.yaml
-├── docs/
-│   ├── wxodemo.md                    # Full reference for the wxodemo CLI
-│   └── demo/                         # Demo scripts, presentation shell, and slide decks
-│       ├── presentation.html         # Slide shell; loads scenarios/*.js
-│       ├── cloud-finops-demo.md      # Human-readable scenario demo scripts
-│       ├── customer-returns-demo.md
-│       ├── hr-onboarding-demo.md
-│       ├── hr-tacit-knowledge-demo.md
-│       ├── incident-triage-demo.md
-│       ├── pension-disability-triage-demo.md
-│       ├── pension-ove-advisor-demo.md
-│       ├── release-readiness-demo.md
-│       ├── travel-request-demo.md
-│       ├── yel-income-assessment-demo.md
-│       └── scenarios/                # Interactive slide scripts per scenario
-├── standalone/                       # Ad-hoc standalone agents (no scenario manifest required)
-│   ├── README.md                     # Standalone conventions and wxodemo usage
-│   ├── document-classifier/          # Configurable document classification into candidate categories (strict JSON)
-│   ├── entity-extractor/             # Named-entity extraction to JSON (agent + regex tool, custom entities)
-│   ├── hello-world/                  # ADK setup check (agent + greeting tool)
-│   ├── information-redactor/         # Sensitive information / personal identifier masking agent
-│   ├── metadata-extractor/           # Arbitrary metadata field extraction into strict JSON schemas
-│   ├── priority-assessor/            # Cross-industry priority assessment (Critical/High/Med/Low, strict JSON)
-│   ├── translator/                   # Translation agent (fixed language list, optional tone)
-│   ├── report-generator/             # Synthetic report generation agent (five report types)
-│   └── travel-rules-qa/              # Finnish travel regulation PDF Q&A agent
-├── traffic-gen/                      # Periodic background traffic generator for WXO instances
-├── connections/                      # Connection templates (empty for mock demo)
-├── src/wxodemo/                      # The wxodemo CLI package (deploy, undeploy, status, smoke, ...)
-├── tests/                            # pytest suite for the CLI (no network or ADK login needed)
-├── wxodemo.py                        # Launcher: python wxodemo.py <command>
-├── pyproject.toml                    # Package metadata; `pip install -e .` gives a `wxodemo` command
-├── env.cfg                           # Secrets -- DO NOT COMMIT
-├── env.cfg.example                   # Template -- safe to commit
-└── requirements.txt                  # ibm-watsonx-orchestrate and pinned deps
+
+## Traffic generator
+
+[`traffic-gen/`](traffic-gen/) is a small containerised Python app that periodically sends prompts to your deployed agents through the WXO REST API. Use it to fill the WXO Home, Observability and Analytics dashboards with realistic usage when preparing a demo. It needs deployed agents, your API key and URL, and Docker or Podman. It reads the agent list and prompts from the scenarios and standalone agents in this repo, so there is nothing to configure.
+
+```bash
+docker build -f traffic-gen/Dockerfile -t wxo-traffic-gen .     # build from the repo root
+docker run --rm \
+  -e WXO_API_KEY=your-api-key-here \
+  -e WXO_URL=https://api.<region>.watson-orchestrate.cloud.ibm.com/instances/<instance-id> \
+  wxo-traffic-gen
 ```
+
+Options, the agent pool and the log format are in [`traffic-gen/README.md`](traffic-gen/README.md).
+
+## Back up agent chats
+
+```bash
+python wxodemo.py export-chats                        # last 7 days, all agents, into export/<timestamp>/
+python wxodemo.py export-chats --agent translator --last 30d
+```
+
+## Good to know
+
+- **Mock data, probabilistic agents.** The data is fictional, and model output varies from run to run. Use the demo scripts as a guide, not as exact expected text.
+- **`wxodemo` has been run on Windows only.** The Linux and macOS commands are provided but were not run on those systems. The test suite replaces `orchestrate` with a fake and needs no platform-specific tool.
+- **Developer Edition.** After import, `wxodemo deploy` promotes each agent to live. If your edition refuses promotion, the deploy stops with exit code 1 and the agent stays a draft.
+- **Approval forms need the browser chat.** The Approve / Reject cards cannot be answered through the API.
+- **Evaluation scores are not a quality signal yet.** See [`docs/known-issues.md`](docs/known-issues.md) for what the current results do and do not show.
+
+Something else failing? Check the troubleshooting table in [`docs/wxodemo.md`](docs/wxodemo.md#troubleshooting) and `python wxodemo.py logs`.
+
+## License and third-party content
+
+The code and sample data in this repo are released under the [MIT License](LICENSE).
+
+[`knowledge/travel-request/VM_2025_63.pdf`](knowledge/travel-request/VM_2025_63.pdf) (*Valtion matkustussääntö 2026*, Ministry of Finance, Finland) is third-party content distributed unmodified under **CC BY-NC-ND 4.0**, not under the MIT License. Source and attribution: [`agents/travel-request/README.md`](agents/travel-request/README.md#source-attribution).
+
+IBM, watsonx and watsonx Orchestrate are trademarks of International Business Machines Corporation, registered in many jurisdictions worldwide. Other names may be trademarks of their respective owners.

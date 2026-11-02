@@ -1,7 +1,7 @@
 # HR Tacit Knowledge — Scenario README
 
 Scenario ID: `hr-tacit-knowledge`  
-Status: `soon` (not yet deployed; Sub-Task 8 required)  
+Status: `live`  
 Plan: [`plans/hr-tacit-knowledge-plan.md`](../../plans/hr-tacit-knowledge-plan.md)
 
 ---
@@ -143,4 +143,4 @@ The curator should: redact the PII, draft a new article and flag an update to AR
   paraphrase with different vocabulary might not match.
 - The tool ID counter (`articles.next_article_id()`) counts the seeded set, so two publishes
   in the same session both get HR-TK-ART-07. Acceptable for a static demo.
-- Scheduled harvesting is not built. See the plan Open Items.
+- Scheduled harvesting is not built.

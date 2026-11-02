@@ -42,7 +42,7 @@ The supervisor has no tools. Its knowledge base is `release_readiness_policy`
 
 ## Limitations
 
-- Not deployed or run against a live WXO instance yet. All data is mock and static; CVE ids are invented.
-- Unverified: whether the supervisor calls all specialists in order, whether targeted queries route to
+- All data is mock and static; CVE ids are invented. The demo script records which answers were seen on a live instance.
+- Not verified: whether the supervisor calls all specialists in order, whether targeted queries route to
   one specialist only, and whether collaborator replies are visible to the user in the chat UI.
 - Specialists are deployed as ordinary agents and may also appear in the chat UI agent list.

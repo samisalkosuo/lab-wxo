@@ -48,10 +48,10 @@ Browser verification required (not testable via CLI):
 - "Reject" button returns the rejection message with nothing recorded.
 - Agent resumes and reports the `message` field verbatim.
 
-## Limitations / not tested
+## Limitations
 
-- Clean first-install (no existing resources) on a fresh WXO instance is untested.
-- Browser flow form rendering and button behaviour require manual browser verification.
+- The approval flow can only be answered in the browser chat UI. The demo script records one
+  browser run each of the Approve and Reject paths.
 - `orchestrate agents deploy` may fail on Developer Edition (warn and continue).
 - KB indexing takes time after import; wait before first knowledge-base query.
 - Evaluation tier is `core` (ground_truth.json only); no ADK test_cases/ added.

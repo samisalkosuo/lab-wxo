@@ -58,11 +58,11 @@ any formal record.
 
 ---
 
-## Limitations (not tested live)
+## Limitations
 
-- The approval flow (`yel_issue_decision`) has not been run in a browser UI.
-  The Confirm / Adjust & Issue / Escalate buttons have not been clicked in a live WXO instance.
-- The agent has not been deployed or smoke-tested against a live WXO instance.
+- The approval flow (`yel_issue_decision`) and ENT-801 were run live in the browser chat UI.
+  ENT-802, ENT-803 and ENT-804 were checked only at the data layer; the agent was not run live
+  for those cases (see [`docs/demo/yel-income-assessment-demo.md`](../../docs/demo/yel-income-assessment-demo.md)).
 - The beginner discount applies to the premium only; the benefit base uses the
   full income. This is a policy rule, not a demo simplification.
 - Benefit estimates are illustrative approximations (2024/2025 figures).

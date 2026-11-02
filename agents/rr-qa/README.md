@@ -9,4 +9,4 @@ Collaborator of `release_readiness`. Reports test evidence only; never decides g
 | `rr_list_skipped_suites` | Skipped or disabled suites and the reason |
 
 Does not handle: CVEs, runbooks, rollback, health checks, the release decision.
-Limitations: mock static data; not run on a live instance.
+Limitations: mock static data.

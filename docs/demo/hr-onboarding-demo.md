@@ -197,7 +197,7 @@ Not seen, so not covered here: Any unexpected database locks.
 
 **When an agent might be worth it** (arguments, not yet measured here): Highly unstructured onboarding channels.
 
-**Open items (still open at the time of writing; see `plans/hr-onboarding-plan.md`)**
+**Open items**
 
 1. Verifying dual sequential approvals on highly loaded environments.
 

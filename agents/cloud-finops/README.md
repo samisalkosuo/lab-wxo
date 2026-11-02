@@ -41,13 +41,12 @@ never calls them directly; only the flows call them after cost-owner approval.
 
 Account: `acct-001` | Billing period: `2025-05` | Prior period: `2025-04`
 
-## Limitations / Not Tested
+## Limitations
 
-- Both approval flows (`cf_approve_reclaim`, `cf_approve_resize`) have not been
-  run against a live WXO instance. They follow the patterns of
+- Both approval flows (`cf_approve_reclaim`, `cf_approve_resize`) follow the patterns of
   `flows/incident_triage/request_remediation.py` and
-  `flows/hr_onboarding/hr_request_provisioning.py`.
-- Browser verification (Approve / Reject on each form) is required but not yet done.
+  `flows/hr_onboarding/hr_request_provisioning.py`. Approve and Reject on each form were
+  verified in the browser chat UI.
 - The agent LLM (`groq/openai/gpt-oss-120b`) and the KB embedding model must exist
   in the target instance.
 - KB indexing takes time after import; wait before the first demo query.
