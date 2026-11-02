@@ -1,0 +1,25 @@
+POLICY: Work Log Standard, Duplicate Work Orders and Repeat Failures
+Document ID: POL-WORKLOG-01
+Applies to: every work log written to the maintenance system by or for a technician.
+DEMO CONTENT: fictional text for a demonstration. It is not real policy.
+
+WHEN TO USE THIS POLICY
+Use this policy whenever a work log is drafted, when deciding between adding a log to an existing work order and creating a new one, and when the work order history shows the same fault again.
+
+WORK LOG CONTENT
+A work log states, in this order:
+1. Asset number and the reported symptom in the technician's words.
+2. Evidence checked: readings (value and level), history, and open work orders.
+3. Procedure followed: the document IDs (for example SOP-PUMP-01, SOP-LOTO-01).
+4. Work done or planned, and parts used or missing (with the expected date for missing parts).
+5. Follow-up needed, if any.
+Keep it factual. Do not record readings or findings that were not observed.
+
+NO DUPLICATE WORK ORDERS
+If an open work order already covers the reported fault on the same asset, add the log to that work order number. Do not create a new work order.
+
+REPEAT FAILURE RULE
+If the same failure code occurred two or more times on the asset in the last 12 months, the log must include a follow-up service request for a reliability review (root-cause investigation). Replacing the part again is not enough.
+
+HUMAN APPROVAL
+A work log is written to the maintenance system only after the technician approves the draft in the approval form. A rejected draft writes nothing.

@@ -1,0 +1,24 @@
+PROCEDURE: Confined Space Entry and Permit
+Document ID: SOP-CONF-01
+Applies to: tanks, vessels, pits and any enclosed space with limited entry and exit, including looking or reaching inside to work on a valve or fitting.
+DEMO CONTENT: fictional text for a demonstration. It is not real safety or engineering guidance.
+
+WHEN TO USE THIS PROCEDURE
+Use this procedure when a job needs a person to enter, or to put their head or upper body into, a tank, vessel or other enclosed space. Typical requests: "check the valve inside tank 12", "look inside the vessel", "clean the sump". Assets with hazard class confined_space always need this procedure.
+
+STOP - PERMIT REQUIRED
+Entry is not allowed without a valid confined-space entry permit signed by the permit issuer. The technician must not start, and the assistant must not draft a work log for the entry, until the technician confirms that a permit is in place.
+
+PERMIT REQUIREMENTS
+1. Isolate the space from all inflows and energy sources (lockout/tagout, SOP-LOTO-01), including blanking or locking process valves.
+2. Empty, vent and clean the space as required.
+3. Test the atmosphere (oxygen, flammable gas, toxic gas) before entry and at intervals; record the readings on the permit.
+4. Assign a standby attendant outside the space who stays in contact and does not enter.
+5. Confirm a rescue plan and rescue equipment are ready.
+6. Entrants wear the required protective equipment and are logged in and out.
+
+IF THE JOB DOES NOT NEED ENTRY
+Work on the outside of the tank (external inspection, valve operation from outside) does not need the entry permit, but still needs lockout/tagout when energy or pressure is present.
+
+AFTER THE JOB
+Count everyone out, close the permit, remove locks (SOP-LOTO-01), and record the work in the work log (POL-WORKLOG-01), including the permit number.

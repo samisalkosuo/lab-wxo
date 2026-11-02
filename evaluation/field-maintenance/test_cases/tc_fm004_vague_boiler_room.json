@@ -1,0 +1,33 @@
+{
+  "agent": "field_maintenance",
+  "goals": {
+    "mx_find_asset-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "mx_find_asset-1",
+      "tool_name": "mx_find_asset",
+      "args": {
+        "description": "boiler room"
+      },
+      "arg_matching": {
+        "description": "ignore"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Several boiler room assets match: the feedwater pump BLR-01, the combustion air fan BLR-02 and the burner control panel BLR-03. The agent asks one question to find out which asset or symptom is meant.",
+      "keywords": [
+        "BLR-01",
+        "BLR-02",
+        "BLR-03"
+      ]
+    }
+  ],
+  "story": "You are a maintenance technician. Something is wrong in the boiler room but you do not know which machine. Answer the agent's question briefly.",
+  "starting_sentence": "Something is wrong in the boiler room."
+}

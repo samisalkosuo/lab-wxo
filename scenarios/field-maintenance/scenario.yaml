@@ -1,0 +1,51 @@
+# scenario.yaml - manifest for the Maintenance Field Assistant scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Status stays `soon` until the scenario is deployed and its demo script is written.
+
+id: field-maintenance
+name: Maintenance Field Assistant
+description: Technician fault report to safe procedure and governed work log
+status: live
+
+agents:
+  - name: field_maintenance
+    path: agents/field-maintenance
+    kind: native
+
+tools:
+  - path: tools/field_maintenance
+    entry: field_maintenance.py
+    names:
+      - mx_find_asset
+      - mx_get_asset
+      - mx_get_work_order_history
+      - mx_list_open_work_orders
+      - mx_get_pm_schedule
+      - mx_check_spares
+      - mx_get_meter_readings
+      - mx_write_work_log
+    # mx_write_work_log is deliberately NOT attached to the agent; only the
+    # mx_submit_work_log flow calls it after the technician approves the draft.
+    attached:
+      - mx_find_asset
+      - mx_get_asset
+      - mx_get_work_order_history
+      - mx_list_open_work_orders
+      - mx_get_pm_schedule
+      - mx_check_spares
+      - mx_get_meter_readings
+
+knowledge_bases:
+  - name: field_maintenance_procedures
+    path: knowledge/field-maintenance
+
+flows:
+  - name: mx_submit_work_log
+    path: flows/mx_submit_work_log
+
+evaluation:
+  path: evaluation/field-maintenance
+  tier: full
+
+demo:
+  script: docs/demo/field-maintenance-demo.md

@@ -1,0 +1,33 @@
+PROCEDURE: Pump Vibration, Noise or Heat - Bearing Inspection
+Document ID: SOP-PUMP-01
+Applies to: centrifugal pumps and similar rotating equipment (for example cooling water pumps, feedwater pumps).
+DEMO CONTENT: fictional text for a demonstration. It is not real safety or engineering guidance.
+
+WHEN TO USE THIS PROCEDURE
+Use this procedure when a technician reports a pump that is vibrating, noisy (grinding, rumbling) or running hot, and condition readings or history point to a bearing problem. Typical symptoms:
+- Vibration above the warning or alarm level, rising over the last day.
+- Bearing temperature above the warning or alarm level while motor current is normal.
+- A noise from the drive end or a hot housing that can be felt on the outside.
+- A previous bearing failure code (for example BRG-WEAR) in the work order history.
+
+BEFORE ANY HANDS-ON WORK
+1. Apply lockout/tagout first. Follow SOP-LOTO-01. Do not open or touch a rotating pump that is not isolated.
+2. Check that no open work order already covers the fault. Add to an existing work order rather than creating a duplicate (POL-WORKLOG-01).
+
+DIAGNOSIS STEPS
+1. Compare vibration and bearing temperature readings with the warning and alarm levels.
+2. Read the closed work order history. If the same failure code occurred two or more times in the last 12 months, treat it as a repeat failure.
+3. Inspect the drive-end bearing for discoloration, play and lubricant condition.
+4. Check shaft and coupling alignment and the coupling insert. A bearing replaced twice without an alignment check usually means the cause was not removed.
+5. Do not blame a similar standby pump. A pump in standby with normal readings is not part of this fault.
+
+DECISION
+- Readings above alarm plus bearing symptoms: replace the bearing, and check alignment and coupling before restart.
+- Repeat bearing failure: also request a follow-up reliability review (service request) so that the cause is investigated, not only the part replaced.
+- Readings normal and no symptoms on site: record observations only, no repair.
+
+PARTS
+Check spare stock before starting: bearing, coupling insert, seal kit. If a part is out of stock, record the expected date in the work log.
+
+AFTER THE JOB
+Run the pump with a second person present, confirm vibration and temperature return below the warning level, then record the work in the work log following POL-WORKLOG-01.

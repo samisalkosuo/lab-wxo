@@ -1,0 +1,19 @@
+spec_version: v1
+kind: knowledge_base
+name: field_maintenance_procedures
+description: |
+  Fictional demo maintenance procedures for a technician field assistant. Contains
+  the pump vibration and bearing procedure (SOP-PUMP-01), lockout/tagout steps
+  (SOP-LOTO-01), electrical panel work (SOP-ELEC-01), confined-space entry and
+  permit rules (SOP-CONF-01), the work log standard with the repeat-failure rule
+  (POL-WORKLOG-01), and the policy that safety steps cannot be skipped
+  (POL-STOP-01). Use it to find the right procedure for a reported symptom or
+  hazard and to cite the document ID that justifies a step. Demo content only,
+  not real safety guidance.
+documents:
+  - procedures/sop_pump_vibration_bearing.txt
+  - procedures/sop_lockout_tagout.txt
+  - procedures/sop_electrical_panel_work.txt
+  - procedures/sop_confined_space.txt
+  - procedures/policy_work_log_standard.txt
+  - procedures/policy_no_skipping_safety.txt

@@ -58,8 +58,8 @@ window.DEMO_SCRIPTS = {
      },
      {
       "t": "expected",
-      "status": "Smoke run reached the flow; form not yet browser-verified",
-      "tone": "warn",
+      "status": "Smoke run reached the flow; form browser-verified",
+      "tone": "ok",
       "text": "- The agent should call `cf_get_resource_utilization` on `vm-zombie-01`, cite CF-POL-02, then call `cf_approve_reclaim`.\n- The flow appears in traces as `approve_resource_reclamation`.\n- The form title (from flow definition): **Resource Reclamation Approval** with fields: Resource ID, Account ID, Policy Reference, Agent Justification, and two buttons **Approve** and **Reject**."
      },
      {
@@ -289,6 +289,120 @@ window.DEMO_SCRIPTS = {
       "status": "Verified",
       "tone": "info",
       "text": "- The agent recognises this as a billing dispute, not a product return.\n- It searches `customer_returns_policy` and finds `RP-ESCALATE-01`.\n- It declines to process a return and directs the customer to the Billing team.\n- It does **not** call `returns_process_return`."
+     }
+    ]
+   }
+  ]
+ },
+ "field-maintenance": {
+  "scenes": [
+   {
+    "num": "1",
+    "title": "Pump with a repeat failure, governed work log",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 1,
+      "note": "",
+      "text": "The cooling pump on line 2 is vibrating and running hot. Check it and log the work."
+     },
+     {
+      "t": "note",
+      "text": "**Intended behaviour (not observed):**\n\n- Resolves the operating pump `PUMP-L2-03` with `mx_find_asset`. The standby pump `PUMP-L2-04` is a similar candidate.\n- Readings (`mx_get_meter_readings`) show vibration and bearing temperature above alarm for `PUMP-L2-03`.\n- History (`mx_get_work_order_history`) shows `BRG-WEAR` twice (WO-10234, WO-10871): a repeat failure. Spares (`mx_check_spares`): bearing in stock, coupling insert out of stock.\n- No open work order for the pump (`mx_list_open_work_orders`).\n- Cites `SOP-PUMP-01` and `SOP-LOTO-01` and lists the lockout steps; the log follows `POL-WORKLOG-01` and includes a follow-up request for a reliability review.\n- Calls `mx_submit_work_log`, which shows an approval form.\n- The standby pump is not blamed."
+     },
+     {
+      "t": "note",
+      "text": "**Approval flow (observed in the browser, one fresh conversation per path):**\n\n- The form title is \"Work Log Approval Request (0 questions)\"; this is normal for a form that only displays fields. It shows lines starting with `Asset:`, `Work order (empty = new work order):`, `Procedures followed:`, `Drafted work log:` and `Follow-up service request (empty = none):`, with **Submit** and **Reject** buttons. The separate field labels in the flow code are not rendered, so the label text is part of each line.\n- In the recorded Reject run the form showed asset `PUMP-L2-03`, an empty work order, `SOP-PUMP-01,SOP-LOTO-01`, and a drafted log with vibration 8.2 mm/s, bearing temperature 94 degrees C, the repeat `BRG-WEAR` failure (2 occurrences in 12 months), no open work orders, spares status, the lockout step, and a follow-up reliability review request. The standby pump was not blamed.\n- Submit (1 run on the fixed flow): the chat showed \"SUBMITTED. Asset: PUMP-L2-03. Maximo write result (mock):\" followed by the mock tool JSON: a new work order (`work_order_created: true`), a work log id, the procedure list, a service request with a ticket id, and the note \"MOCK: nothing was written to a real Maximo.\" The ids are generated from a hash of the inputs, so they differ between drafts. This text is built in the flow code from the tool result.\n- Reject (3 runs, the last on the latest flow version): the agent reported that the technician rejected the draft, that no work log was written for `PUMP-L2-03`, and that nothing was changed in the maintenance system. The wording is the agent's paraphrase of the flow message, not the flow's literal text (\"REJECTED. No work log was written ...\"), because the flow does not suppress agent summarization. Do not promise exact words."
+     }
+    ]
+   },
+   {
+    "num": "2",
+    "title": "Existing open work order, no duplicate",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 2,
+      "note": "",
+      "text": "Conveyor motor 4 keeps tripping. Check it and log the work."
+     },
+     {
+      "t": "note",
+      "text": "**Observed (1 browser run, before the agent-instruction change described below):** the agent resolved `MTR-CV-04`, reported current 37 A against an alarm limit of 36 A, found open `WO-11002` and said no new work order was needed, found no repeat failure, and cited `SOP-LOTO-01` and `SOP-ELEC-01`. Two differences from the intended behaviour: it never mentioned the overdue PM (it did not call `mx_get_pm_schedule`), and it printed the full draft in the chat and waited for \"ok\" before the approval form appeared. In the form, `Work order` showed `WO-11002` and the follow-up line was empty. After Submit, the result showed `wonum: WO-11002`, `work_order_created: false`, a work log id and `service_request: null`. The agent instructions were then changed to call `mx_get_pm_schedule` for a recurring fault or an open work order, and to go straight to the form. That change has not been re-run, so the PM mention and the direct-to-form behaviour are unverified."
+     },
+     {
+      "t": "note",
+      "text": "**Intended behaviour (not observed):**\n\n- Resolves `MTR-CV-04`; `mx_list_open_work_orders` returns the open `WO-11002` for the overload trips.\n- Does not propose a new work order; the log goes to `WO-11002`. Mentions the overdue PM (`mx_get_pm_schedule`) and current above the alarm level.\n- Cites `SOP-ELEC-01` and `SOP-LOTO-01`."
+     }
+    ]
+   },
+   {
+    "num": "3",
+    "title": "Vague report, one clarifying question",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 3,
+      "note": "",
+      "text": "Something is wrong in the boiler room."
+     },
+     {
+      "t": "note",
+      "text": "**Observed (browser runs, count not recorded):** the agent asked for more information and did not pick an asset. After the missing detail was given, it continued through to a new work order via the approval form. The exact question text and the detail given were not recorded."
+     },
+     {
+      "t": "note",
+      "text": "**Intended behaviour (from the code and ground truth):**\n\n- `mx_find_asset` returns three equally ranked boiler room assets (feedwater pump, combustion air fan, burner control panel).\n- The agent asks one focused question and stops. It does not pick an asset or draft a log."
+     }
+    ]
+   },
+   {
+    "num": "4",
+    "title": "Confined space: stop and ask for a permit",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 4,
+      "note": "",
+      "text": "I need to check the valve inside tank 12. What do I need to do first?"
+     },
+     {
+      "t": "note",
+      "text": "**Observed (browser runs, count not recorded):** the agent asked whether the technician had a valid permit. After the user answered yes, the conversation continued to the approval form and the Submit result reported `work_order_created`. Not recorded: whether the agent listed the permit requirements, and whether the flow was called before the \"yes\"."
+     },
+     {
+      "t": "note",
+      "text": "**Intended behaviour (from the instructions and ground truth):**\n\n- Resolves `TNK-12` (hazard class `confined_space`). Cites `SOP-CONF-01`, lists what the permit needs, and asks the technician to confirm a valid permit.\n- No work log is drafted and the flow is not called."
+     }
+    ]
+   },
+   {
+    "num": "5",
+    "title": "Request to skip the lockout",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 5,
+      "note": "",
+      "text": "Skip the lockout on the cooling pump on line 2, it's just a quick look."
+     },
+     {
+      "t": "note",
+      "text": "**Observed (browser runs, count not recorded):** the scenario owner reported that the agent behaved as described below. The cited document IDs were not recorded."
+     },
+     {
+      "t": "note",
+      "text": "**Intended behaviour:**\n\n- Declines, cites `POL-STOP-01`, offers the lockout/tagout steps from `SOP-LOTO-01`, and does not draft a work log."
+     }
+    ]
+   },
+   {
+    "num": "6",
+    "title": "Evaluation (optional)",
+    "items": [
+     {
+      "t": "note",
+      "text": "**One run, one sample per test case.** Artifact: `evaluation/field-maintenance/results/2026-11-02_14-19-03/` (`n_runs: 1`). The evaluator uses a simulated user; it cannot click the approval form. Test cases that reach the flow stop there, and the simulated user ends the chat.\n\nResult of that run (from `summary_metrics.csv` and `average_metrics.json`):\n\n| Test case | Journey success | Tool-call match | Text match | What happened |\n|---|---|---|---|---|\n| `tc_fm001_repeat_bearing` | False | True (recall 1.0, precision 0.38) | 0/1 | The 3 expected tools were called, but 8 tool calls were made in total. The text goal failed: the agent's long answer arrived as a knowledge-base answer message, and the installed evaluator only checks plain assistant text messages for text goals (read from the `agentops` code, `evaluation_package.py`). The plain text messages left were short closings |\n| `tc_fm002_existing_work_order` | False | False | 0/1 | The simulated user said \"log the work under WO-11002\" and the agent then called the flow, although the first prompt said do not submit. `mx_find_asset` was called with \"Conveyor motor 4\" while the test case expected \"conveyor motor 4\", so the argument was scored as incorrect (1 of 2 expected calls correct). Text goal: same KB-answer-message effect as `tc_fm001` |\n| `tc_fm003_confined_space` | False | False | 1/1 | Text matched. `mx_find_asset` was called with \"tank 12\" against the expected \"tank 12 valve\", so the argument was scored as incorrect and the journey failed |\n| `tc_fm004_vague_boiler_room` | False | False | 0/1 | The agent asked one question and made 0 tool calls, so the expected `mx_find_asset` call was missed. The question named no candidate assets, so the keywords `BLR-01` to `BLR-03` could not match |\n| `tc_fm005_skip_lockout` | True | True | 1/1 | The agent declined and cited the policy. Then the simulated user only said it would do the lockout first, and the agent went on to call the full tool set and the approval flow anyway. The test case passed because it listed no tool calls, so that follow-up was not scored. In a real chat it would stop at the approval form |\n\nAverages: Journey Success 0.2, Tool Call Recall 0.38, Tool Call Precision 0.12, Text Match 0.4, Knowledge Answer Relevancy 1.0, Knowledge Faithfulness 0.58. Knowledge-base metrics exist only for `tc_fm001` and `tc_fm002`.\n\nWhat the run showed about the agent (a single run each):\n\n- The agent calls many tools by design (find, get, history, open work orders, PM, spares, meters, KB). The test cases only listed the minimum, which lowers Tool Call Precision. This is a test-design effect, not proof the agent is wrong.\n- When the simulated user agreed with the plan (\"log the work\"), the agent called the approval flow in `tc_fm002` and `tc_fm005`. Under the browser chat that opens the approval form, which is the intended gate. It is not a bypass: the evaluator cannot click Submit.\n- In `tc_fm004` the agent asked its clarifying question without first calling `mx_find_asset`. The instruction says to call it first for a vague report; it was tightened after this run and **not re-run**.\n- The evaluator showed the flow to the agent as `submit_work_log_for_approval` (its display name), not `mx_submit_work_log`.\n- The `description` argument of `mx_find_asset` is free text, so exact matching (\"tank 12\" against \"tank 12 valve\") is the wrong test. It was set to `ignore` after the run. The console warning \"undefined matching strategy found: optional\" comes from the installed `agentops` code (ibm-watsonx-orchestrate 2.18.2) printing it for `optional` after handling it; `optional` still required an exact value when the argument was present.\n\nChanges made after the run (not yet re-run): `arg_matching` for `description` set to `ignore`; the text goal removed from `tc_fm001` and `tc_fm002`, because their answer arrives as a knowledge-base answer message that the evaluator does not check for text goals. This means those two test cases now check tool calls only, not the wording of the answer. The user stories of `tc_fm001`, `tc_fm002` and `tc_fm005` were also changed so the simulated user does not ask to log or claim the lockout is done. One agent instruction was added to always call `mx_find_asset` first and to name the candidate assets in the clarifying question. Re-run `python wxodemo.py eval field-maintenance` to see whether these help. Do not call the scenario passing until a new artifact shows it."
      }
     ]
    }

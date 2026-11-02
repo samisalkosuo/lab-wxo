@@ -23,6 +23,8 @@ What to do: treat the tool-selection metrics as the useful signal, and do not qu
 
 **The evaluation has not been re-run** since the `p99_latency_ms` to `latency` fix in the Incident Triage tools.
 
+**Field Maintenance: 1 of 5 test cases succeeded in the one evaluation run** (`evaluation/field-maintenance/results/2026-11-02_14-19-03/`, `n_runs: 1`, Journey Success 0.2). Causes found in the result files: exact matching of the free-text `description` argument of `mx_find_asset`; text goals that the evaluator does not score when the answer arrives as a knowledge-base answer message; and in one test case the agent asked a question without calling `mx_find_asset`. The test cases and one agent instruction were edited after the run and **have not been re-run**. Details: [Scene 6 of the demo script](demo/field-maintenance-demo.md).
+
 **The evaluation framework is optional and not installed by `setup`.** On Python 3.14 its `pandas~=2.2.3` pin cannot be satisfied. The workaround is in [Running the evaluation](../README.md#running-the-evaluation-optional).
 
 ## Incident Triage: wrong incident in approval requests
@@ -41,6 +43,7 @@ The demo scripts in `docs/demo/` have a "What was and was not verified" table fo
 
 | Scenario | Not verified |
 |---|---|
+| `field-maintenance` | Repeat-run reliability: scenes 3 to 5 were run in the browser, counts not recorded. The agent sometimes prints the full work log and waits for "ok" before the form (seen again in Scene 4). The approval form was seen working (Submit and Reject). The ADK evaluation re-run after the test-case edits. The Maximo connection is a mock; no real Maximo was tested. |
 | `travel-request` | The approval form in a browser (render, Approve issues an id, Reject issues none). Retrieval quality on the Finnish PDF: in an early test the best configuration answered 11 of 20 questions correctly, so amounts come from tools, not from the knowledge base. Quotes from the Finnish document are not exact. |
 | `release-readiness` | Which specialists the supervisor called in which order, and whether collaborator replies are visible in the chat UI. Post-fix answers were reported as fine but not recorded. |
 | `pension-ove-advisor` | The governed application flow in a browser. |

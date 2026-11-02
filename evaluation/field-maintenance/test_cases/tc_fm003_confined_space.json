@@ -1,0 +1,33 @@
+{
+  "agent": "field_maintenance",
+  "goals": {
+    "mx_find_asset-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "mx_find_asset-1",
+      "tool_name": "mx_find_asset",
+      "args": {
+        "description": "tank 12 valve"
+      },
+      "arg_matching": {
+        "description": "ignore"
+      }
+    },
+    {
+      "name": "summarize",
+      "type": "text",
+      "response": "Entering or reaching inside tank TNK-12 is a confined space job and needs a confined-space entry permit per SOP-CONF-01. No work log is drafted until the technician confirms a valid permit.",
+      "keywords": [
+        "TNK-12",
+        "SOP-CONF-01",
+        "permit"
+      ]
+    }
+  ],
+  "story": "You are a maintenance technician. You need to check the valve inside tank 12. You have not got a permit yet and do not claim you have one.",
+  "starting_sentence": "I need to check the valve inside tank 12. What do I need to do first?"
+}

@@ -113,6 +113,7 @@ Open the chat in your WXO instance, select an agent and paste a prompt. Each age
 | `cloud_finops` | `Our cloud bill jumped 30% this month. Can you investigate why?` | Spend analysis from tools, with approval forms before resources are reclaimed or resized. |
 | `customer_returns` | `I bought a ProBlend 500 blender last month and it broke after a few uses. My order number is ORD-1001.` | Warranty and return policy checks, then a governed refund. |
 | `release_readiness` | `Is rel-2025-Q3 ready to ship?` | A supervisor agent calls three specialist agents and combines their findings. |
+| `field_maintenance` | `The cooling pump on line 2 is vibrating and running hot. Check it and tell me what to do.` | Asset lookup, history, readings and spares from a mock Maximo, a cited procedure, then a work log approval form (Submit / Reject) before anything is written. |
 | `translator` | `Translate 'Our quarterly results are in' to German, but make it sound enthusiastic.` | A tool-free agent with a clarification and refusal path. |
 
 > The approval cards (Approve / Reject) only render in the WXO **browser** chat, not through the API or `wxodemo smoke`.
@@ -129,6 +130,7 @@ Business scenarios with mock data, tools, knowledge bases, approval flows, evalu
 |---|---|---|---|
 | [cloud-finops](agents/cloud-finops/) | `cloud_finops` | `cloud-finops` | Investigates spend anomalies, recommends rightsizing, and governs cloud resource reclamation through human approval flows |
 | [customer-returns](agents/customer-returns/) | `customer_returns` | `customer-returns` | Conversational returns agent evaluating warranty and return policies; issues governed refunds via approval flow |
+| [field-maintenance](agents/field-maintenance/) | `field_maintenance` | `field-maintenance` | Maintenance field assistant: resolves an asset from a vague fault report in a mock Maximo, checks history, open work orders, PM, spares and readings, cites procedures and safety steps, and writes a work log only through an approval flow |
 | [hr-onboarding](agents/hr-onboarding/) | `hr_onboarding` | `hr-onboarding` | Conversational HR onboarding assistant that analyzes role-based access policies and initiates governed IT provisioning flows |
 | [hr-tacit-knowledge](agents/hr-tacit-knowledge/) | `hr_tk_curator`, `hr_tk_guide` | `hr-tacit-knowledge` | Curates tacit HR knowledge from harvested work artefacts via expert review flow (`hr_tk_curator`) and answers employee questions with citations (`hr_tk_guide`) |
 | [incident-triage](agents/incident-triage/) | `incident_triage` | `incident-triage` | Diagnoses production incidents with runbook knowledge; routes automated remediation through human approval |
@@ -167,7 +169,8 @@ Each pattern below has a sample you can read, deploy and copy.
 | An agent that answers from a knowledge base (PDF) | [`standalone/travel-rules-qa`](standalone/travel-rules-qa/) |
 | Tools + knowledge base + human-approval flow | [`agents/incident-triage`](agents/incident-triage/) (the reference scenario) |
 | A supervisor agent with collaborator agents | [`agents/release-readiness`](agents/release-readiness/) |
-| Governed write actions (flow-only tools) | [`agents/customer-returns`](agents/customer-returns/), [`agents/hr-tacit-knowledge`](agents/hr-tacit-knowledge/) |
+| Governed write actions (flow-only tools) | [`agents/customer-returns`](agents/customer-returns/), [`agents/hr-tacit-knowledge`](agents/hr-tacit-knowledge/), [`agents/field-maintenance`](agents/field-maintenance/) |
+| Read-only tools that mimic an enterprise system (mock Maximo) | [`agents/field-maintenance`](agents/field-maintenance/) |
 | Evaluation test cases and ground truth | [`evaluation/incident-triage`](evaluation/incident-triage/) |
 
 ## Build your own agents

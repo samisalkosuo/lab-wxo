@@ -1,0 +1,35 @@
+{
+  "agent": "field_maintenance",
+  "goals": {
+    "mx_find_asset-1": [
+      "mx_list_open_work_orders-1"
+    ],
+    "mx_list_open_work_orders-1": []
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "mx_find_asset-1",
+      "tool_name": "mx_find_asset",
+      "args": {
+        "description": "conveyor motor 4"
+      },
+      "arg_matching": {
+        "description": "ignore"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "mx_list_open_work_orders-1",
+      "tool_name": "mx_list_open_work_orders",
+      "args": {
+        "assetnum": "MTR-CV-04"
+      },
+      "arg_matching": {
+        "assetnum": "strict"
+      }
+    }
+  ],
+  "story": "You are a maintenance technician. Conveyor motor 4 keeps tripping. You want to know what to do and which work order the log would go to. You do not want to submit it now. You never ask the agent to log or submit anything. After the agent answers, thank it briefly and end the conversation.",
+  "starting_sentence": "Conveyor motor 4 keeps tripping. Check it and tell me which work order the log would go to, but do not submit it."
+}

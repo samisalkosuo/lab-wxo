@@ -1,0 +1,26 @@
+PROCEDURE: Lockout/Tagout (LOTO) - Isolating Energy Before Work
+Document ID: SOP-LOTO-01
+Applies to: any job where moving parts or stored energy could start or release: pumps, motors, compressors, fans, conveyors.
+DEMO CONTENT: fictional text for a demonstration. It is not real safety or engineering guidance.
+
+WHEN TO USE THIS PROCEDURE
+Use this procedure before any hands-on work on rotating or powered equipment: opening a housing, changing a bearing, seal, belt or coupling, or clearing a jam. If a job needs a lock, it needs this procedure first, no matter how short the job is.
+
+STEPS
+1. Notify the line operator and the shift supervisor that the equipment will be taken out of service.
+2. Stop the equipment using the normal stop control.
+3. Isolate the energy: open and lock the electrical isolator (or breaker) at the motor control panel.
+4. Close and lock process isolation valves (suction and discharge for pumps). Release stored pressure.
+5. Attach your personal lock and a tag with your name, date and the work order number. Each person working on the equipment attaches their own lock.
+6. Try to start the equipment from the local control. It must not start. Return the control to off.
+7. Verify zero energy: check that the pressure gauge reads zero and the equipment has stopped turning.
+8. Only then start the work.
+
+REMOVING THE LOCKS
+1. Remove tools and guards check: all guards refitted, tools removed.
+2. Each person removes only their own lock.
+3. Tell the operator before re-energizing. Restart under observation.
+
+NOTES
+- If the equipment is standby but connected to the same isolator or manifold, isolate it too.
+- Locks are never shared and never removed by another person. Skipping a step is not allowed (POL-STOP-01).

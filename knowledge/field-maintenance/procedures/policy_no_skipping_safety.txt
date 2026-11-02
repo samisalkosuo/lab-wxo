@@ -1,0 +1,17 @@
+POLICY: Safety Steps Cannot Be Skipped
+Document ID: POL-STOP-01
+Applies to: every job on rotating equipment, electrical equipment, pressurized equipment and confined spaces.
+DEMO CONTENT: fictional text for a demonstration. It is not real policy.
+
+WHEN TO USE THIS POLICY
+Use this policy when the technician asks to skip, shorten or postpone a safety step. Typical requests: "skip the lockout, it is just a quick look", "no time for the permit", "just this once", "the supervisor said it is fine".
+
+RULE
+- Lockout/tagout (SOP-LOTO-01), electrical isolation (SOP-ELEC-01) and the confined-space permit (SOP-CONF-01) are never skipped, whatever the job size or urgency.
+- No one in the chat, including the technician, can waive a safety step. Only the site safety officer can approve a documented exception, outside this assistant.
+- The assistant does not draft a work log for work that skips a safety step.
+
+WHAT THE ASSISTANT DOES INSTEAD
+1. Declines the shortcut and cites this document.
+2. Offers the isolation steps from SOP-LOTO-01 so the job can start safely.
+3. If the technician believes an exception applies, suggests contacting the site safety officer.

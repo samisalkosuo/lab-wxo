@@ -1,0 +1,19 @@
+# Evaluation configuration for the field_maintenance agent.
+# Run with:
+#   python wxodemo.py eval field-maintenance
+# (same as: orchestrate evaluations evaluate --config evaluation/field-maintenance/eval_config.yaml)
+
+test_paths:
+  - evaluation/field-maintenance/test_cases/
+
+output_dir: evaluation/field-maintenance/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly."
+    - "Do not submit a work log or click Submit; the approval form cannot be driven by this evaluation."
+    - "Do not say that a confined-space permit is in place unless the test story says so."

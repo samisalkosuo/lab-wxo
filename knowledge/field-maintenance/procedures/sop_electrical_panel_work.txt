@@ -1,0 +1,28 @@
+PROCEDURE: Electrical Panel and Motor Circuit Work
+Document ID: SOP-ELEC-01
+Applies to: motor control panels, contactors, overload relays and motor terminal boxes.
+DEMO CONTENT: fictional text for a demonstration. It is not real safety or engineering guidance.
+
+WHEN TO USE THIS PROCEDURE
+Use this procedure when a motor trips on overload, a contactor chatters or overheats, or a panel shows heat or burn marks. Typical symptoms:
+- Motor current above the alarm level and repeated overload trips.
+- A contactor that clicks, buzzes or has pitted contacts.
+- Cabinet temperature above the warning level.
+
+BEFORE ANY HANDS-ON WORK
+1. Only qualified electrical personnel open a panel. If you are not qualified, request an electrician through the work log.
+2. Apply lockout/tagout (SOP-LOTO-01) at the upstream isolator and prove the circuit dead with a tester.
+
+DIAGNOSIS STEPS
+1. Read motor current and winding temperature. A current above alarm with normal winding temperature points to the load or the contactor, not the winding.
+2. Check mechanical load: belt, gearbox and bearings turn freely by hand once isolated.
+3. Inspect the contactor contacts and the overload relay setting.
+4. Check for open work orders on the asset. A trip fault is often already under investigation.
+
+DECISION
+- Worn or pitted contactor: replace it (check stock: contactor 40 A).
+- Mechanical overload: remove the cause first, then reset the relay.
+- A preventive maintenance task that is overdue should be done in the same visit and noted in the work log.
+
+AFTER THE JOB
+Restore guards and covers, remove the locks (SOP-LOTO-01), restart under observation and confirm the current is below the warning level. Record in the work log (POL-WORKLOG-01).

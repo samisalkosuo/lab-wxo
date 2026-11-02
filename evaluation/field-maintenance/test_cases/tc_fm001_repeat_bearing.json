@@ -1,0 +1,49 @@
+{
+  "agent": "field_maintenance",
+  "goals": {
+    "mx_find_asset-1": [
+      "mx_get_meter_readings-1"
+    ],
+    "mx_get_meter_readings-1": [
+      "mx_get_work_order_history-1"
+    ],
+    "mx_get_work_order_history-1": []
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "mx_find_asset-1",
+      "tool_name": "mx_find_asset",
+      "args": {
+        "description": "cooling pump on line 2"
+      },
+      "arg_matching": {
+        "description": "ignore"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "mx_get_meter_readings-1",
+      "tool_name": "mx_get_meter_readings",
+      "args": {
+        "assetnum": "PUMP-L2-03"
+      },
+      "arg_matching": {
+        "assetnum": "strict"
+      }
+    },
+    {
+      "type": "tool_call",
+      "name": "mx_get_work_order_history-1",
+      "tool_name": "mx_get_work_order_history",
+      "args": {
+        "assetnum": "PUMP-L2-03"
+      },
+      "arg_matching": {
+        "assetnum": "strict"
+      }
+    }
+  ],
+  "story": "You are a maintenance technician. The cooling pump on line 2 is vibrating and hot. You want to know what to do and what the work log would say. You do not want to submit it now. You never ask the agent to log or submit anything. After the agent answers, thank it briefly and end the conversation.",
+  "starting_sentence": "The cooling pump on line 2 is vibrating and running hot. Check it and show me the work log you would draft, but do not submit it."
+}
