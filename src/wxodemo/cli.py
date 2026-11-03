@@ -20,6 +20,15 @@ from wxodemo.logging_setup import fail, get_logger, ok, plain, register_secret, 
 from wxodemo.manifest import ManifestError
 from wxodemo.scaffold import run_new_scenario
 from wxodemo.smoke import run_smoke
+from wxodemo.traffic import (
+    run_traffic_build,
+    run_traffic_logs,
+    run_traffic_pool,
+    run_traffic_redeploy,
+    run_traffic_start,
+    run_traffic_status,
+    run_traffic_stop,
+)
 from wxodemo.validate import run_validate
 
 
@@ -215,6 +224,71 @@ def cmd_logs(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_traffic(args: argparse.Namespace) -> int:
+    subcommand = getattr(args, "traffic_command", None)
+    root = repo_root()
+    if not subcommand:
+        parser = getattr(args, "_parser", None)
+        if parser:
+            parser.print_help()
+        return 0
+
+    if subcommand == "build":
+        return run_traffic_build(
+            root, engine=args.engine, no_cache=args.no_cache, dry_run=args.dry_run
+        )
+    if subcommand == "start":
+        cfg = _config_for(args)
+        return run_traffic_start(
+            root,
+            cfg,
+            engine=args.engine,
+            interval=args.interval,
+            agents=args.agents,
+            env=args.env,
+            container_name=args.name,
+            follow=args.follow,
+            foreground=args.foreground,
+            dry_run=args.dry_run,
+        )
+    if subcommand == "stop":
+        return run_traffic_stop(
+            root, engine=args.engine, container_name=args.name, dry_run=args.dry_run
+        )
+    if subcommand == "status":
+        cfg = None
+        try:
+            cfg = load_config()
+            register_secret(cfg.api_key)
+        except Exception:  # noqa: BLE001
+            pass
+        return run_traffic_status(
+            root, config=cfg, engine=args.engine, container_name=args.name
+        )
+    if subcommand == "redeploy":
+        cfg = _config_for(args)
+        return run_traffic_redeploy(
+            root,
+            cfg,
+            engine=args.engine,
+            interval=args.interval,
+            agents=args.agents,
+            env=args.env,
+            container_name=args.name,
+            no_cache=args.no_cache,
+            follow=args.follow,
+            dry_run=args.dry_run,
+        )
+    if subcommand == "logs":
+        return run_traffic_logs(
+            root, engine=args.engine, container_name=args.name, tail=args.tail
+        )
+    if subcommand == "pool":
+        return run_traffic_pool(root, agents=args.agents, json_output=args.json)
+
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="wxodemo",
@@ -320,6 +394,106 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("logs", help="show the log file path and its last lines")
     p.add_argument("-n", "--tail", type=int, default=20, help="number of lines (default 20)")
     p.set_defaults(func=cmd_logs)
+
+    p_traffic = sub.add_parser(
+        "traffic",
+        aliases=["traffic-gen"],
+        help="manage traffic generator container (build, start, stop, status, ...)",
+    )
+    p_traffic.set_defaults(func=cmd_traffic, _parser=p_traffic)
+    tsub = p_traffic.add_subparsers(dest="traffic_command", metavar="subcommand")
+
+    pb = tsub.add_parser("build", help="build the traffic generator image (wxo-traffic-gen)")
+    pb.add_argument(
+        "--engine", choices=["podman", "docker"], help="container engine (default: auto-detect)"
+    )
+    pb.add_argument("--no-cache", action="store_true", help="do not use cache when building image")
+    pb.add_argument(
+        "--dry-run", action="store_true", help="show the build command without running it"
+    )
+    pb.set_defaults(func=cmd_traffic, _parser=p_traffic)
+
+    ps = tsub.add_parser("start", help="start the traffic generator container in the background")
+    ps.add_argument(
+        "--engine", choices=["podman", "docker"], help="container engine (default: auto-detect)"
+    )
+    ps.add_argument("--interval", type=int, help="call interval in minutes (default: 1)")
+    ps.add_argument("--agents", help="comma-separated agent names to include in pool")
+    ps.add_argument("--env", choices=["live", "draft"], help="target environment (default: live)")
+    ps.add_argument(
+        "--name", default="wxo-traffic-gen", help="container name (default: wxo-traffic-gen)"
+    )
+    ps.add_argument(
+        "-f", "--follow", action="store_true", help="follow container logs after starting"
+    )
+    ps.add_argument(
+        "--foreground", action="store_true", help="run in foreground instead of detached"
+    )
+    ps.add_argument(
+        "--dry-run", action="store_true", help="show the run command without starting container"
+    )
+    ps.set_defaults(func=cmd_traffic, _parser=p_traffic)
+
+    pst = tsub.add_parser("stop", help="stop and remove the traffic generator container")
+    pst.add_argument(
+        "--engine", choices=["podman", "docker"], help="container engine (default: auto-detect)"
+    )
+    pst.add_argument(
+        "--name", default="wxo-traffic-gen", help="container name (default: wxo-traffic-gen)"
+    )
+    pst.add_argument(
+        "--dry-run", action="store_true", help="show stop command without running it"
+    )
+    pst.set_defaults(func=cmd_traffic, _parser=p_traffic)
+
+    pstat = tsub.add_parser("status", help="check container and image status")
+    pstat.add_argument(
+        "--engine", choices=["podman", "docker"], help="container engine (default: auto-detect)"
+    )
+    pstat.add_argument(
+        "--name", default="wxo-traffic-gen", help="container name (default: wxo-traffic-gen)"
+    )
+    pstat.set_defaults(func=cmd_traffic, _parser=p_traffic)
+
+    pr = tsub.add_parser("redeploy", help="stop, rebuild image, and start container")
+    pr.add_argument(
+        "--engine", choices=["podman", "docker"], help="container engine (default: auto-detect)"
+    )
+    pr.add_argument("--interval", type=int, help="call interval in minutes (default: 1)")
+    pr.add_argument("--agents", help="comma-separated agent names to include in pool")
+    pr.add_argument("--env", choices=["live", "draft"], help="target environment (default: live)")
+    pr.add_argument(
+        "--name", default="wxo-traffic-gen", help="container name (default: wxo-traffic-gen)"
+    )
+    pr.add_argument(
+        "--no-cache", action="store_true", help="do not use cache when rebuilding image"
+    )
+    pr.add_argument(
+        "-f", "--follow", action="store_true", help="follow container logs after starting"
+    )
+    pr.add_argument(
+        "--dry-run", action="store_true", help="show redeploy commands without running them"
+    )
+    pr.set_defaults(func=cmd_traffic, _parser=p_traffic)
+
+    pl = tsub.add_parser(
+        "logs", help="follow traffic generator container logs (Ctrl+C to stop)"
+    )
+    pl.add_argument(
+        "--engine", choices=["podman", "docker"], help="container engine (default: auto-detect)"
+    )
+    pl.add_argument(
+        "--name", default="wxo-traffic-gen", help="container name (default: wxo-traffic-gen)"
+    )
+    pl.add_argument("-n", "--tail", type=int, help="number of lines from end of logs")
+    pl.set_defaults(func=cmd_traffic, _parser=p_traffic)
+
+    pp = tsub.add_parser(
+        "pool", help="preview discovered scenario and standalone agents and prompts"
+    )
+    pp.add_argument("--agents", help="filter to specific comma-separated agent names")
+    pp.add_argument("--json", action="store_true", help="output pool as JSON")
+    pp.set_defaults(func=cmd_traffic, _parser=p_traffic)
 
     return parser
 

@@ -83,6 +83,7 @@ Commands that need no credentials: `list`, `validate`, `new-scenario`, `logs`, `
 | `export-chats [options]` | Exports agent chats and traces. |
 | `new-scenario <id> --name N --description D [--agent-name A] [--dry-run]` | Scaffolds a new scenario. |
 | `logs [-n N]` | Prints the log file path and its last N lines (default 20). |
+| `traffic <subcommand>` (alias `traffic-gen`) | Manages the traffic generator container (`build`, `start`, `stop`, `status`, `redeploy`, `logs`, `pool`). |
 
 ### setup
 
@@ -228,6 +229,49 @@ python wxodemo.py new-scenario customer-returns --name "Customer Returns" \
 python wxodemo.py logs
 python wxodemo.py logs -n 100
 ```
+
+### traffic
+
+Manage the containerised traffic generator (`wxo-traffic-gen`) using Docker or Podman (auto-detected, with credentials from `env.cfg`):
+
+```bash
+# Build the image from repository root
+python wxodemo.py traffic build [--no-cache] [--engine podman|docker]
+
+# Start generating traffic in the background
+python wxodemo.py traffic start [--interval MIN] [--agents A1,A2] [--env live|draft] [-f]
+
+# Check container and image status
+python wxodemo.py traffic status
+
+# Follow container logs (default) or tail last N lines (Ctrl+C to stop)
+python wxodemo.py traffic logs
+python wxodemo.py traffic logs -n 50
+
+# Stop and remove the container
+python wxodemo.py traffic stop
+
+# Redeploy (stop, rebuild image, start)
+python wxodemo.py traffic redeploy
+
+# Preview discovered local agents and prompts pool
+python wxodemo.py traffic pool [--agents A1,A2] [--json]
+```
+
+| Subcommand | Option | Meaning |
+|---|---|---|
+| `build` | `--no-cache`, `--dry-run` | Build `wxo-traffic-gen` image without cache / show build command |
+| `start` | `--interval N` | Call interval in minutes (default 1) |
+| | `--agents A1,A2` | Restrict pool to comma-separated agent names or scenario ids |
+| | `--env live\|draft` | Target environment (default `live`) |
+| | `-f`, `--follow` | Follow live container logs immediately after starting |
+| | `--foreground` | Run in foreground instead of detached |
+| | `--dry-run` | Preview start command with masked API key |
+| `stop` | `--dry-run` | Stop and remove the container |
+| `status` | | Shows detected container runtime, container status, and local image status |
+| `redeploy` | `--no-cache`, `--dry-run`, `-f` | Atomic stop, rebuild, and start |
+| `logs` | `-n N` | Follow live output by default (Ctrl+C to stop) or tail last N lines |
+| `pool` | `--agents A1,A2`, `--json` | Discover and display callable agents and prompts from repo manifests |
 
 ## Target names
 

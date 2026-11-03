@@ -14,27 +14,17 @@ Agents that start an approval flow are sent a prompt and left waiting (see "How 
 
 1. Deploy the agents you want traffic for (see the root [`README.md`](../README.md#deploy-to-your-instance)).
    Only deployed (`live`) agents receive traffic; others are skipped with a warning.
-2. Build the image from the **repository root**:
+2. Ensure `env.cfg` is configured in the repository root.
+3. Build and start using `wxodemo.py traffic`:
 
    ```bash
-   docker build -f traffic-gen/Dockerfile -t wxo-traffic-gen .
+   python wxodemo.py traffic build     # builds wxo-traffic-gen image (auto-detects podman/docker)
+   python wxodemo.py traffic start     # starts in background using env.cfg credentials
+   python wxodemo.py traffic logs      # follow live log output (Ctrl+C to stop)
+   python wxodemo.py traffic stop      # stop when done
    ```
 
-3. Run it with your WXO API key and instance URL:
-
-   ```bash
-   docker run --rm \
-     -e WXO_API_KEY=your-api-key-here \
-     -e WXO_URL=https://api.<region>.watson-orchestrate.cloud.ibm.com/instances/<instance-id> \
-     wxo-traffic-gen
-   ```
-
-4. Watch the log. It prints the agent pool first, then one line per call. It runs until you
-   stop it (Ctrl+C in that terminal, or `docker stop`). One call per minute by default; see
-   `CALL_INTERVAL_MINUTES` below.
-
-The API key and URL are the same values you use in `env.cfg`. Do not paste a real key into a
-file you commit; pass it on the command line or from your shell environment.
+You can also run container commands directly with `podman` or `docker` (see [Standalone Container Usage](#standalone-container-usage) below).
 
 ---
 
@@ -95,19 +85,51 @@ and exercise the draft agents instead.
 
 ---
 
-## Build
+## CLI commands (via wxodemo)
 
-The build context **must be the repository root**, not the `traffic-gen/` directory.
-The Dockerfile copies `scenarios/`, `standalone/`, and `evaluation/` from the repo root
-so that the container picks up manifests and prompts automatically.
+`wxodemo traffic` manages the container lifecycle and credentials automatically:
 
 ```bash
-docker build -f traffic-gen/Dockerfile -t wxo-traffic-gen .
+# Build / rebuild image
+python wxodemo.py traffic build [--no-cache] [--engine podman|docker]
+
+# Start in background
+python wxodemo.py traffic start [--interval MIN] [--agents A1,A2] [--env live|draft] [-f]
+
+# Check container and image status
+python wxodemo.py traffic status
+
+# Follow logs (default) or tail last N lines (Ctrl+C to stop)
+python wxodemo.py traffic logs
+python wxodemo.py traffic logs -n 50
+
+# Stop and remove container
+python wxodemo.py traffic stop
+
+# Rebuild and restart in one command
+python wxodemo.py traffic redeploy
+
+# Preview discovered agent pool and prompts
+python wxodemo.py traffic pool [--agents A1,A2] [--json]
 ```
 
 ---
 
-## Run
+## Standalone Container Usage
+
+If you prefer to invoke Podman or Docker directly without `wxodemo`, run the commands from the **repository root**:
+
+### Build
+
+```bash
+# Using Docker
+docker build -f traffic-gen/Dockerfile -t wxo-traffic-gen .
+
+# Or using Podman
+podman build -f traffic-gen/Dockerfile -t wxo-traffic-gen .
+```
+
+### Run
 
 ```bash
 docker run --rm \
@@ -118,7 +140,7 @@ docker run --rm \
   wxo-traffic-gen
 ```
 
-To send runs to the draft agents instead of live:
+To send runs to draft agents instead of live:
 
 ```bash
 docker run --rm \
@@ -137,8 +159,6 @@ docker run --rm \
   -e AGENT_FILTER=incident_triage,hello_world,translator \
   wxo-traffic-gen
 ```
-
-`CALL_INTERVAL_MINUTES` can be changed without rebuilding — pass it at `docker run` time.
 
 ---
 

@@ -59,6 +59,7 @@ def test_every_documented_command_is_registered():
     expected = {
         "setup", "doctor", "login", "activate", "list", "status", "deploy", "undeploy",
         "validate", "smoke", "export-chats", "new-scenario", "eval", "logs",
+        "traffic", "traffic-gen",
     }  # fmt: skip
     assert expected <= set(choices)
 
@@ -85,9 +86,17 @@ def test_list_shows_all_and_filters_by_kind(repo, capsys):
     code, out = run(capsys, "list")
     assert code == 0 and "alpha" in out and "hello_world" in out and "report_generator" in out
     _, only_standalone = run(capsys, "list", "--kind", "standalone")
-    assert "hello_world" in only_standalone and "alpha" not in only_standalone and "report_generator" not in only_standalone
+    assert (
+        "hello_world" in only_standalone
+        and "alpha" not in only_standalone
+        and "report_generator" not in only_standalone
+    )
     _, only_tools = run(capsys, "list", "--kind", "tool")
-    assert "report_generator" in only_tools and "hello_world" not in only_tools and "alpha" not in only_tools
+    assert (
+        "report_generator" in only_tools
+        and "hello_world" not in only_tools
+        and "alpha" not in only_tools
+    )
 
 
 def test_list_empty_repo(tmp_path, monkeypatch, capsys):

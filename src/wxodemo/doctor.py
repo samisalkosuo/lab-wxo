@@ -8,6 +8,7 @@ import sys
 from wxodemo.adk import active_env_lines, find_orchestrate
 from wxodemo.config import REQUIRED_KEYS, ConfigError, load_config
 from wxodemo.logging_setup import fail, info, ok, plain, register_secret, warn
+from wxodemo.traffic import get_container_engine_info
 
 MIN_PYTHON = (3, 11)
 
@@ -76,6 +77,12 @@ def run_doctor() -> int:
             info(f"Active WXO environment: {active[0]} (run 'python wxodemo.py login' to switch)")
         else:
             info("No active WXO environment yet. Run: python wxodemo.py login")
+
+    engine_info = get_container_engine_info()
+    if engine_info:
+        ok(f"Container engine: {engine_info[1]}")
+    else:
+        info("No container engine (Podman or Docker) found (optional; for traffic generator)")
 
     if failures:
         return 1

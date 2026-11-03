@@ -260,17 +260,20 @@ python -m ruff check src tests wxodemo.py
 
 ## Traffic generator
 
-[`traffic-gen/`](traffic-gen/) is a small containerised Python app that periodically sends prompts to your deployed agents through the WXO REST API. Use it to fill the WXO Home, Observability and Analytics dashboards with realistic usage when preparing a demo. It needs deployed agents, your API key and URL, and Docker or Podman. It reads the agent list and prompts from the scenarios and standalone agents in this repo, so there is nothing to configure.
+[`traffic-gen/`](traffic-gen/) is a small containerised Python app that periodically sends prompts to your deployed agents through the WXO REST API. Use it to fill the WXO Home, Observability and Analytics dashboards with realistic usage when preparing a demo. It needs deployed agents, your `env.cfg` credentials, and Docker or Podman (auto-detected).
+
+Use `wxodemo traffic` to manage the generator lifecycle:
 
 ```bash
-docker build -f traffic-gen/Dockerfile -t wxo-traffic-gen .     # build from the repo root
-docker run --rm \
-  -e WXO_API_KEY=your-api-key-here \
-  -e WXO_URL=https://api.<region>.watson-orchestrate.cloud.ibm.com/instances/<instance-id> \
-  wxo-traffic-gen
+python wxodemo.py traffic build                         # build the wxo-traffic-gen container image
+python wxodemo.py traffic start                         # start in background with credentials from env.cfg
+python wxodemo.py traffic status                        # check container and image status
+python wxodemo.py traffic logs                          # follow live traffic logs (Ctrl+C to stop)
+python wxodemo.py traffic stop                          # stop and remove container
+python wxodemo.py traffic pool                          # preview discovered agent pool and prompts
 ```
 
-Options, the agent pool and the log format are in [`traffic-gen/README.md`](traffic-gen/README.md).
+Options, customization, standalone container commands, and log details are in [`traffic-gen/README.md`](traffic-gen/README.md) and [`docs/wxodemo.md`](docs/wxodemo.md#traffic).
 
 ## Back up agent chats
 
