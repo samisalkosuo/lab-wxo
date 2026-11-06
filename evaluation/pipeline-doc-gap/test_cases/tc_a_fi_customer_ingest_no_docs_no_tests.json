@@ -1,0 +1,42 @@
+{
+    "agent": "pipeline_doc_gap",
+    "goals": {
+        "pdg_get_pipeline-1": [
+            "pdg_get_ownership-1"
+        ],
+        "pdg_get_ownership-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "pdg_get_pipeline-1",
+            "tool_name": "pdg_get_pipeline",
+            "args": {
+                "pipeline_id": "fi-customer-ingest"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "pdg_get_ownership-1",
+            "tool_name": "pdg_get_ownership",
+            "args": {
+                "pipeline_id": "fi-customer-ingest"
+            }
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "fi-customer-ingest has no README and no tests folder. This is a documentation gap under STD-DOC-01 and a test gap under STD-TEST-01. The owner is @aino-virtanen.",
+            "keywords": [
+                "no README",
+                "STD-DOC-01",
+                "STD-TEST-01",
+                "tests"
+            ]
+        }
+    ],
+    "story": "You are a platform engineer. You want to know whether the pipeline fi-customer-ingest has documentation and test gaps. Ask the agent to check it. Do NOT ask the agent to open a pull request. Accept whatever the agent reports.",
+    "starting_sentence": "Check pipeline fi-customer-ingest for documentation and test gaps. Use your tools and the knowledge base. Do NOT open a pull request - just report the gaps and the standards that apply."
+}

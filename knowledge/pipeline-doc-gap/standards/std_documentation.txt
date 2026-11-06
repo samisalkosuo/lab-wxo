@@ -1,0 +1,42 @@
+STANDARD: Pipeline Documentation Standard
+Standard ID: STD-DOC-01
+Applies to: every data pipeline in the platform catalog.
+
+WHEN TO USE THIS DOCUMENT
+Use it when a pipeline has no README, or when its README exists but you need to judge whether it is complete. Typical symptoms:
+- pdg_get_pipeline shows "README present: no".
+- The README sections listed by pdg_get_pipeline do not include all required sections.
+- Nobody outside the owning team can say what the pipeline reads, writes or when it runs.
+
+REQUIRED README SECTIONS
+1. Overview - what the pipeline does and why it exists, in two or three sentences.
+2. Inputs and outputs - every source and target, with names as they appear in the catalog.
+3. Schedule - when it runs and in which time zone.
+4. Failure handling - what happens on failure, who is alerted, and how to re-run.
+5. Owner - the CODEOWNERS handle and the fallback reviewer for the country.
+
+Pipelines that handle personal data must also contain the extra sections required by the country document (REQ-FI-01, REQ-SE-01, REQ-DE-01).
+
+DECISION
+A README is complete only if all five required sections are present, plus the country sections when the pipeline handles personal data. A missing README is a gap. A README that lacks a required section is a gap. Do not call a pipeline a documentation gap on one signal alone: confirm with pdg_get_pipeline.
+
+README TEMPLATE
+# <pipeline_id>
+
+## Overview
+<two or three sentences from the pipeline description>
+
+## Inputs and outputs
+- Inputs: <from pdg_get_pipeline>
+- Outputs: <from pdg_get_pipeline>
+
+## Schedule
+<from pdg_get_pipeline>
+
+## Failure handling
+<TODO: owner to confirm alerting and re-run steps>
+
+## Owner
+<CODEOWNERS handle from pdg_get_ownership>; fallback reviewer: <country fallback>
+
+Sections that cannot be filled from catalog metadata must be marked TODO for the owner to confirm. Never invent failure-handling details.

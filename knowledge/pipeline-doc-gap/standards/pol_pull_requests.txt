@@ -1,0 +1,16 @@
+POLICY: Pull Request and Reviewer Policy
+Policy ID: POL-PR-01
+Applies to: draft pull requests proposed by the pipeline documentation and test gap agent.
+
+WHEN TO USE THIS DOCUMENT
+Use it when you are about to propose a draft pull request, or when the user asks who reviews it. Typical symptoms:
+- pdg_get_ownership shows KEY-PERSON RISK because no CODEOWNER is an active committer.
+- The user asks for a PR for a pipeline and you must choose the reviewer.
+
+POLICY
+- Pull requests are always drafts. Review and merge follow the repository's existing PR process and branch protection.
+- Only a README under docs/ and a test skeleton under tests/ may be proposed.
+- The reviewer is an active CODEOWNER of the pipeline.
+- If no CODEOWNER is an active committer (key-person risk), the reviewer is the country fallback reviewer reported by pdg_get_ownership, and the PR description must say that the pipeline has no active owner.
+- A PR is proposed only after the user asks for it. Finding a gap is not a request to open a PR.
+- Placeholders marked TODO in drafts must be listed in the PR description so the reviewer knows what to confirm.

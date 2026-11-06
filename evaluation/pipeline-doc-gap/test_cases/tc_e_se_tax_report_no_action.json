@@ -1,0 +1,40 @@
+{
+    "agent": "pipeline_doc_gap",
+    "goals": {
+        "pdg_get_pipeline-1": [
+            "pdg_get_ci_history-1"
+        ],
+        "pdg_get_ci_history-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "pdg_get_pipeline-1",
+            "tool_name": "pdg_get_pipeline",
+            "args": {
+                "pipeline_id": "se-tax-report"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "pdg_get_ci_history-1",
+            "tool_name": "pdg_get_ci_history",
+            "args": {
+                "pipeline_id": "se-tax-report"
+            }
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "se-tax-report has a complete README including the Retention section, its tests run in CI, and it has an active owner. There is no gap and no action is needed.",
+            "keywords": [
+                "no gap",
+                "no action"
+            ]
+        }
+    ],
+    "story": "You are a platform engineer. You want to know whether se-tax-report needs any documentation or test work. Ask the agent. Do NOT ask the agent to open a pull request. If the agent says no action is needed, confirm that you understand.",
+    "starting_sentence": "Check pipeline se-tax-report for documentation and test gaps. Do NOT open a pull request - just tell me whether any action is needed."
+}

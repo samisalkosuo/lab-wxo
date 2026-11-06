@@ -1,0 +1,17 @@
+# Evaluation configuration for the pipeline_doc_gap agent.
+# Run with:
+#   python wxodemo.py eval pipeline-doc-gap
+# (same as: orchestrate evaluations evaluate --config evaluation/pipeline-doc-gap/eval_config.yaml)
+
+test_paths:
+  - evaluation/pipeline-doc-gap/test_cases/
+
+output_dir: evaluation/pipeline-doc-gap/results/
+
+n_runs: 1
+
+enable_verbose_logging: true
+
+llm_user_config:
+  user_response_style:
+    - "Be concise. Answer the agent's questions briefly."

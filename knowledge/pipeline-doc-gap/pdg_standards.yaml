@@ -1,0 +1,18 @@
+spec_version: v1
+kind: knowledge_base
+name: pdg_standards
+description: |
+  Documentation, test and pull request standards for data pipelines. Contains the
+  documentation standard (required README sections and template, STD-DOC-01), the test
+  standard (tests must run in CI, test skeleton template, STD-TEST-01), per-country
+  documentation requirements for pipelines that handle personal data (Finland REQ-FI-01
+  data residency, Sweden REQ-SE-01 retention, Germany REQ-DE-01 employee data handling),
+  and the pull request and reviewer policy (POL-PR-01). Use it to decide whether a
+  pipeline has a documentation or test gap and to cite the standard behind each finding.
+documents:
+  - standards/std_documentation.txt
+  - standards/std_tests.txt
+  - standards/req_finland.txt
+  - standards/req_sweden.txt
+  - standards/req_germany.txt
+  - standards/pol_pull_requests.txt

@@ -1,0 +1,23 @@
+REQUIREMENT: Finland - Documentation for Personal Data Pipelines
+Requirement ID: REQ-FI-01
+Applies to: pipelines with country FI that handle personal data (pdg_get_pipeline shows "Handles personal data: yes").
+
+WHEN TO USE THIS DOCUMENT
+Use it when a Finnish pipeline handles personal data and has a README, to check whether the README meets the Finnish requirement on top of STD-DOC-01. Typical symptoms:
+- The README has all five STD-DOC-01 sections but no "Data residency" section.
+- A reviewer asks where the data is stored and processed and the README does not say.
+
+REQUIREMENT
+In addition to the five STD-DOC-01 sections, the README of a Finnish pipeline that handles personal data must contain a section titled "Data residency" that states:
+- the storage location of inputs and outputs (for example an EU region), and
+- that personal data is not copied outside the EU or EEA, or the approved transfer basis if it is.
+
+DECISION
+If the pipeline is FI, handles personal data and the README sections do not include "Data residency", this is a documentation gap against REQ-FI-01, even when all STD-DOC-01 sections are present. Cite REQ-FI-01 and STD-DOC-01 together.
+
+README ADDITION
+## Data residency
+Storage location: <TODO: owner to confirm region>
+Transfers outside EU/EEA: <TODO: owner to confirm; none expected>
+
+The agent cannot know the real storage location from catalog metadata. Always leave these lines as TODO for the owner.

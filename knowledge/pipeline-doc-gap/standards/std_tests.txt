@@ -1,0 +1,39 @@
+STANDARD: Pipeline Test Standard
+Standard ID: STD-TEST-01
+Applies to: every data pipeline in the platform catalog.
+
+WHEN TO USE THIS DOCUMENT
+Use it when a pipeline has no tests folder, or when a tests folder exists and you must judge whether the tests are effective. Typical symptoms:
+- pdg_get_pipeline shows "Tests folder present: no".
+- pdg_get_pipeline shows a tests folder, but pdg_get_ci_history shows the test stage as not_run in every recent run.
+- Tests exist but nobody can say when they last ran.
+
+A TESTS FOLDER IS NOT EFFECTIVE TESTING
+Tests count only if the CI test stage runs them. A pipeline with a tests folder whose test stage is not_run in all recent CI runs has the gap "tests not in CI". The fix is to enable the test stage in the CI workflow, which is a change to CI configuration. This standard and the draft PR tool cover only files under tests/. A draft PR must therefore not claim to fix CI; state that enabling the test stage is a separate step for the owner.
+
+REQUIRED TESTS
+1. Schema test - the output has the columns and types listed in the README.
+2. Row-count test - the output is not empty for a known sample input.
+3. Failure test - the pipeline fails clearly on a missing input.
+
+DECISION
+- No tests folder: gap "no tests". Propose a test skeleton.
+- Tests folder present, test stage not_run in all recent CI runs: gap "tests not in CI". Report it; do not propose new tests as the fix.
+- Tests folder present, test stage runs: no test gap.
+Do not call a pipeline a test gap on one signal alone: always check pdg_get_ci_history when a tests folder exists.
+
+TEST SKELETON TEMPLATE
+# tests/test_<pipeline_id_with_underscores>.py
+def test_output_schema():
+    # TODO: owner to fill in expected columns from the README
+    assert True
+
+def test_output_not_empty():
+    # TODO: owner to provide a sample input
+    assert True
+
+def test_fails_on_missing_input():
+    # TODO: owner to define the expected error
+    assert True
+
+Skeleton tests are placeholders and must be marked TODO. Never present them as real coverage.

@@ -1,0 +1,3 @@
+# Dependencies for pdg tool package
+# Uses Python standard library and ibm-watsonx-orchestrate
+ibm-watsonx-orchestrate==2.18.2

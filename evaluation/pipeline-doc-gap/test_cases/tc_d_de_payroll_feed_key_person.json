@@ -1,0 +1,42 @@
+{
+    "agent": "pipeline_doc_gap",
+    "goals": {
+        "pdg_get_pipeline-1": [
+            "pdg_get_ownership-1"
+        ],
+        "pdg_get_ownership-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "pdg_get_pipeline-1",
+            "tool_name": "pdg_get_pipeline",
+            "args": {
+                "pipeline_id": "de-payroll-feed"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "pdg_get_ownership-1",
+            "tool_name": "pdg_get_ownership",
+            "args": {
+                "pipeline_id": "de-payroll-feed"
+            }
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "de-payroll-feed has no tests folder and key-person risk: its only committer @jonas-keller has left, so there is no active owner. A PR reviewer should be the German fallback reviewer @de-platform-lead.",
+            "keywords": [
+                "key-person",
+                "@jonas-keller",
+                "@de-platform-lead",
+                "STD-TEST-01"
+            ]
+        }
+    ],
+    "story": "You are a platform engineer. You want to know the documentation, test and ownership situation of de-payroll-feed and who should review a pull request. Ask the agent. Do NOT ask the agent to open a pull request. Accept whatever the agent reports.",
+    "starting_sentence": "Check pipeline de-payroll-feed for documentation, test and ownership gaps, and tell me who should review a PR. Do NOT open a pull request."
+}

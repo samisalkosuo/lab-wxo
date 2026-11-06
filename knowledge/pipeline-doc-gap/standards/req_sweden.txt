@@ -1,0 +1,18 @@
+REQUIREMENT: Sweden - Documentation for Personal Data Pipelines
+Requirement ID: REQ-SE-01
+Applies to: pipelines with country SE that handle personal data (pdg_get_pipeline shows "Handles personal data: yes").
+
+WHEN TO USE THIS DOCUMENT
+Use it when a Swedish pipeline handles personal data and has a README, to check whether the README meets the Swedish requirement on top of STD-DOC-01. Typical symptoms:
+- The README has all five STD-DOC-01 sections but no "Retention" section.
+
+REQUIREMENT
+In addition to the five STD-DOC-01 sections, the README of a Swedish pipeline that handles personal data must contain a section titled "Retention" that states how long the outputs are kept and how they are deleted.
+
+DECISION
+If the pipeline is SE, handles personal data and the README sections do not include "Retention", this is a documentation gap against REQ-SE-01. If the section is present, there is no country-specific gap.
+
+README ADDITION
+## Retention
+Retention period: <TODO: owner to confirm>
+Deletion method: <TODO: owner to confirm>

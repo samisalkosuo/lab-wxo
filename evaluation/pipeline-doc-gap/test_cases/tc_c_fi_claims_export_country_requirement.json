@@ -1,0 +1,30 @@
+{
+    "agent": "pipeline_doc_gap",
+    "goals": {
+        "pdg_get_pipeline-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "pdg_get_pipeline-1",
+            "tool_name": "pdg_get_pipeline",
+            "args": {
+                "pipeline_id": "fi-claims-export"
+            }
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "fi-claims-export has a README with the five STD-DOC-01 sections, but it has no Data residency section. This pipeline handles personal data in Finland, so REQ-FI-01 requires that section. This is a documentation gap.",
+            "keywords": [
+                "REQ-FI-01",
+                "Data residency",
+                "STD-DOC-01"
+            ]
+        }
+    ],
+    "story": "You are a platform engineer for the Finnish team. You want to know whether the pipeline fi-claims-export meets the Finnish documentation requirements. Ask the agent to check it. Do NOT ask the agent to open a pull request. Accept whatever the agent reports.",
+    "starting_sentence": "Check pipeline fi-claims-export against the Finnish documentation requirements. Do NOT open a pull request - just report your findings and the requirement IDs."
+}

@@ -1,0 +1,42 @@
+{
+    "agent": "pipeline_doc_gap",
+    "goals": {
+        "pdg_get_pipeline-1": [
+            "pdg_get_ci_history-1"
+        ],
+        "pdg_get_ci_history-1": [
+            "summarize"
+        ]
+    },
+    "goal_details": [
+        {
+            "type": "tool_call",
+            "name": "pdg_get_pipeline-1",
+            "tool_name": "pdg_get_pipeline",
+            "args": {
+                "pipeline_id": "se-invoice-batch"
+            }
+        },
+        {
+            "type": "tool_call",
+            "name": "pdg_get_ci_history-1",
+            "tool_name": "pdg_get_ci_history",
+            "args": {
+                "pipeline_id": "se-invoice-batch"
+            }
+        },
+        {
+            "name": "summarize",
+            "type": "text",
+            "response": "se-invoice-batch has a tests folder, but the CI test stage did not run in any recent run, so the tests are not effective. This is a tests-not-in-CI gap under STD-TEST-01. Enabling the CI test stage is the fix; a new test skeleton would not fix it.",
+            "keywords": [
+                "CI",
+                "not_run",
+                "STD-TEST-01",
+                "tests"
+            ]
+        }
+    ],
+    "story": "You are a platform engineer. The pipeline se-invoice-batch has a tests folder, so you assume its testing is fine. Ask the agent to check it for documentation and test gaps. Do NOT ask the agent to open a pull request. Accept whatever the agent reports.",
+    "starting_sentence": "Check pipeline se-invoice-batch for documentation and test gaps. It has a tests folder, so I think it is fine. Do NOT open a pull request - just report your findings."
+}

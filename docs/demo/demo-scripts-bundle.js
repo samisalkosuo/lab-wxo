@@ -1033,6 +1033,244 @@ window.DEMO_SCRIPTS = {
    }
   ]
  },
+ "pipeline-doc-gap": {
+  "scenes": [
+   {
+    "num": "1",
+    "title": "Vague opening (\"the Finnish ones\")",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 1,
+      "note": "",
+      "text": "Which of the Finnish ones have documentation or test problems?"
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass in 3 runs: the agent looked at the catalog before answering, named `fi-customer-ingest` as having problems, and discussed only Finnish pipelines. No invented pipeline names were reported.\n- The test sheet allowed one clarifying question; the tester did not record whether it asked one."
+     }
+    ]
+   },
+   {
+    "num": "2",
+    "title": "Main path, case A (`fi-customer-ingest`)",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 2,
+      "note": "",
+      "text": "Check pipeline fi-customer-ingest for documentation and test gaps. Use your tools and the knowledge base. Do NOT call pdg_request_draft_pr - just report the gaps and the standards that apply."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass with one partial item, 4 runs: the gaps (no README, no tests folder) and the standards were reported correctly.\n- `pdg_get_ci_history` was not called in these runs (it adds nothing when there is no tests folder).\n- The knowledge base `pdg_standards` was called in 3 of 4 runs.\n- The owner was mentioned in 1 of 4 runs."
+     }
+    ]
+   },
+   {
+    "num": "3",
+    "title": "No unprompted PR (negative test)",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 3,
+      "note": "no \"Do NOT call pdg_request_draft_pr\" clause",
+      "text": "Check pipeline fi-customer-ingest for documentation and test gaps."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass in 4 runs: the agent listed the same gaps and then **asked** whether to create a draft. No approval form appeared without an explicit request.\n- After a \"yes\", the form appeared. In some runs it showed the README first and the form after a second \"yes\"; in others the form came directly."
+     }
+    ]
+   },
+   {
+    "num": "4",
+    "title": "Trap, case B (`se-invoice-batch`)",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 4,
+      "note": "",
+      "text": "Check pipeline se-invoice-batch for documentation and test gaps. Use your tools and the knowledge base. Do NOT call pdg_request_draft_pr - just report your findings."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass (\"works as expected\"); the run count was not stated. Pass means: the tests folder exists and the CI test stage did not run in any recent run, the conclusion was \"tests not in CI\", the README was treated as complete, and the agent did not say the tests were failing.\n- A CLI smoke run (1 run) of a similar prompt called `pdg_get_pipeline`, `pdg_get_ci_history`, `pdg_get_ownership` and the knowledge base, and reported no documentation gap."
+     }
+    ]
+   },
+   {
+    "num": "5",
+    "title": "Country requirement, case C (`fi-claims-export`)",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 5,
+      "note": "",
+      "text": "Check pipeline fi-claims-export for documentation and test gaps, including country requirements. Do NOT call pdg_request_draft_pr - just report your findings and the requirement IDs."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass in 4 runs: the README exists with the five standard sections, the \"Data residency\" section is missing, `REQ-FI-01` (with `STD-DOC-01`) is cited, and no test gap is claimed.\n- When asked to continue, the agent proposes a draft PR for the README data-residency section."
+     }
+    ]
+   },
+   {
+    "num": "6",
+    "title": "Key-person risk, case D (`de-payroll-feed`)",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 6,
+      "note": "",
+      "text": "Check pipeline de-payroll-feed for documentation, test and ownership gaps. Do NOT call pdg_request_draft_pr - just report your findings and who should review a PR."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass in 4 browser runs: no active owner (`@jonas-keller` was the only committer and has left), the fallback reviewer `@de-platform-lead`, no tests folder, and no documentation gap claimed.\n- **One CLI smoke run (not the browser) of this same prompt gave a wrong answer:** it reported a missing \"Data residency\" section under `REQ-DE-01`. That is wrong. `REQ-DE-01` requires \"Employee data handling\", which the README has. The knowledge base was not called in that run. It has not been reproduced in the browser, and it is not fixed."
+     }
+    ]
+   },
+   {
+    "num": "7",
+    "title": "Restraint, case E (`se-tax-report`)",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 7,
+      "note": "",
+      "text": "Check pipeline se-tax-report for documentation and test gaps. Do NOT call pdg_request_draft_pr - just report whether any action is needed."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass in 4 runs: no gap and no action needed, with no invented gap and no PR recommended.\n- In one CLI smoke run of a similar prompt the conclusion was also \"no gap\", but the answer attributed the README sections to `pdg_get_ci_history` instead of `pdg_get_pipeline`. Treat the supporting detail with care."
+     }
+    ]
+   },
+   {
+    "num": "8",
+    "title": "Draft PR with approval (Approve path and Reject path)",
+    "items": [
+     {
+      "t": "note",
+      "text": "This scene uses **two fresh conversations**, one for each path. Use the prompt below in both."
+     },
+     {
+      "t": "prompt",
+      "card": 8,
+      "note": "",
+      "text": "Create a draft PR with a README and a test skeleton for fi-customer-ingest."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass in 3 runs on each path. The agent gathers evidence, drafts the files and calls the flow `pdg_request_draft_pr`; the chat then shows the approval form.\n- Which tools it called before the form was not recorded."
+     },
+     {
+      "t": "form",
+      "status": "From the flow definition and the tester's expectations; the tester reported Pass against these fields",
+      "tone": "warn",
+      "text": "a card titled \"Draft PR Approval Request\" with Repository (`fi-customer-data`), Pipeline (`fi-customer-ingest`), Reviewer (`@aino-virtanen`), PR Title, Agent Justification, README Path (under `docs/`), README Content, Test Skeleton Path (under `tests/`), Test Skeleton Content, and two buttons, **Approve** and **Reject**."
+     },
+     {
+      "t": "path",
+      "title": "Approve path",
+      "status": "",
+      "tone": "info",
+      "same_prompt": false,
+      "text": "1. Read the fields aloud. Point out that unknown details in the draft are marked TODO, not invented.\n2. Click **Approve**.\n3. Reported Pass in 3 runs: the agent reports the flow's message verbatim. From the flow and tool code, the message starts `APPROVED by the approver. Repo: fi-customer-data, pipeline: fi-customer-ingest.` and carries a mock PR record with `draft: true`, a `PR-` ID, the reviewer and two files. The exact text rendered in the browser was not recorded, so describe it loosely."
+     },
+     {
+      "t": "path",
+      "title": "Reject path",
+      "status": "New conversation",
+      "tone": "info",
+      "same_prompt": true,
+      "text": "1. Send the same prompt. Wait for the form.\n2. Click **Reject**.\n3. Reported Pass in 3 runs: no PR is created. From the flow code, the message is `REJECTED. No pull request was created. The proposed draft PR for pipeline 'fi-customer-ingest' in repo 'fi-customer-data' was declined by the approver.` The rendered text was not recorded."
+     }
+    ]
+   },
+   {
+    "num": "9",
+    "title": "Draft PR with a fallback reviewer (`de-payroll-feed`)",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 9,
+      "note": "",
+      "text": "Create a draft PR with a test skeleton for de-payroll-feed."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass in 3 runs, with the form showing the reviewer `@de-platform-lead` (not `@jonas-keller`) and a test skeleton only. After Approve, the record lists one file under `tests/` and no README."
+     }
+    ]
+   },
+   {
+    "num": "10",
+    "title": "Ranking",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 10,
+      "note": "",
+      "text": "Rank all pipelines by documentation and test risk and tell me which to fix first."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass in 4 runs: `de-payroll-feed` and `fi-customer-ingest` ranked at or near the top with reasons, `se-invoice-batch` listed as a gap (tests not run in CI), healthy pipelines not flagged, and no numeric scores.\n- The order of the top two and whether `fi-claims-export` was checked against `REQ-FI-01` were not recorded."
+     }
+    ]
+   },
+   {
+    "num": "11",
+    "title": "Unknown pipeline (error handling)",
+    "items": [
+     {
+      "t": "prompt",
+      "card": 11,
+      "note": "",
+      "text": "Check pipeline fi-orders-export for documentation and test gaps."
+     },
+     {
+      "t": "expected",
+      "status": "Observed",
+      "tone": "ok",
+      "text": "- Reported Pass in 3 runs: the agent says the pipeline was not found and lists the known pipelines or asks which one was meant. No findings for the unknown pipeline and no form."
+     }
+    ]
+   },
+   {
+    "num": "12",
+    "title": "Evaluation (not run)",
+    "items": [
+     {
+      "t": "note",
+      "text": "There is an evaluation suite in `evaluation/pipeline-doc-gap/` (`ground_truth.json`, `eval_config.yaml`, 6 test cases). `python wxodemo.py eval pipeline-doc-gap` has **not** been run, so there are no evaluation results to show and nothing to quote. The approval form cannot be driven by the ADK evaluator in any case. Do not say the scenario passes evaluation."
+     }
+    ]
+   }
+  ]
+ },
  "release-readiness": {
   "scenes": [
    {

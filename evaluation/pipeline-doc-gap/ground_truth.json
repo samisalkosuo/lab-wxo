@@ -1,0 +1,111 @@
+{
+  "version": "1.0",
+  "description": "Ground truth for the Pipeline Docs and Test Gap scenario. Cases A-F are planted in tools/pdg/data/.",
+  "smoke_prompts": [
+    {
+      "id": "A-fi-customer-ingest",
+      "prompt": "Check pipeline fi-customer-ingest for documentation and test gaps. Use your tools and the knowledge base. Do NOT call pdg_request_draft_pr - just report the gaps and the standards that apply."
+    },
+    {
+      "id": "B-se-invoice-batch",
+      "prompt": "Check pipeline se-invoice-batch for documentation and test gaps. Use your tools and the knowledge base. Do NOT call pdg_request_draft_pr - just report your findings."
+    },
+    {
+      "id": "C-fi-claims-export",
+      "prompt": "Check pipeline fi-claims-export for documentation and test gaps, including country requirements. Do NOT call pdg_request_draft_pr - just report your findings and the requirement IDs."
+    },
+    {
+      "id": "D-de-payroll-feed",
+      "prompt": "Check pipeline de-payroll-feed for documentation, test and ownership gaps. Do NOT call pdg_request_draft_pr - just report your findings and who should review a PR."
+    },
+    {
+      "id": "E-se-tax-report",
+      "prompt": "Check pipeline se-tax-report for documentation and test gaps. Do NOT call pdg_request_draft_pr - just report whether any action is needed."
+    }
+  ],
+  "cases": {
+    "A": {
+      "pipeline_id": "fi-customer-ingest",
+      "case": "A",
+      "symptom_summary": "No README and no tests folder; handles personal data.",
+      "expected_gaps": ["no_readme", "no_tests"],
+      "expected_standards": ["STD-DOC-01", "STD-TEST-01"],
+      "expected_reviewer": "@aino-virtanen",
+      "expected_pr_files": ["docs/ README", "tests/ test skeleton"],
+      "requires_human_approval": true,
+      "red_herrings": [],
+      "diagnostic_path": [
+        "pdg_get_pipeline(pipeline_id='fi-customer-ingest')",
+        "pdg_get_ownership(pipeline_id='fi-customer-ingest')"
+      ]
+    },
+    "B": {
+      "pipeline_id": "se-invoice-batch",
+      "case": "B",
+      "symptom_summary": "Tests folder with 14 tests exists, but the CI test stage is not_run in all recent runs.",
+      "expected_gaps": ["tests_not_in_ci"],
+      "expected_standards": ["STD-TEST-01"],
+      "requires_human_approval": true,
+      "red_herrings": [
+        "The tests folder is present. It must not be accepted as effective testing without checking CI history."
+      ],
+      "diagnostic_path": [
+        "pdg_get_pipeline(pipeline_id='se-invoice-batch')",
+        "pdg_get_ci_history(pipeline_id='se-invoice-batch')"
+      ],
+      "notes": "A test skeleton PR does not fix this gap; enabling the CI test stage does. The agent must say so."
+    },
+    "C": {
+      "pipeline_id": "fi-claims-export",
+      "case": "C",
+      "symptom_summary": "README has the five STD-DOC-01 sections but no 'Data residency' section; FI pipeline handling personal data. Tests run in CI.",
+      "expected_gaps": ["missing_country_section"],
+      "expected_standards": ["REQ-FI-01", "STD-DOC-01"],
+      "requires_human_approval": true,
+      "red_herrings": [],
+      "diagnostic_path": [
+        "pdg_get_pipeline(pipeline_id='fi-claims-export')"
+      ],
+      "notes": "pdg_list_pipelines shows no objective signal for this pipeline; the gap is found only by comparing README sections with the country requirement in the knowledge base."
+    },
+    "D": {
+      "pipeline_id": "de-payroll-feed",
+      "case": "D",
+      "symptom_summary": "Only committer has left the company; no active CODEOWNER; no tests folder; handles personal data.",
+      "expected_gaps": ["no_active_owner", "no_tests"],
+      "expected_standards": ["STD-TEST-01", "POL-PR-01"],
+      "expected_reviewer": "@de-platform-lead",
+      "requires_human_approval": true,
+      "red_herrings": [],
+      "diagnostic_path": [
+        "pdg_get_pipeline(pipeline_id='de-payroll-feed')",
+        "pdg_get_ownership(pipeline_id='de-payroll-feed')"
+      ]
+    },
+    "E": {
+      "pipeline_id": "se-tax-report",
+      "case": "E",
+      "symptom_summary": "Healthy: complete README including Retention, tests run in CI, active owner.",
+      "expected_gaps": [],
+      "expected_standards": [],
+      "requires_human_approval": false,
+      "red_herrings": [],
+      "diagnostic_path": [
+        "pdg_get_pipeline(pipeline_id='se-tax-report')",
+        "pdg_get_ci_history(pipeline_id='se-tax-report')"
+      ],
+      "notes": "Restraint case: no gap, no PR, no action."
+    },
+    "F": {
+      "pipeline_id": "de-sales-rollup",
+      "case": "F",
+      "symptom_summary": "Healthy: README, tests run in CI, active owner, no personal data.",
+      "expected_gaps": [],
+      "expected_standards": [],
+      "requires_human_approval": false,
+      "red_herrings": [],
+      "diagnostic_path": [],
+      "notes": "Second restraint case so that not every country has a gap."
+    }
+  }
+}

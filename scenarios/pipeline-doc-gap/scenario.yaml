@@ -1,0 +1,45 @@
+# scenario.yaml - manifest for the Pipeline Docs and Test Gap scenario.
+# Field reference and a complete example: scenarios/incident-triage/scenario.yaml
+# Status is `live`: deployed and the demo script written from the user's browser runs.
+
+id: pipeline-doc-gap
+name: Pipeline Docs and Test Gap
+description: Platform-wide docs and test gap detection with draft PRs into existing review
+status: live
+
+agents:
+  - name: pipeline_doc_gap
+    path: agents/pipeline-doc-gap
+    kind: native
+
+tools:
+  - path: tools/pdg
+    entry: pdg.py
+    names:
+      - pdg_list_pipelines
+      - pdg_get_pipeline
+      - pdg_get_ci_history
+      - pdg_get_ownership
+      - pdg_create_draft_pr
+    # pdg_create_draft_pr is deliberately NOT attached to the agent; only the
+    # pdg_request_draft_pr flow calls it after human approval (least privilege).
+    attached:
+      - pdg_list_pipelines
+      - pdg_get_pipeline
+      - pdg_get_ci_history
+      - pdg_get_ownership
+
+knowledge_bases:
+  - name: pdg_standards
+    path: knowledge/pipeline-doc-gap
+
+flows:
+  - name: pdg_request_draft_pr
+    path: flows/pipeline_doc_gap
+
+evaluation:
+  path: evaluation/pipeline-doc-gap
+  tier: full
+
+demo:
+  script: docs/demo/pipeline-doc-gap-demo.md

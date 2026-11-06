@@ -1,0 +1,18 @@
+REQUIREMENT: Germany - Documentation for Employee Data Pipelines
+Requirement ID: REQ-DE-01
+Applies to: pipelines with country DE that handle personal data (pdg_get_pipeline shows "Handles personal data: yes").
+
+WHEN TO USE THIS DOCUMENT
+Use it when a German pipeline handles personal data and has a README, to check whether the README meets the German requirement on top of STD-DOC-01. Typical symptoms:
+- The README has all five STD-DOC-01 sections but no "Employee data handling" section.
+
+REQUIREMENT
+In addition to the five STD-DOC-01 sections, the README of a German pipeline that handles personal data must contain a section titled "Employee data handling" that states which employee attributes are processed and who has access to the outputs.
+
+DECISION
+If the pipeline is DE, handles personal data and the README sections do not include "Employee data handling", this is a documentation gap against REQ-DE-01. If the section is present, there is no country-specific gap.
+
+README ADDITION
+## Employee data handling
+Attributes processed: <TODO: owner to confirm>
+Access to outputs: <TODO: owner to confirm>
