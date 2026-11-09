@@ -73,6 +73,7 @@ All other agents are polled until the run reaches a terminal status or a 3-minut
 | `CALL_INTERVAL_MINUTES` | no | `1` | Window size in minutes; one call fires per window at a random second |
 | `AGENT_FILTER` | no | _(all)_ | Comma-separated agent names to restrict the pool, e.g. `incident_triage,hello_world` |
 | `WXO_ENVIRONMENT` | no | `live` | Agent environment that runs are sent to: `live` or `draft`. See below |
+| `WXO_API_KEYS_FILE` | no | _(unset)_ | Path inside the container to a CSV of extra users (`user,api_key`). See "Multiple users" below |
 
 ### Why `live` is the default
 
@@ -82,6 +83,36 @@ Observability / Analytics, but the WXO **Home** dashboard (Messages, Adoption, â
 `GET /v1/orchestrate/agents` and sends it as `environment_id`. Agents without a live
 environment are skipped with a warning. Set `WXO_ENVIRONMENT=draft` to omit `environment_id`
 and exercise the draft agents instead.
+
+---
+
+## Multiple users
+
+By default every call uses the single `WXO_API_KEY`, so usage data shows one user. To spread traffic
+across several users, list extra API keys in a CSV. Each call then picks a **random user** from the pool.
+
+Copy [`api-keys.csv.example`](../api-keys.csv.example) to `api-keys.csv` in the repository root
+(the file is gitignored because it holds secrets) and edit it:
+
+```csv
+# Extra users for the traffic generator. Lines starting with # and blank lines are ignored.
+user,api_key
+alice,<alice-api-key>
+bob,<bob-api-key>
+```
+
+- The header needs an `api_key` column; the `user` column is optional. A blank user becomes `user-N`
+  (N = data row number). Rows with an empty key are skipped with a warning.
+- The `WXO_API_KEY` from `env.cfg` is **always in the pool**, labelled `default`. A CSV row with the same
+  key is dropped, and duplicate user labels get a `-2`, `-3` suffix.
+- Keys that fail the token exchange at startup are dropped with a warning. If none are valid, the app exits with an error.
+- Logs show the **user label**, never the key. Log lines are prefixed with `[user]` only when the CSV added users.
+- If `WXO_API_KEYS_FILE` is unset, missing or unreadable, only `WXO_API_KEY` is used.
+- The CSV is read once at startup. **Restart the container** (`traffic restart`) after editing it.
+
+`python wxodemo.py traffic start` / `redeploy` mount `api-keys.csv` read-only at `/app/api-keys.csv` and set
+`WXO_API_KEYS_FILE` automatically when the file exists. The CSV is never copied into the image.
+With a manual `docker run`, mount it yourself (see [Run](#run)).
 
 ---
 
@@ -147,6 +178,17 @@ docker run --rm \
   -e WXO_API_KEY=your-api-key-here \
   -e WXO_URL=https://api.eu-de.watson-orchestrate.cloud.ibm.com/instances/your-instance-id \
   -e WXO_ENVIRONMENT=draft \
+  wxo-traffic-gen
+```
+
+To use several users, mount the CSV read-only and point `WXO_API_KEYS_FILE` at it:
+
+```bash
+docker run --rm \
+  -e WXO_API_KEY=your-api-key-here \
+  -e WXO_URL=https://api.eu-de.watson-orchestrate.cloud.ibm.com/instances/your-instance-id \
+  -v "$(pwd)/api-keys.csv:/app/api-keys.csv:ro" \
+  -e WXO_API_KEYS_FILE=/app/api-keys.csv \
   wxo-traffic-gen
 ```
 

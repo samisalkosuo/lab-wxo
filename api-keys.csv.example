@@ -1,0 +1,4 @@
+# Copy to api-keys.csv (gitignored) and replace the placeholders with real WXO API keys.
+user,api_key
+alice,REPLACE_WITH_ALICE_API_KEY
+bob,REPLACE_WITH_BOB_API_KEY

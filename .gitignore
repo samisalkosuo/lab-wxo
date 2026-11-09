@@ -10,6 +10,8 @@ env.cfg
 .env*
 !env.cfg.example
 !.env.example
+api-keys.csv
+!api-keys.csv.example
 
 # Python
 __pycache__/

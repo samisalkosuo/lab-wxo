@@ -145,6 +145,73 @@ def test_traffic_start_dry_run(repo, capsys, monkeypatch):
     assert "k-secret-1234" not in out
 
 
+def _dry_run_start(repo, capsys, monkeypatch) -> tuple[int, str]:
+    monkeypatch.setattr(traffic.shutil, "which", lambda cmd: "/usr/bin/docker")
+    cfg = Config(api_key="k-secret-1234", url="https://api.test/instances/1", env_name="demo")
+    code = traffic.run_traffic_start(repo, cfg, dry_run=True)
+    captured = capsys.readouterr()
+    return code, captured.out + captured.err
+
+
+def test_read_api_keys_csv(tmp_path):
+    path = tmp_path / "keys.csv"
+    path.write_text(
+        "\ufeff# comment\n\nuser,api_key\nalice,key-a\n,key-b\nbob,\n# skip\ncarol,  key-c  \n",
+        encoding="utf-8",
+    )
+    assert traffic.read_api_keys_csv(path) == ["key-a", "key-b", "key-c"]
+
+
+def test_read_api_keys_csv_no_header_or_empty(tmp_path):
+    no_header = tmp_path / "noheader.csv"
+    no_header.write_text("alice,key-a\nbob,key-b\n", encoding="utf-8")
+    assert traffic.read_api_keys_csv(no_header) == []
+
+    empty = tmp_path / "empty.csv"
+    empty.write_text("\n# only comments\n", encoding="utf-8")
+    assert traffic.read_api_keys_csv(empty) == []
+
+
+def test_traffic_start_without_keys_csv(repo, capsys, monkeypatch):
+    code, out = _dry_run_start(repo, capsys, monkeypatch)
+    assert code == 0
+    assert "api-keys.csv" not in out
+    assert "WXO_API_KEYS_FILE" not in out
+    assert " -v " not in out
+
+
+def test_traffic_start_with_keys_csv(repo, capsys, monkeypatch):
+    keys_file = repo / "api-keys.csv"
+    keys_file.write_text("user,api_key\nalice,key-alice-111\nbob,key-bob-222\n", encoding="utf-8")
+    code, out = _dry_run_start(repo, capsys, monkeypatch)
+    assert code == 0
+    assert f"-v {keys_file.resolve()}:/app/api-keys.csv:ro" in out
+    assert "-e WXO_API_KEYS_FILE=/app/api-keys.csv" in out
+    assert "Using 2 users from api-keys.csv" in out
+    # Image name stays last; mount comes before it
+    assert out.strip().splitlines()[-1].endswith(traffic.DEFAULT_IMAGE)
+    # No key values anywhere in the output
+    for secret in ("k-secret-1234", "key-alice-111", "key-bob-222"):
+        assert secret not in out
+
+
+def test_traffic_start_keys_csv_not_readable(repo, capsys, monkeypatch):
+    (repo / "api-keys.csv").write_bytes(b"user,api_key\nalice,\xff\xfe\xfa\n")
+    code, out = _dry_run_start(repo, capsys, monkeypatch)
+    assert code == 0
+    assert "Could not read api-keys.csv" in out
+    assert "WXO_API_KEYS_FILE" not in out
+    assert " -v " not in out
+
+
+def test_traffic_start_keys_csv_without_header(repo, capsys, monkeypatch):
+    (repo / "api-keys.csv").write_text("alice,key-alice-111\n", encoding="utf-8")
+    code, out = _dry_run_start(repo, capsys, monkeypatch)
+    assert code == 0
+    assert "Using 0 users from api-keys.csv" in out
+    assert "key-alice-111" not in out
+
+
 def test_traffic_stop_dry_run(repo, capsys, monkeypatch):
     monkeypatch.setattr(traffic.shutil, "which", lambda cmd: "/usr/bin/podman")
     code = traffic.run_traffic_stop(repo, dry_run=True)
@@ -162,6 +229,39 @@ def test_traffic_redeploy_dry_run(repo, capsys, monkeypatch):
     assert "[dry-run] would stop and remove container" in out
     assert "[dry-run] would run: /usr/bin/docker build" in out
     assert "[dry-run] would run: /usr/bin/docker run" in out
+
+
+def test_traffic_restart_dry_run(repo, capsys, monkeypatch):
+    monkeypatch.setattr(traffic.shutil, "which", lambda cmd: "/usr/bin/docker")
+    cfg = Config(api_key="k-secret-1234", url="https://api.test/instances/1", env_name="demo")
+    code = traffic.run_traffic_restart(repo, cfg, dry_run=True)
+    assert code == 0
+    out = capsys.readouterr().out
+    assert "[dry-run] would stop and remove container" in out
+    assert "[dry-run] would run: /usr/bin/docker run" in out
+    assert " build" not in out
+
+
+def test_traffic_restart_starts_even_if_stop_fails(repo, capsys, monkeypatch):
+    monkeypatch.setattr(traffic.shutil, "which", lambda cmd: "/usr/bin/docker")
+    cfg = Config(api_key="k-secret-1234", url="https://api.test/instances/1", env_name="demo")
+    started = []
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("stop exploded")
+
+    monkeypatch.setattr(traffic, "run_traffic_stop", boom)
+    monkeypatch.setattr(
+        traffic, "run_traffic_start", lambda *a, **k: started.append(True) or 0
+    )
+    assert traffic.run_traffic_restart(repo, cfg) == 0
+    assert started == [True]
+    assert "starting anyway" in capsys.readouterr().out
+
+    started.clear()
+    monkeypatch.setattr(traffic, "run_traffic_stop", lambda *a, **k: 1)
+    assert traffic.run_traffic_restart(repo, cfg) == 0
+    assert started == [True]
 
 
 def test_traffic_start_already_running(repo, capsys, monkeypatch):

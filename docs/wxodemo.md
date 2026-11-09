@@ -254,6 +254,9 @@ python wxodemo.py traffic stop
 # Redeploy (stop, rebuild image, start)
 python wxodemo.py traffic redeploy
 
+# Restart (stop, then start again without rebuilding; start runs even if stop fails)
+python wxodemo.py traffic restart
+
 # Preview discovered local agents and prompts pool
 python wxodemo.py traffic pool [--agents A1,A2] [--json]
 ```
@@ -270,8 +273,11 @@ python wxodemo.py traffic pool [--agents A1,A2] [--json]
 | `stop` | `--dry-run` | Stop and remove the container |
 | `status` | | Shows detected container runtime, container status, and local image status |
 | `redeploy` | `--no-cache`, `--dry-run`, `-f` | Atomic stop, rebuild, and start |
+| `restart` | `--interval`, `--agents`, `--env`, `--dry-run`, `-f` | Stop, then start again with the existing image; start is attempted even if stop fails |
 | `logs` | `-n N` | Follow live output by default (Ctrl+C to stop) or tail last N lines |
 | `pool` | `--agents A1,A2`, `--json` | Discover and display callable agents and prompts from repo manifests |
+
+**Multiple users.** By default the generator calls with the single `WXO_API_KEY` from `env.cfg`. To make usage data show several users, copy `api-keys.csv.example` to `api-keys.csv` in the repository root and list `user,api_key` rows (the file is gitignored because it holds secrets). When the file exists, `traffic start` and `traffic redeploy` mount it read-only into the container and set `WXO_API_KEYS_FILE` for you. The command prints `Using N users from api-keys.csv` (a count only; key values are masked, including in `--dry-run`). Each call then uses a random user; the `env.cfg` key stays in the pool as `default`. Without the file, behaviour is unchanged. Run `traffic restart` after editing the CSV. See [`traffic-gen/README.md`](../traffic-gen/README.md#multiple-users) for the CSV format.
 
 ## Target names
 

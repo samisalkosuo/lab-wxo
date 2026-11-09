@@ -25,6 +25,7 @@ from wxodemo.traffic import (
     run_traffic_logs,
     run_traffic_pool,
     run_traffic_redeploy,
+    run_traffic_restart,
     run_traffic_start,
     run_traffic_status,
     run_traffic_stop,
@@ -279,6 +280,19 @@ def cmd_traffic(args: argparse.Namespace) -> int:
             follow=args.follow,
             dry_run=args.dry_run,
         )
+    if subcommand == "restart":
+        cfg = _config_for(args)
+        return run_traffic_restart(
+            root,
+            cfg,
+            engine=args.engine,
+            interval=args.interval,
+            agents=args.agents,
+            env=args.env,
+            container_name=args.name,
+            follow=args.follow,
+            dry_run=args.dry_run,
+        )
     if subcommand == "logs":
         return run_traffic_logs(
             root, engine=args.engine, container_name=args.name, tail=args.tail
@@ -475,6 +489,28 @@ def build_parser() -> argparse.ArgumentParser:
         "--dry-run", action="store_true", help="show redeploy commands without running them"
     )
     pr.set_defaults(func=cmd_traffic, _parser=p_traffic)
+
+    prs = tsub.add_parser(
+        "restart", help="stop the running container and start it again (no rebuild)"
+    )
+    prs.add_argument(
+        "--engine", choices=["podman", "docker"], help="container engine (default: auto-detect)"
+    )
+    prs.add_argument("--interval", type=int, help="call interval in minutes (default: 1)")
+    prs.add_argument("--agents", help="comma-separated agent names to include in pool")
+    prs.add_argument(
+        "--env", choices=["live", "draft"], help="target environment (default: live)"
+    )
+    prs.add_argument(
+        "--name", default="wxo-traffic-gen", help="container name (default: wxo-traffic-gen)"
+    )
+    prs.add_argument(
+        "-f", "--follow", action="store_true", help="follow container logs after starting"
+    )
+    prs.add_argument(
+        "--dry-run", action="store_true", help="show restart commands without running them"
+    )
+    prs.set_defaults(func=cmd_traffic, _parser=p_traffic)
 
     pl = tsub.add_parser(
         "logs", help="follow traffic generator container logs (Ctrl+C to stop)"

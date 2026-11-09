@@ -2,9 +2,14 @@
 
 Periodically calls watsonx Orchestrate agents via the REST API to generate usage data.
 One call fires per CALL_INTERVAL_MINUTES window, at a random second within that window.
+Each call uses a randomly chosen user (API key): WXO_API_KEY (user 'default') plus the
+users listed in the optional WXO_API_KEYS_FILE CSV.
 
 Environment variables:
-  WXO_API_KEY            required  IBM Cloud or MCSP API key
+  WXO_API_KEY            required  IBM Cloud or MCSP API key (always in the pool, as user 'default')
+  WXO_API_KEYS_FILE      optional  CSV with header 'user,api_key' adding more users to the pool
+                                   (blank lines and '#' comment lines ignored; blank user -> user-N).
+                                   If missing or unreadable, only WXO_API_KEY is used.
   WXO_URL                required  https://api.<region>.watson-orchestrate.cloud.ibm.com/instances/<id>
   WXO_ENV_TYPE           optional  ibm_iam (default) or mcsp
   CALL_INTERVAL_MINUTES  optional  window size in minutes, default 1
@@ -17,6 +22,7 @@ Stdlib only — no third-party packages required.
 
 from __future__ import annotations
 
+import csv
 import http.client
 import json
 import os
@@ -122,6 +128,61 @@ class TokenManager:
     def refresh(self) -> str:
         self._token, self._fetched_at = _fetch_token(self._api_key, self._env_type)
         return self._token
+
+
+DEFAULT_USER = "default"
+
+
+def load_api_keys_csv(path: Path) -> list[tuple[str, str]]:
+    """Read a 'user,api_key' CSV. Returns [(user, api_key)].
+
+    Tolerates a BOM, blank lines and '#' comment lines. Rows with an empty key are skipped;
+    a blank user becomes 'user-N' (N = 1-based data row number). Never logs key values.
+    """
+    with path.open(encoding="utf-8-sig", newline="") as fh:
+        rows = [
+            row for row in csv.reader(fh)
+            if row and any(c.strip() for c in row) and not row[0].strip().startswith("#")
+        ]
+    if not rows:
+        return []
+    header = [c.strip().lower() for c in rows[0]]
+    if "api_key" not in header:
+        _warn(f"{path}: header must contain 'user,api_key'; ignoring file.")
+        return []
+    key_idx = header.index("api_key")
+    user_idx = header.index("user") if "user" in header else None
+    result: list[tuple[str, str]] = []
+    for n, row in enumerate(rows[1:], start=1):
+        key = row[key_idx].strip() if key_idx < len(row) else ""
+        user = row[user_idx].strip() if user_idx is not None and user_idx < len(row) else ""
+        if not key:
+            _warn(f"{path}: data row {n} has no api_key, skipping.")
+            continue
+        result.append((user or f"user-{n}", key))
+    return result
+
+
+def build_user_keys(default_key: str, csv_keys: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    """Pool of (user, key): env.cfg key first as 'default', then CSV users.
+
+    CSV rows whose key is already in the pool are dropped; duplicate user labels get a suffix.
+    """
+    pool: list[tuple[str, str]] = [(DEFAULT_USER, default_key)]
+    seen_keys = {default_key}
+    seen_users = {DEFAULT_USER}
+    for user, key in csv_keys:
+        if key in seen_keys:
+            _warn(f"User '{user}' has a duplicate api_key; skipping.")
+            continue
+        label, i = user, 2
+        while label in seen_users:
+            label = f"{user}-{i}"
+            i += 1
+        seen_keys.add(key)
+        seen_users.add(label)
+        pool.append((label, key))
+    return pool
 
 
 # ---------------------------------------------------------------------------
@@ -451,10 +512,12 @@ def resolve_pool(
 # Sending a prompt
 # ---------------------------------------------------------------------------
 
-def send_prompt(api: Api, base_url: str, entry: PoolEntry) -> None:
+def send_prompt(api: Api, base_url: str, entry: PoolEntry, user: str | None = None) -> None:
     prompt = random.choice(entry.prompts)
     short = prompt[:80] + ("..." if len(prompt) > 80 else "")
     label = f"{entry.name:<30}  \"{short}\""
+    if user:
+        label = f"[{user}] {label}"
 
     url = f"{base_url.rstrip('/')}/v1/orchestrate/runs"
     body: dict[str, Any] = {
@@ -526,6 +589,8 @@ def main() -> None:
     agent_filter_raw = os.environ.get("AGENT_FILTER", "")
     agent_filter = [n.strip() for n in agent_filter_raw.split(",") if n.strip()] if agent_filter_raw else []
 
+    keys_file = os.environ.get("WXO_API_KEYS_FILE", "").strip()
+
     if not api_key:
         print("ERROR: WXO_API_KEY is not set.", file=sys.stderr)
         sys.exit(1)
@@ -554,17 +619,35 @@ def main() -> None:
 
     _log(f"Discovered {len(specs)} agent(s) from manifests.")
 
-    # Authenticate.
-    _log("Authenticating…")
-    tokens = TokenManager(api_key, env_type)
-    try:
-        tokens.get()
-    except RuntimeError as exc:
-        print(f"ERROR: {exc}", file=sys.stderr)
-        sys.exit(1)
-    _log("Token obtained.")
+    # Load users: env.cfg key ('default') plus optional CSV users.
+    csv_keys: list[tuple[str, str]] = []
+    if keys_file:
+        try:
+            csv_keys = load_api_keys_csv(Path(keys_file))
+        except (OSError, csv.Error, UnicodeDecodeError) as exc:
+            _warn(f"Cannot read WXO_API_KEYS_FILE ({keys_file}): {exc}. Using WXO_API_KEY only.")
+    user_keys = build_user_keys(api_key, csv_keys)
 
-    api = Api(tokens)
+    # Authenticate every user; drop those whose key fails the token exchange.
+    _log(f"Authenticating {len(user_keys)} user(s)…")
+    apis: dict[str, Api] = {}
+    for user, key in user_keys:
+        tokens = TokenManager(key, env_type)
+        try:
+            tokens.get()
+        except RuntimeError as exc:
+            _warn(f"User '{user}': authentication failed, dropping from pool: {exc}")
+            continue
+        apis[user] = Api(tokens)
+    if not apis:
+        print("ERROR: No valid API keys (all token exchanges failed).", file=sys.stderr)
+        sys.exit(1)
+    users = list(apis)
+    multi_user = bool(csv_keys)  # label log lines only when a CSV contributed users
+    _log(f"Token obtained. Users in pool ({len(users)}): {', '.join(users)}")
+
+    # Catalog lookup uses 'default' if valid, otherwise the first valid user.
+    api = apis.get(DEFAULT_USER) or apis[users[0]]
 
     # Resolve against live WXO agents.
     _log("Loading agent catalog from WXO…")
@@ -598,8 +681,9 @@ def main() -> None:
         time.sleep(offset)
 
         entry = random.choice(pool)
+        user = random.choice(users)
         try:
-            send_prompt(api, base_url, entry)
+            send_prompt(apis[user], base_url, entry, user if multi_user else None)
         except Exception as exc:  # noqa: BLE001
             _log(f"Unexpected error: {exc}")
 

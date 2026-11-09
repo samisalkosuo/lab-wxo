@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 import json
 import shutil
 import subprocess
@@ -23,6 +24,29 @@ from wxodemo.manifest import load_yaml
 DEFAULT_IMAGE = "wxo-traffic-gen"
 DEFAULT_CONTAINER = "wxo-traffic-gen"
 SUPPORTED_ENGINES = ("podman", "docker")
+API_KEYS_FILENAME = "api-keys.csv"
+API_KEYS_CONTAINER_PATH = "/app/api-keys.csv"
+
+
+def read_api_keys_csv(path: Path) -> list[str]:
+    """Return the api_key values from a 'user,api_key' CSV (header-aware).
+
+    Skips blank lines, '#' comment lines and rows with an empty key. A file without an
+    'api_key' header column yields no keys.
+    """
+    with path.open(encoding="utf-8-sig", newline="") as fh:
+        rows = [
+            row for row in csv.reader(fh)
+            if row and any(c.strip() for c in row) and not row[0].strip().startswith("#")
+        ]
+    if not rows:
+        return []
+    header = [c.strip().lower() for c in rows[0]]
+    if "api_key" not in header:
+        return []
+    idx = header.index("api_key")
+    keys = [row[idx].strip() for row in rows[1:] if idx < len(row)]
+    return [k for k in keys if k]
 
 
 def find_container_engine(preferred: str | None = None) -> tuple[str, str]:
@@ -322,6 +346,22 @@ def run_traffic_start(
     if env:
         cmd.extend(["-e", f"WXO_ENVIRONMENT={env}"])
 
+    keys_file = root / API_KEYS_FILENAME
+    if keys_file.is_file():
+        try:
+            csv_keys = read_api_keys_csv(keys_file)
+        except (OSError, csv.Error, UnicodeDecodeError) as exc:
+            warn(f"Could not read {API_KEYS_FILENAME} ({type(exc).__name__}); starting without it.")
+        else:
+            for key in csv_keys:
+                register_secret(key)
+            info(f"Using {len(csv_keys)} users from {API_KEYS_FILENAME}")
+            # Native absolute host path; the drive-letter colon is handled by docker/podman.
+            cmd.extend([
+                "-v", f"{keys_file.resolve()}:{API_KEYS_CONTAINER_PATH}:ro",
+                "-e", f"WXO_API_KEYS_FILE={API_KEYS_CONTAINER_PATH}",
+            ])
+
     cmd.append(DEFAULT_IMAGE)
 
     if dry_run:
@@ -492,6 +532,44 @@ def run_traffic_redeploy(
         container_name=container_name,
         follow=follow,
         dry_run=False,
+    )
+
+
+def run_traffic_restart(
+    root: Path,
+    config: Config | None,
+    engine: str | None = None,
+    interval: int | None = None,
+    agents: str | None = None,
+    env: str | None = None,
+    container_name: str = DEFAULT_CONTAINER,
+    follow: bool = False,
+    dry_run: bool = False,
+) -> int:
+    """Stop the running container and start it again (no image rebuild).
+
+    A failed stop does not prevent the start.
+    """
+    try:
+        stop_code = run_traffic_stop(
+            root, engine=engine, container_name=container_name, dry_run=dry_run
+        )
+    except Exception as exc:  # noqa: BLE001
+        warn(f"Stop failed ({exc}); starting anyway")
+    else:
+        if stop_code != 0:
+            warn(f"Stop returned exit code {stop_code}; starting anyway")
+
+    return run_traffic_start(
+        root,
+        config,
+        engine=engine,
+        interval=interval,
+        agents=agents,
+        env=env,
+        container_name=container_name,
+        follow=follow,
+        dry_run=dry_run,
     )
 
 

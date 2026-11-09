@@ -16,6 +16,12 @@
 #     -e WXO_ENV_TYPE=ibm_iam \
 #     -e CALL_INTERVAL_MINUTES=1 \
 #     wxo-traffic-gen
+#
+# Optional extra users (CSV is mounted at runtime, never copied into the image):
+#   docker run --rm ... \
+#     -v "$(pwd)/api-keys.csv:/app/api-keys.csv:ro" \
+#     -e WXO_API_KEYS_FILE=/app/api-keys.csv \
+#     wxo-traffic-gen
 
 FROM python:3.11-slim
 
